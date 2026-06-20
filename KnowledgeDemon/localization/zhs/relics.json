@@ -1,0 +1,8 @@
+{
+    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.title": "认知容器",
+    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.description": "你手动打出的牌在进入[gold]弃牌堆[/gold]前将被[gold]记录[/gold]。\n回合结束时，[gold]抉择[/gold]1次。",
+    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.flavor": "[red]这个遗物的细节将在未来揭晓……[/red]",
+    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.title": "知识寄主",
+    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.description": "你手动打出的牌在进入[gold]弃牌堆[/gold]前将被[gold]记录[/gold]。\n回合结束时，不断[gold]抉择[/gold]直到[gold]藏书库[/gold]中没有卡牌。",
+    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.flavor": "[red]这个遗物的细节将在未来揭晓……[/red]"
+}

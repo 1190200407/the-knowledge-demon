@@ -1,0 +1,14 @@
+{
+	"id": "KnowledgeDemon", 
+	"name": "KnowledgeDemon",
+	"author": "ComicChess",
+	"description": "添加可操控角色-知识恶魔",
+	"version": "1.1",
+	"has_pck": true,
+	"has_dll": true,
+	"dependencies": [
+	  { "id": "STS2-RitsuLib", "min_version": "0.4.24" }
+	],
+	"affects_gameplay": true
+  }
+  

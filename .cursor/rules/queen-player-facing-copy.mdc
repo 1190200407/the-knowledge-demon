@@ -1,0 +1,77 @@
+---
+description: 知识恶魔 mod 玩家文案：只写效果、不写机制名/层数术语、不写自动词条
+alwaysApply: true
+---
+
+# 玩家向文案（卡牌 / 意图 / 能力）
+
+面向玩家的描述要**最短、只讲结果**，不要写成设计文档或机制说明。
+
+## 卡牌与意图（`cards.json`、`intents.json`）
+
+- **只写玩家感受到的效果**（例如「技能牌耗能-1」「获得缠结」），不要写「获得某某能力」「施加某某 Power」等内部实现名。
+- **不要**在卡牌/意图里解释层数、叠加、计数器、与 Amount 的关系、「回合结束时解除」等实现细节（除非原版同类卡就这么写且用户明确要求）。
+- **不要**在卡牌描述里重复能力 hover 的全文；需要数值时用动态标签或一句效果即可。
+- 仍遵守 `queen-cards-description-no-blue-numbers`：卡牌描述里的效果数字不用 `[blue]`。
+
+## 选牌提示（`cards.json` 的 `selectionScreenPrompt`）
+
+- **记录**、**具象**（以及同类「从某处选 N 张牌」的交互）的 `selectionScreenPrompt` **必须写 `{Amount}`**，由 `CardSelectorPrefs(prompt, selectCount)` 注入张数；不要写死「一张」「要具象的牌」等不带数量的文案。
+- **富文本对齐原版 `card_selection.json`**：张数用 `[blue]{Amount}[/blue]`；关键词（如 `[gold]记录[/gold]`、`[gold]具象[/gold]`、`[gold]消耗[/gold]`、`[gold]丢弃[/gold]`）用金色。示例：`选择[blue]{Amount}[/blue]张牌来[gold]消耗[/gold]。`
+- 卡牌 **description** 里的效果数字仍不用 `[blue]`（见下文「代码富文本」）；`selectionScreenPrompt` 单独按本条上色。
+
+## 卡牌 Hover Tip（`AdditionalHoverTips`）
+
+- **描述已把效果写清楚时**：不要挂实现用 Power 的 hover（哪怕打出后会施加该 Power）。例如蝴蝶效应描述写了「储存伤害」，**不要**挂 `TwisterStoredDamagePower`。
+- **只有描述里点名了名称或原版游戏术语**时，才挂对应 tip：
+  - **能力名**出现在文案里 → `FromPower`（例：写了「魂灯」→ `SoulLampPower`）
+  - **卡牌名**出现在文案里 → `FromCard`（例：写了「龙卷风」→ `Twister`）
+  - **状态 / 关键词**出现在文案里 → `FromAffliction`、关键词 tip 等（例：「中毒」→ `PoisonPower`；「力量」→ `StrengthPower`）
+- **不要**为仅用于实现的追踪/包装 Power 加 tip。
+- 怪物牌：描述里用 `[gold]失衡[/gold]`、`[gold]偷窃[/gold]` 等点名的聚合体能力可保留 tip；描述只写效果、未点能力名的，不挂 tip。
+
+## 能力（`powers.json`）
+
+- 标题可以是能力名（如「灵巧」）；**只写玩家能懂的效果**，不写内部 Power 类名。
+- **`description`**（图鉴 / 静态 hover）：**不要用 `{Amount}`**——此处通常拿不到当前层数。写概括句即可，例如「本回合你的技能牌耗能减少」；若需暗示随层数变化，可说「减少层数对应的数值」，仍不要写死 `1`。
+- **`smartDescription`**（战斗内 / 有动态层数时）：用 `{Amount}` 等标签**告诉玩家具体减/加了多少**；**`{Amount}` 一般包 `[blue]…[/blue]`**（对齐原版能力 hover，例如 `[blue]{Amount}[/blue]点[gold]格挡[/gold]`、`下[blue]{Amount}[/blue]张牌`）。
+- 卡牌/意图里仍避免啰嗦的层数、叠加机制说明（本条的「层数对应的数值」仅用于 `powers.json` 的 `description` 概括）。
+
+## 代码注释
+
+- 脚本里的 `<summary>` / 注释可以给开发者写清 hook、层数逻辑；**不要**把这类措辞抄进本地化。
+
+## 反例 → 正例
+
+| 反例 | 正例 |
+|------|------|
+| 获得1层灵巧（本回合技能牌耗能降低，层数叠加） | 获得缠结。技能牌耗能-1。 |
+| description 写 `耗能-{Amount}` | description：`本回合你的技能牌耗能减少。`；smartDescription：`耗能-[blue]{Amount}[/blue]。` |
+| 学习意图：施加 SkillCostMinusOneThisTurnPower | 学习意图：技能牌耗能-1。 |
+
+# 代码描述
+在 `TheQueen/localization/zhs/cards.json` 的卡牌描述里，**不要手写**以下“系统会自动追加展示”的词条（避免重复显示）：
+
+- 消耗
+- 虚无
+- 消逝
+- 保留
+- 魂缚
+
+## 示例
+
+```json
+// ❌ BAD（重复写了“消耗/魂缚”）
+"COMICCHESS-XXX.description":"……\n[gold]消耗[/gold]\n[purple]魂缚[/purple]"
+
+// ✅ GOOD（只写效果文本）
+"COMICCHESS-XXX.description":"……"
+```
+
+# 代码富文本
+在 `TheQueen/localization/` 各语言 **`cards.json`** 的卡牌描述（`COMICCHESS-*.description` 等）中：
+
+- **不要用 `[blue]…[/blue]` 包裹表示效果量的数字**：张数、次数、抽牌数、层数、数值型动态标签（例如 `{ExtraDamage:diff()}`）等，一律不用蓝色；直接写数字或仅用动态标签即可。
+
+- 牌名、关键词等仍可用 `[gold]` 等现有约定。`powers.json` 等能力文案不在此规则范围内。
+

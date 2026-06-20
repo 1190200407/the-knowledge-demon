@@ -1,0 +1,20 @@
+{
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.title": "知识过载",
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.description": "每当你的藏书库中的牌超过4张时，你抉择1次。",
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.smartDescription": "每当你的[gold]藏书库[/gold]中的牌超过4张时，[gold]抉择[/gold]1次。",
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.title": "知识堡垒",
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.description": "回合结束时，你的藏书库中每有1张牌，你获得格挡。",
+    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.smartDescription": "回合结束时，你的[gold]藏书库[/gold]中每有1张牌，你获得[blue]{Amount}[/blue]点[gold]格挡[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_GENERATIONAL_REPAIR_POWER.title": "断代修复",
+    "KNOWLEDGE_DEMON_POWER_GENERATIONAL_REPAIR_POWER.description": "你消耗牌时，将其记录。",
+    "KNOWLEDGE_DEMON_POWER_GENERATIONAL_REPAIR_POWER.smartDescription": "你下[blue]{Amount}[/blue]次[gold]消耗[/gold]时，将其[gold]记录[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.title": "蝴蝶效应",
+    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.description": "本回合被攻击时储存受到的伤害。下回合开始时，记录龙卷风。",
+    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.smartDescription": "本回合被攻击时储存受到的伤害（已储存[blue]{Amount}[/blue]）。下回合开始时，[gold]记录[/gold][gold]龙卷风[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.title": "求知欲",
+    "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.description": "你在回合内抉择时抽牌。",
+    "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.smartDescription": "你在回合内[gold]抉择[/gold]时，抽[blue]{Amount}[/blue]张牌。",
+    "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.title": "平行观测",
+    "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.description": "你可以变化出其他颜色的牌。",
+    "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.smartDescription": "你可以[gold]变化[/gold]出其他颜色的牌。"
+}

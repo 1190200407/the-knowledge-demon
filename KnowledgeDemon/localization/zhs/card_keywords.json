@@ -1,0 +1,11 @@
+{
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.description": "生成牌的[gold]临时复制品[/gold]加入[gold]藏书库[/gold]。回合结束时消失。",
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.title": "记录",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.description": "从[gold]藏书库[/gold]中选择牌加入[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.smartDescription": "从[gold]藏书库[/gold]中选择{Materialize}张牌加入[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.title": "具象",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.description": "从[gold]藏书库[/gold]中随机展示[blue]3[/blue]张牌，选择[blue]1[/blue]张执行，[gold]丢弃[/gold]另外2张。",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.title": "抉择",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.description": "同名的[gold]独一[/gold]牌只能存在1张，重复的牌出现时将会被[gold]变化[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.title": "独一"
+}

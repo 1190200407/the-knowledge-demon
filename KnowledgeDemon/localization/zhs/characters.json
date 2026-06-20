@@ -1,0 +1,17 @@
+{
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.aromaPrinciple": "[sine]占位[/sine]",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.banter.alive.endTurnPing": "占位",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.banter.dead.endTurnPing": "占位",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.cardsModifierDescription": "知识恶魔的卡牌现在会出现在奖励和商店中。",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.cardsModifierTitle": "知识恶魔卡牌",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.description": "盘踞高塔、以秘闻与咒册为食粮的知识恶魔。",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.eventDeathPrevention": "看来我的死亡还不被允许……",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.goldMonologue": "[sine]我会把这当做小费的[/sine]",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.possessiveAdjective": "他的",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounObject": "他",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounPossessive": "他的",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounSubject": "他",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.title": "知识恶魔",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.titleObject": "知识恶魔",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.unlockText": "用[blue]{Prerequisite}[/blue]进行一局游戏来解锁这个角色。"
+}

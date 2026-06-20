@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://c28aoy3xtu8w1"
+path="res://.godot/imported/knowledge_demon.skel-454e409d3c3b988cdf315edba7dc6ead.spskel"
+
+[deps]
+
+source_file="res://KnowledgeDemon/animations/knowledge_demon/knowledge_demon.skel"
+dest_files=["res://.godot/imported/knowledge_demon.skel-454e409d3c3b988cdf315edba7dc6ead.spskel"]
+
+[params]
+
