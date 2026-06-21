@@ -12,6 +12,7 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<BookLibraryPileActivatePatch>();
 		patcher.RegisterPatch<BookLibraryFindOnTablePatch>();
 		patcher.RegisterPatch<BookLibraryDynamicVarPreviewPatch>();
+		patcher.RegisterPatch<BookLibraryChooseScreenReadyPatch>();
 		patcher.RegisterPatch<ParallelObservationTransformOptionsPatch>();
 		patcher.RegisterPatch<KnowledgeDemonUniqueTransformOptionsPatch>();
 		patcher.RegisterPatch<BigMushroomGrowScalePatch>();

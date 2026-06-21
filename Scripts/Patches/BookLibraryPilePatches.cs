@@ -127,7 +127,11 @@ internal sealed class BookLibraryDynamicVarPreviewPatch : IPatchMethod
         Creature? target,
         DynamicVarSet dynamicVarSet)
     {
-        if (__instance.Pile is not { } pile || !BookLibraryUtility.IsBookLibraryPile(pile.Type))
+        if (__instance.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type))
+        {
+            // 藏书库堆内牌
+        }
+        else if (!KnowledgeDemonChooseContext.IsChooseCandidate(__instance))
         {
             return;
         }

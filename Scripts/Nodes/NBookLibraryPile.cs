@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using STS2RitsuLib.CardPiles;
 
 namespace ComicChess.KnowledgeDemon;
@@ -39,6 +40,7 @@ public partial class NBookLibraryPile : Control
     private CardPile? _pile;
     private Player? _player;
     private NBookLibraryCardHolder? _focusedHolder;
+    private bool _handCardPlaySuppressesHover;
 
     public static NBookLibraryPile? Instance { get; private set; }
 
@@ -384,6 +386,35 @@ public partial class NBookLibraryPile : Control
             if (GodotObject.IsInstanceValid(holder))
             {
                 holder.UpdateCard();
+            }
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        var hand = NCombatRoom.Instance?.Ui?.Hand;
+        var suppress = hand?.InCardPlay ?? false;
+        if (suppress == _handCardPlaySuppressesHover)
+        {
+            return;
+        }
+
+        _handCardPlaySuppressesHover = suppress;
+        ApplyLibraryHoverSuppression(suppress);
+    }
+
+    private void ApplyLibraryHoverSuppression(bool suppress)
+    {
+        if (suppress && _focusedHolder != null)
+        {
+            NotifyHolderUnfocused(_focusedHolder);
+        }
+
+        foreach (var holder in _holders.Values)
+        {
+            if (GodotObject.IsInstanceValid(holder))
+            {
+                holder.SetHoverInteractionEnabled(!suppress);
             }
         }
     }

@@ -169,16 +169,25 @@ public static class BookLibraryCmd
 
         await ExtractCandidatesFromLibrary(player, candidates);
 
-        var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidates, player);
+        try
+        {
+            KnowledgeDemonChooseContext.Begin(candidates);
 
-        await KnowledgeDemonHook.AfterChooseFromLibrary(
-            choiceContext,
-            player,
-            chooseSource,
-            chosen,
-            candidates);
+            var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidates, player);
 
-        return new BookLibraryChooseResult(chosen, candidates);
+            await KnowledgeDemonHook.AfterChooseFromLibrary(
+                choiceContext,
+                player,
+                chooseSource,
+                chosen,
+                candidates);
+
+            return new BookLibraryChooseResult(chosen, candidates);
+        }
+        finally
+        {
+            KnowledgeDemonChooseContext.End();
+        }
     }
 
     /// <summary>抉择并自动结算（<see cref="ChooseFromLibrary" /> + <see cref="ApplyChooseResult" />）。</summary>

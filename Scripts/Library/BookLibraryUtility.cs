@@ -45,10 +45,26 @@ public static class BookLibraryUtility
         var ncard = NCard.FindOnTable(card);
         if (ncard != null)
         {
-            ApplyHandTableVisuals(ncard);
+            ApplyLibraryCardPreviewVisuals(ncard);
         }
 
         NBookLibraryPile.Instance?.TryGetHolder(card)?.UpdateCard();
+    }
+
+    public static void ApplyLibraryCardPreviewVisuals(NCard ncard, bool applyTint = true)
+    {
+        if (!GodotObject.IsInstanceValid(ncard))
+        {
+            return;
+        }
+
+        ncard.SetForceUnpoweredPreview(false);
+        ncard.SetPretendCardCanBePlayed(true);
+        ncard.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
+        if (applyTint)
+        {
+            ApplyLibraryCardTint(ncard);
+        }
     }
 
     public static void ApplyHandTableVisuals(NCard ncard)
@@ -60,8 +76,7 @@ public static class BookLibraryUtility
 
         if (ncard.IsNodeReady())
         {
-            ncard.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
-            ApplyLibraryCardTint(ncard);
+            ApplyLibraryCardPreviewVisuals(ncard);
             return;
         }
 
@@ -72,8 +87,7 @@ public static class BookLibraryUtility
                 return;
             }
 
-            ncard.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
-            ApplyLibraryCardTint(ncard);
+            ApplyLibraryCardPreviewVisuals(ncard);
         }).CallDeferred();
     }
 

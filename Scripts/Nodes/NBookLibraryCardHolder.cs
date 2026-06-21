@@ -45,6 +45,8 @@ public partial class NBookLibraryCardHolder : NCardHolder
     private CancellationTokenSource? _positionCancelToken;
     private CancellationTokenSource? _scaleCancelToken;
 
+    private bool _hoverInteractionEnabled = true;
+
     public bool InSelectMode { get; set; }
 
     public bool IsSelected { get; set; }
@@ -222,6 +224,31 @@ public partial class NBookLibraryCardHolder : NCardHolder
         _libraryIndexLabel.Visible = displayIndex > 0 && SaveManager.Instance.PrefsSave.ShowCardIndices;
     }
 
+    public void SetHoverInteractionEnabled(bool enabled)
+    {
+        if (_hoverInteractionEnabled == enabled)
+        {
+            return;
+        }
+
+        _hoverInteractionEnabled = enabled;
+        if (Hitbox != null)
+        {
+            Hitbox.SetEnabled(enabled);
+        }
+
+        if (!enabled)
+        {
+            if (_isHovered || _isFocused)
+            {
+                OnUnfocus();
+            }
+
+            DoCardHoverEffects(false);
+            NBookLibraryPile.Instance?.NotifyHolderUnfocused(this);
+        }
+    }
+
     public void UpdateCard(bool applyLibraryTint = true)
     {
         if (!IsNodeReady() || CardNode == null || !CardNode.IsNodeReady())
@@ -229,11 +256,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
             return;
         }
 
-        CardNode.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
-        if (applyLibraryTint)
-        {
-            BookLibraryUtility.ApplyLibraryCardTint(CardNode);
-        }
+        BookLibraryUtility.ApplyLibraryCardPreviewVisuals(CardNode, applyLibraryTint);
         if (CombatManager.Instance is not { IsInProgress: true })
         {
             return;
@@ -297,7 +320,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
         }
 
         CardNode.Model = endCard;
-        CardNode.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
+        BookLibraryUtility.ApplyLibraryCardPreviewVisuals(CardNode);
     }
 
     public void Flash()
@@ -348,6 +371,12 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void DoCardHoverEffects(bool isHovered)
     {
+        if (!_hoverInteractionEnabled)
+        {
+            ClearHoverTips();
+            return;
+        }
+
         ZIndex = isHovered ? 1 : 0;
         if (isHovered)
         {
@@ -361,7 +390,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void OnMousePressed(InputEvent inputEvent)
     {
-        if (!InSelectMode)
+        if (!InSelectMode || !_hoverInteractionEnabled)
         {
             return;
         }
@@ -371,7 +400,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void OnMouseReleased(InputEvent inputEvent)
     {
-        if (!InSelectMode)
+        if (!InSelectMode || !_hoverInteractionEnabled)
         {
             return;
         }
