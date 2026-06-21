@@ -1,6 +1,6 @@
-[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://bg85h22rkxs6g"]
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://kdxmtvozit7n1"]
 
-[ext_resource type="FontFile" uid="uid://bcyeh1iceu7xs" path="res://KnowledgeDemon/fonts/kreon_bold.ttf" id="1_shared"]
+[ext_resource type="FontFile" uid="uid://kd65r4q7t0jvc" path="res://KnowledgeDemon/fonts/kreon_bold.ttf" id="1_shared"]
 
 [resource]
 base_font = ExtResource("1_shared")

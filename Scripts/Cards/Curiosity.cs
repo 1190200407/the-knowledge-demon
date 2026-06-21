@@ -17,12 +17,13 @@ public sealed class Curiosity : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
+    private const string PowerVarName = "Power";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromChoose()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<CuriosityPower>("Cards", 1m)];
+        [new PowerVar<CuriosityPower>(PowerVarName, 1m)];
 
     public Curiosity()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -35,13 +36,13 @@ public sealed class Curiosity : KnowledgeDemonCardModel
         await PowerCmd.Apply<CuriosityPower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars.Cards.BaseValue,
+            DynamicVars[PowerVarName].BaseValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars[PowerVarName].UpgradeValueBy(1m);
     }
 }

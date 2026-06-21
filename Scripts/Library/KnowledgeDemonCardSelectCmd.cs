@@ -103,8 +103,9 @@ public static class KnowledgeDemonCardSelectCmd
         if (ShouldSelectLocalCard(player))
         {
             NPlayerHand.Instance?.CancelAllCardPlay();
-            var overlay = NKnowledgeDemonCardSelectOverlay.EnsureReady();
-            result = await overlay.RunSession(prefs, filter, includeHand);
+            var pile = NBookLibraryPile.Instance
+                ?? throw new InvalidOperationException("Book library pile is not ready for card selection.");
+            result = await pile.RunSession(prefs, filter, includeHand);
             RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(
                 player,
                 choiceId,

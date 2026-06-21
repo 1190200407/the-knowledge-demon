@@ -1,54 +1,88 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace ComicChess.KnowledgeDemon;
 
+/// <summary>
+/// 藏书库选牌会话：遮罩/表盘在 pile；选中预览在 pile 中间区；Confirm/Peek 用手牌节点。
+/// </summary>
 internal sealed class KnowledgeDemonCardSelectSession
 {
-    private readonly NKnowledgeDemonCardSelectOverlay _overlay;
+    private const BindingFlags InstanceAny = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+    private static readonly FieldInfo SelectedCardsField =
+        typeof(NPlayerHand).GetField("_selectedCards", InstanceAny)!;
+
+    private static readonly FieldInfo PrefsField =
+        typeof(NPlayerHand).GetField("_prefs", InstanceAny)!;
+
+    private static readonly FieldInfo SelectionCompletionSourceField =
+        typeof(NPlayerHand).GetField("_selectionCompletionSource", InstanceAny)!;
+
+    private static readonly FieldInfo CurrentSelectionFilterField =
+        typeof(NPlayerHand).GetField("_currentSelectionFilter", InstanceAny)!;
+
+    private static readonly FieldInfo CurrentModeField =
+        typeof(NPlayerHand).GetField("_currentMode", InstanceAny)!;
+
+    private static readonly FieldInfo IsDisabledField =
+        typeof(NPlayerHand).GetField("_isDisabled", InstanceAny)!;
+
+    private static readonly MethodInfo AfterCardsSelectedMethod =
+        typeof(NPlayerHand).GetMethod("AfterCardsSelected", InstanceAny)!;
+
+    private static readonly MethodInfo UpdateSelectModeCardVisibilityMethod =
+        typeof(NPlayerHand).GetMethod("UpdateSelectModeCardVisibility", InstanceAny)!;
+
+    private static readonly MethodInfo RefreshSelectModeConfirmButtonMethod =
+        typeof(NPlayerHand).GetMethod("RefreshSelectModeConfirmButton", InstanceAny)!;
+
+    private static readonly MethodInfo AnimEnableMethod =
+        typeof(NPlayerHand).GetMethod("AnimEnable", InstanceAny)!;
+
+    private static readonly MethodInfo AnimDisableMethod =
+        typeof(NPlayerHand).GetMethod("AnimDisable", InstanceAny)!;
+
+    private readonly NBookLibraryPile _libraryPile;
     private readonly CardSelectorPrefs _prefs;
     private readonly Func<CardModel, bool> _filter;
     private readonly bool _includeHand;
-    private readonly List<CardModel> _selected = [];
+    private readonly HashSet<CardModel> _libraryOriginCards = [];
     private readonly List<NBookLibraryCardHolder> _libraryHolders = [];
-    private readonly List<NHandCardHolder> _handHolders = [];
-    private readonly Dictionary<CardModel, int> _libraryDisplayIndices = new();
-
     private readonly Callable _libraryHolderPressedCallable;
 
-    private TaskCompletionSource<IEnumerable<CardModel>>? _completionSource;
-    private Tween? _backstopTween;
-    private int _savedBackstopIndex;
-    private int _savedHeaderIndex;
-    private int _savedConfirmIndex;
     private int _savedLibraryIndex = -1;
-    private int _savedHandIndex = -1;
-    private bool _handCardsHidden;
+    private bool _vanillaCleanupDone;
+    private int _libraryConfirmRefreshVersion;
+
+    internal static KnowledgeDemonCardSelectSession? ActiveSession { get; private set; }
 
     internal bool IncludeHand => _includeHand;
 
-    internal bool IsActive => _completionSource != null;
+    internal bool IsActive => ActiveSession == this;
 
     public KnowledgeDemonCardSelectSession(
-        NKnowledgeDemonCardSelectOverlay overlay,
+        NBookLibraryPile libraryPile,
         CardSelectorPrefs prefs,
         Func<CardModel, bool> filter,
         bool includeHand)
     {
-        _overlay = overlay;
+        _libraryPile = libraryPile;
         _prefs = prefs;
         _filter = filter;
         _includeHand = includeHand;
@@ -57,142 +91,364 @@ internal sealed class KnowledgeDemonCardSelectSession
 
     public async Task<IEnumerable<CardModel>> RunAsync()
     {
-        _completionSource = new TaskCompletionSource<IEnumerable<CardModel>>();
-        Enter();
-        var result = await _completionSource.Task;
-        Exit();
-        return result;
+        EnterLayerSetup();
+        try
+        {
+            var hand = NCombatRoom.Instance!.Ui!.Hand;
+            return await RunVanillaHandSimpleSelectAsync(hand);
+        }
+        finally
+        {
+            ExitLayerSetup();
+        }
     }
 
-    public bool TryHandleHandHolder(NCardHolder holder)
+    internal void MarkLibraryOrigin(CardModel card) => _libraryOriginCards.Add(card);
+
+    internal bool IsLibraryOrigin(CardModel card) => _libraryOriginCards.Contains(card);
+
+    internal static List<CardModel> GetSelectedCards(NPlayerHand hand) =>
+        (List<CardModel>)SelectedCardsField.GetValue(hand)!;
+
+    internal static void RefreshHandConfirmButton(NPlayerHand hand)
     {
-        if (!_includeHand)
+        if (!hand.IsInCardSelection)
         {
-            return false;
+            return;
+        }
+
+        RefreshSelectModeConfirmButtonMethod.Invoke(hand, null);
+    }
+
+    private void ScheduleLibraryConfirmRefresh(NPlayerHand hand)
+    {
+        var version = ++_libraryConfirmRefreshVersion;
+        Callable.From(() =>
+        {
+            if (ActiveSession != this || version != _libraryConfirmRefreshVersion)
+            {
+                return;
+            }
+
+            RefreshHandConfirmButton(hand);
+        }).CallDeferred();
+    }
+
+    private void CancelPendingLibraryConfirmRefresh() => _libraryConfirmRefreshVersion++;
+
+    private static void HideSelectModeConfirmButton(NPlayerHand hand) =>
+        hand.GetNode<NConfirmButton>("%SelectModeConfirmButton").Disable();
+
+    internal void DeselectLibraryCard(NPlayerHand hand, CardModel model, NCard cardNode)
+    {
+        GetSelectedCards(hand).Remove(model);
+        _libraryOriginCards.Remove(model);
+        RefreshHandConfirmButton(hand);
+        _libraryPile.RestoreSelectionVisual(model, cardNode);
+    }
+
+    internal void RestoreAllLibrarySelections()
+    {
+        var hand = NCombatRoom.Instance?.Ui?.Hand;
+        foreach (var holder in _libraryPile.GetSelectedCardHolders())
+        {
+            if (holder.CardNode is not { Model: CardModel model } cardNode || hand == null)
+            {
+                continue;
+            }
+
+            GetSelectedCards(hand).Remove(model);
+            _libraryOriginCards.Remove(model);
+            _libraryPile.RestoreSelectionVisual(model, cardNode);
+        }
+
+        _libraryPile.ClearSelectedLibraryCards();
+    }
+
+    internal void RegisterLibraryHolder(NBookLibraryCardHolder holder)
+    {
+        _libraryHolders.RemoveAll(h => !GodotObject.IsInstanceValid(h));
+
+        if (_libraryHolders.Contains(holder))
+        {
+            return;
+        }
+
+        holder.Connect(NCardHolder.SignalName.Pressed, _libraryHolderPressedCallable);
+        _libraryHolders.Add(holder);
+        holder.InSelectMode = true;
+        if (holder.CardNode?.Model is CardModel card)
+        {
+            holder.Visible = _filter(card);
+        }
+
+        holder.UpdateCard();
+    }
+
+    internal void UnregisterLibraryHolder(NBookLibraryCardHolder holder)
+    {
+        if (!_libraryHolders.Remove(holder))
+        {
+            return;
+        }
+
+        if (!GodotObject.IsInstanceValid(holder))
+        {
+            return;
+        }
+
+        holder.Disconnect(NCardHolder.SignalName.Pressed, _libraryHolderPressedCallable);
+        holder.InSelectMode = false;
+        holder.IsSelected = false;
+    }
+
+    internal void RefreshLibraryHolderVisibility()
+    {
+        foreach (var holder in _libraryHolders)
+        {
+            if (!GodotObject.IsInstanceValid(holder) || holder.CardNode?.Model is not CardModel card)
+            {
+                continue;
+            }
+
+            holder.Visible = _filter(card);
+            holder.UpdateCard();
+        }
+    }
+
+    private void OnLibraryHolderPressed(NCardHolder holder)
+    {
+        if (holder is not NBookLibraryCardHolder libraryHolder
+            || libraryHolder.CardNode?.Model is not CardModel card
+            || !_filter(card))
+        {
+            return;
         }
 
         var hand = NCombatRoom.Instance?.Ui?.Hand;
-        if (hand == null || hand.IsInCardSelection)
-        {
-            return false;
-        }
-
-        if (holder is not NHandCardHolder handHolder || handHolder.CardNode?.Model is not CardModel card)
-        {
-            return false;
-        }
-
-        if (!_filter(card))
-        {
-            return false;
-        }
-
-        Toggle(card);
-        return true;
-    }
-
-    public void TryHandleLibraryHolder(NBookLibraryCardHolder holder)
-    {
-        if (holder.CardNode?.Model is not CardModel card || !_filter(card))
+        if (hand == null)
         {
             return;
         }
 
-        Toggle(card);
-    }
-
-    public void Confirm()
-    {
-        if (_completionSource == null)
+        if (hand.PeekButton.IsPeeking)
         {
+            hand.PeekButton.Wiggle();
             return;
         }
 
-        var count = _selected.Count;
-        if (count < _prefs.MinSelect || count > _prefs.MaxSelect)
+        var cardNode = NBookLibraryPile.Instance?.TakeCardForSelection(card);
+        if (cardNode == null)
         {
+            Entry.Logger.Warn($"[BookLibrary][Select] TakeCardForSelection failed for {card.Id}");
             return;
         }
 
-        _completionSource.TrySetResult(_selected.ToList());
+        SelectLibraryCard(hand, cardNode, card);
     }
 
-    private void Enter()
+    private void SelectLibraryCard(NPlayerHand hand, NCard cardNode, CardModel model)
     {
-        var ui = _overlay.CombatUi;
-        var backstop = _overlay.Backstop;
-        var header = _overlay.Header;
-        var confirm = _overlay.ConfirmButton;
-
-        _savedBackstopIndex = backstop.GetIndex();
-        _savedHeaderIndex = header.GetIndex();
-        _savedConfirmIndex = confirm.GetIndex();
-
-        var library = NBookLibraryPile.Instance;
-        var hand = ui.Hand;
-
-        if (library is not null)
+        if (hand.PeekButton.IsPeeking)
         {
-            _savedLibraryIndex = library.GetIndex();
+            hand.PeekButton.Wiggle();
+            return;
         }
 
-        if (_includeHand)
+        _libraryPile.BeginSelectedCardHand(hand);
+
+        var selectedCards = GetSelectedCards(hand);
+        var prefs = (CardSelectorPrefs)PrefsField.GetValue(hand)!;
+        if (selectedCards.Count >= prefs.MaxSelect)
         {
-            _savedHandIndex = hand.GetIndex();
+            DeselectSelectedCard(hand, selectedCards[^1]);
         }
 
-        var backstopIndex = ui.PlayContainer.GetIndex() + 1;
-        ui.MoveChildSafely(backstop, backstopIndex);
+        var tempHolder = NHandCardHolder.Create(cardNode, hand);
+        tempHolder.InSelectMode = true;
+        _libraryPile.AddSelectedLibraryCard(tempHolder);
+        tempHolder.QueueFreeSafely();
+        selectedCards.Add(model);
+        MarkLibraryOrigin(model);
+        ScheduleLibraryConfirmRefresh(hand);
+        LogState("SelectLibraryCard");
+    }
 
-        backstop.Visible = true;
-        backstop.MouseFilter = Control.MouseFilterEnum.Stop;
-        backstop.SelfModulate = new Color(1f, 1f, 1f, 0f);
-        _backstopTween = backstop.CreateTween();
-        _backstopTween.TweenProperty(backstop, "self_modulate:a", 1f, 0.2f);
-
-        var layerIndex = backstop.GetIndex() + 1;
-        if (library is not null)
+    private void DeselectSelectedCard(NPlayerHand hand, CardModel model)
+    {
+        if (IsLibraryOrigin(model))
         {
-            ui.MoveChildSafely(library, layerIndex);
-            layerIndex = library.GetIndex() + 1;
+            _libraryPile.DeselectSelectedLibraryCard(model);
+            return;
         }
 
-        if (_includeHand)
+        hand.GetNode<NSelectedHandCardContainer>("%SelectedHandCardContainer").DeselectCard(model);
+    }
+
+    /// <summary>
+    /// 接原版手牌 SimpleSelect：OnHandSelectModeEntered 抬手牌 UI；纯藏书库隐藏 CardHolderContainer。
+    /// </summary>
+    private async Task<IEnumerable<CardModel>> RunVanillaHandSimpleSelectAsync(NPlayerHand hand)
+    {
+        ActiveSession = this;
+        var handHeader = hand.GetNode<MegaRichTextLabel>("%SelectionHeader");
+        var handBackstop = hand.GetNode<Control>("%SelectModeBackstop");
+        var libraryContainer = _libraryPile.SelectedCardContainerRoot
+            ?? throw new InvalidOperationException("Book library selected card container is not ready.");
+        _libraryPile.BeginSelectedCardHand(hand);
+        LogState("SelectBegin");
+        var peekToggledCallable = Callable.From<NPeekButton>(OnPeekButtonToggled);
+        hand.PeekButton.Connect(NPeekButton.SignalName.Toggled, peekToggledCallable);
+        try
         {
-            ui.MoveChildSafely(hand, layerIndex);
+            hand.CancelAllCardPlay();
+
+            var wasDisabled = (bool)IsDisabledField.GetValue(hand)!;
+            if (wasDisabled)
+            {
+                AnimEnableMethod.Invoke(hand, null);
+            }
+
+            CurrentModeField.SetValue(hand, NPlayerHand.Mode.SimpleSelect);
+            CurrentSelectionFilterField.SetValue(hand, _filter);
+            PrefsField.SetValue(hand, _prefs);
+
+            NCombatRoom.Instance!.RestrictControllerNavigation([]);
+            NCombatRoom.Instance.Ui.OnHandSelectModeEntered();
+
+            hand.EnableControllerNavigation();
+            if (_libraryPile.SelectModeBackstop != null)
+            {
+                hand.PeekButton.AddTargets(libraryContainer, _libraryPile.SelectModeBackstop);
+            }
+            else
+            {
+                hand.PeekButton.AddTargets(libraryContainer);
+            }
+
+            var tcs = new TaskCompletionSource<IEnumerable<CardModel>>();
+            SelectionCompletionSourceField.SetValue(hand, tcs);
+
+            handHeader.Visible = true;
+            handHeader.Text = "[center]" + _prefs.Prompt.GetFormattedText() + "[/center]";
+            handBackstop.Visible = false;
+            handBackstop.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+            hand.PeekButton.Enable();
+            UpdateSelectModeCardVisibilityMethod.Invoke(hand, null);
+            RefreshLibraryHolderVisibility();
+            RefreshHandConfirmButton(hand);
+
+            if (!_includeHand)
+            {
+                hand.CardHolderContainer.Visible = false;
+            }
+
+            LogState("SelectReady");
+
+            try
+            {
+                IEnumerable<CardModel> result;
+                try
+                {
+                    result = await tcs.Task;
+                }
+                catch (OperationCanceledException)
+                {
+                    result = [];
+                    _vanillaCleanupDone = true;
+                }
+
+                FinishHandSelection(hand, source: null, wasDisabled);
+
+                NCombatRoom.Instance?.EnableControllerNavigation();
+                LogState("SelectComplete");
+                return result;
+            }
+            finally
+            {
+                if (!_includeHand)
+                {
+                    hand.CardHolderContainer.Visible = true;
+                }
+
+                handHeader.Visible = false;
+                CancelPendingLibraryConfirmRefresh();
+                HideSelectModeConfirmButton(hand);
+            }
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(hand.PeekButton))
+            {
+                hand.PeekButton.Disconnect(NPeekButton.SignalName.Toggled, peekToggledCallable);
+            }
+
+            ActiveSession = null;
+            LogState("SelectEnd");
+        }
+    }
+
+    private void OnPeekButtonToggled(NPeekButton button)
+    {
+        RefreshLibraryHolderVisibilityForPeek(button.IsPeeking);
+        _libraryPile.ApplySelectBackstopPeekVisibility(!button.IsPeeking);
+    }
+
+    private void RefreshLibraryHolderVisibilityForPeek(bool isPeeking)
+    {
+        foreach (var holder in _libraryHolders)
+        {
+            if (!GodotObject.IsInstanceValid(holder) || holder.CardNode?.Model is not CardModel card)
+            {
+                continue;
+            }
+
+            holder.Visible = isPeeking || _filter(card);
+            holder.UpdateCard();
+        }
+    }
+
+    private void FinishHandSelection(NPlayerHand hand, AbstractModel? source, bool wasDisabled)
+    {
+        CancelPendingLibraryConfirmRefresh();
+        RestoreAllLibrarySelections();
+        if (!_vanillaCleanupDone)
+        {
+            AfterCardsSelectedMethod.Invoke(hand, [source]);
         }
 
-        if (!_includeHand)
+        SelectionCompletionSourceField.SetValue(hand, null);
+        HideSelectModeConfirmButton(hand);
+
+        if (wasDisabled)
         {
-            hand.CardHolderContainer.Visible = false;
-            _handCardsHidden = true;
+            AnimDisableMethod.Invoke(hand, null);
         }
+    }
 
-        header.Visible = true;
-        header.Text = "[center]" + _prefs.Prompt.GetFormattedText() + "[/center]";
-        confirm.Visible = true;
-        header.MoveToFrontSafely();
-        confirm.MoveToFrontSafely();
+    private void EnterLayerSetup()
+    {
+        var ui = NCombatRoom.Instance!.Ui!;
+        var library = _libraryPile;
 
-        NCombatRoom.Instance?.RestrictControllerNavigation([]);
+        _savedLibraryIndex = library.GetIndex();
+        // PlayContainer 在 combat_ui 里排在 Hand 之后；抬到其上方才能让 backstop 盖住已打出牌。
+        var layerIndex = ui.PlayContainer.GetIndex() + 1;
+        ui.MoveChildSafely(library, layerIndex);
+        library.ShowSelectionUi();
+        library.ArrangeCards(animate: false);
+
         CollectLibraryHolders();
-        if (_includeHand)
-        {
-            CollectHandHolders(hand);
-        }
-
-        RefreshHolderVisuals();
-        RefreshConfirmButton();
+        NCombatRoom.Instance?.RestrictControllerNavigation([]);
+        LogState("EnterLayer");
     }
 
-    private void Exit()
+    private void ExitLayerSetup()
     {
-        _backstopTween?.Kill();
+        var ui = NCombatRoom.Instance!.Ui!;
 
-        var ui = _overlay.CombatUi;
-        var backstop = _overlay.Backstop;
-        var header = _overlay.Header;
-        var confirm = _overlay.ConfirmButton;
+        RestoreAllLibrarySelections();
 
         foreach (var holder in _libraryHolders)
         {
@@ -205,244 +461,54 @@ internal sealed class KnowledgeDemonCardSelectSession
             holder.InSelectMode = false;
             holder.IsSelected = false;
             holder.Visible = true;
-
-            if (holder.CardNode?.Model is CardModel card
-                && _libraryDisplayIndices.TryGetValue(card, out var pileIndex))
-            {
-                holder.SetLibraryIndex(pileIndex);
-            }
-
-            ClearSelectionHighlight(holder.CardNode);
-            holder.UpdateCard();
-        }
-
-        foreach (var holder in _handHolders)
-        {
-            if (!GodotObject.IsInstanceValid(holder))
-            {
-                continue;
-            }
-
-            holder.InSelectMode = false;
-            holder.SetIndexLabel(0);
-            if (holder.CardNode is not null)
-            {
-                holder.CardNode.SetPretendCardCanBePlayed(false);
-                holder.CardNode.SetForceUnpoweredPreview(false);
-                ClearSelectionHighlight(holder.CardNode);
-            }
-
-            holder.Visible = true;
             holder.UpdateCard();
         }
 
         _libraryHolders.Clear();
-        _handHolders.Clear();
-        _selected.Clear();
-        _libraryDisplayIndices.Clear();
+        _libraryOriginCards.Clear();
 
-        backstop.Visible = false;
-        backstop.MouseFilter = Control.MouseFilterEnum.Ignore;
-        var fadeTween = backstop.CreateTween();
-        fadeTween.TweenProperty(backstop, "self_modulate:a", 0f, 0.2f);
+        _libraryPile.HideSelectionUi();
 
-        header.Visible = false;
-        confirm.Disable();
-        confirm.Visible = false;
-
-        ui.MoveChildSafely(backstop, _savedBackstopIndex);
-        ui.MoveChildSafely(header, _savedHeaderIndex);
-        ui.MoveChildSafely(confirm, _savedConfirmIndex);
-
-        if (_savedHandIndex >= 0)
+        if (_savedLibraryIndex >= 0)
         {
-            ui.MoveChildSafely(ui.Hand, _savedHandIndex);
-            _savedHandIndex = -1;
-        }
-
-        if (_savedLibraryIndex >= 0 && NBookLibraryPile.Instance is { } library)
-        {
-            ui.MoveChildSafely(library, _savedLibraryIndex);
+            ui.MoveChildSafely(_libraryPile, _savedLibraryIndex);
             _savedLibraryIndex = -1;
+            _libraryPile.ArrangeCards(animate: false);
         }
 
-        if (_handCardsHidden)
-        {
-            ui.Hand.CardHolderContainer.Visible = true;
-            _handCardsHidden = false;
-        }
-
-        _completionSource = null;
         NCombatRoom.Instance?.EnableControllerNavigation();
+        var hand = NCombatRoom.Instance?.Ui?.Hand;
+        if (hand != null)
+        {
+            HideSelectModeConfirmButton(hand);
+        }
+
+        LogState("ExitLayer");
     }
 
     private void CollectLibraryHolders()
     {
-        var pile = NBookLibraryPile.Instance;
+        foreach (var holder in _libraryPile.GetHolderSnapshot())
+        {
+            RegisterLibraryHolder(holder);
+        }
+    }
+
+    internal static void LogState(string phase, NBookLibraryPile? pile = null)
+    {
+        pile ??= NBookLibraryPile.Instance;
         if (pile == null)
         {
+            Entry.Logger.Info($"[BookLibrary][{phase}] pile=null");
             return;
         }
 
-        foreach (var holder in pile.GetHolderSnapshot())
-        {
-            if (!GodotObject.IsInstanceValid(holder))
-            {
-                continue;
-            }
-
-            if (holder.CardNode?.Model is CardModel card)
-            {
-                _libraryDisplayIndices[card] = _libraryDisplayIndices.Count + 1;
-            }
-
-            holder.Connect(NCardHolder.SignalName.Pressed, _libraryHolderPressedCallable);
-            _libraryHolders.Add(holder);
-            holder.InSelectMode = true;
-        }
-    }
-
-    private void OnLibraryHolderPressed(NCardHolder holder)
-    {
-        if (holder is NBookLibraryCardHolder libraryHolder)
-        {
-            TryHandleLibraryHolder(libraryHolder);
-        }
-    }
-
-    private void CollectHandHolders(NPlayerHand hand)
-    {
-        foreach (var holder in hand.ActiveHolders)
-        {
-            _handHolders.Add(holder);
-            holder.InSelectMode = true;
-            if (holder.CardNode is not null)
-            {
-                holder.CardNode.SetPretendCardCanBePlayed(false);
-                holder.CardNode.SetForceUnpoweredPreview(_prefs.UnpoweredPreviews);
-            }
-        }
-    }
-
-    private void Toggle(CardModel card)
-    {
-        if (_selected.Contains(card))
-        {
-            _selected.Remove(card);
-        }
-        else if (_selected.Count >= _prefs.MaxSelect)
-        {
-            if (_prefs.MaxSelect <= 1)
-            {
-                _selected.Clear();
-                _selected.Add(card);
-            }
-            else
-            {
-                _selected.RemoveAt(_selected.Count - 1);
-                _selected.Add(card);
-            }
-        }
-        else
-        {
-            _selected.Add(card);
-        }
-
-        RefreshHolderVisuals();
-        RefreshConfirmButton();
-
-        if (!_prefs.RequireManualConfirmation && _selected.Count >= _prefs.MaxSelect)
-        {
-            Confirm();
-        }
-    }
-
-    private void RefreshHolderVisuals()
-    {
-        foreach (var holder in _libraryHolders)
-        {
-            if (!GodotObject.IsInstanceValid(holder) || holder.CardNode?.Model is not CardModel card)
-            {
-                continue;
-            }
-
-            var selectionIndex = _selected.IndexOf(card);
-            holder.IsSelected = selectionIndex >= 0;
-            holder.Visible = _filter(card);
-            holder.UpdateCard();
-
-            if (selectionIndex >= 0)
-            {
-                holder.SetLibraryIndex(selectionIndex + 1);
-                SetSelectionHighlight(holder.CardNode, true);
-            }
-            else
-            {
-                if (_libraryDisplayIndices.TryGetValue(card, out var pileIndex))
-                {
-                    holder.SetLibraryIndex(pileIndex);
-                }
-
-                ClearSelectionHighlight(holder.CardNode);
-            }
-        }
-
-        foreach (var holder in _handHolders)
-        {
-            if (!GodotObject.IsInstanceValid(holder) || holder.CardNode?.Model is not CardModel card)
-            {
-                continue;
-            }
-
-            var selectionIndex = _selected.IndexOf(card);
-            var isSelected = selectionIndex >= 0;
-            holder.Visible = _filter(card);
-            holder.CardNode.SetPretendCardCanBePlayed(isSelected);
-            holder.CardNode.SetForceUnpoweredPreview(_prefs.UnpoweredPreviews);
-            holder.SetIndexLabel(isSelected ? selectionIndex + 1 : 0);
-            holder.UpdateCard();
-            SetSelectionHighlight(holder.CardNode, isSelected);
-        }
-    }
-
-    private static void SetSelectionHighlight(NCard? cardNode, bool selected)
-    {
-        if (cardNode is null || !GodotObject.IsInstanceValid(cardNode))
-        {
-            return;
-        }
-
-        if (selected)
-        {
-            cardNode.CardHighlight.AnimShow();
-            cardNode.CardHighlight.Modulate = NCardHighlight.playableColor;
-        }
-        else
-        {
-            ClearSelectionHighlight(cardNode);
-        }
-    }
-
-    private static void ClearSelectionHighlight(NCard? cardNode)
-    {
-        if (cardNode is null || !GodotObject.IsInstanceValid(cardNode))
-        {
-            return;
-        }
-
-        cardNode.CardHighlight.AnimHide();
-    }
-
-    private void RefreshConfirmButton()
-    {
-        var count = _selected.Count;
-        if (count >= _prefs.MinSelect && count <= _prefs.MaxSelect)
-        {
-            _overlay.ConfirmButton.Enable();
-        }
-        else
-        {
-            _overlay.ConfirmButton.Disable();
-        }
+        var ui = NCombatRoom.Instance?.Ui;
+        var hand = ui?.Hand;
+        Entry.Logger.Info(
+            $"[BookLibrary][{phase}] pileVisible={pile.Visible} pileIndex={pile.GetIndex()} " +
+            $"holders={pile.GetHolderSnapshot().Count} " +
+            $"handIndex={hand?.GetIndex() ?? -1} includeHand={ActiveSession?.IncludeHand} " +
+            $"sessionActive={ActiveSession != null}");
     }
 }

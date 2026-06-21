@@ -41,6 +41,8 @@ internal sealed class BookLibraryPileInjectPatch : IPatchMethod
             .Instantiate<NBookLibraryPile>(PackedScene.GenEditState.Disabled);
         __instance.AddChildSafely(watch);
         __instance.MoveChildSafely(watch, __instance.Hand.GetIndex());
+        Entry.Logger.Info(
+            $"[BookLibrary][Inject] handIndex={__instance.Hand.GetIndex()} pileIndex={watch.GetIndex()}");
     }
 }
 

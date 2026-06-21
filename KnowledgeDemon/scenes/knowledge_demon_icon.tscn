@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://b5der1ck84ixn"]
+[gd_scene load_steps=2 format=3 uid="uid://kd4izppn2xk6g"]
 
-[ext_resource type="Texture2D" uid="uid://dscw5u75cgmvl" path="res://KnowledgeDemon/images/charui/knowledge_demon_boss.png" id="1_s81sc"]
+[ext_resource type="Texture2D" uid="uid://kdcwzlbdic16o" path="res://KnowledgeDemon/images/charui/knowledge_demon_boss.png" id="1_s81sc"]
 
 [node name="CharacterIcon" type="TextureRect"]
 anchors_preset = 15

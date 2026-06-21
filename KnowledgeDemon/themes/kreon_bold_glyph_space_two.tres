@@ -1,7 +1,7 @@
-[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://kdr34jgrn81mg"]
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://kdw68i5oa3kva"]
 
 [ext_resource type="FontVariation" uid="uid://kdxmtvozit7n1" path="res://KnowledgeDemon/themes/kreon_bold_shared.tres" id="1_shared"]
 
 [resource]
 base_font = ExtResource("1_shared")
-spacing_glyph = 1
+spacing_glyph = 2

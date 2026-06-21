@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -8,6 +12,8 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using STS2RitsuLib.CardPiles;
 
 namespace ComicChess.KnowledgeDemon;
@@ -25,6 +31,11 @@ public partial class NBookLibraryPile : Control
     private NBookLibraryCardHolder? _pendingTransformHolder;
 
     private Control? _dialCenter;
+    private Control? _selectBackstop;
+    private Control? _selectedCardContainerRoot;
+    private NPlayerHand? _selectedCardHand;
+    private Tween? _selectBackstopTween;
+    private KnowledgeDemonCardSelectSession? _selectSession;
     private CardPile? _pile;
     private Player? _player;
     private NBookLibraryCardHolder? _focusedHolder;
@@ -62,6 +73,195 @@ public partial class NBookLibraryPile : Control
         }
 
         _dialCenter.MouseFilter = MouseFilterEnum.Ignore;
+
+        _selectBackstop = GetNodeOrNull<Control>("%SelectModeBackstop");
+        _selectedCardContainerRoot = GetNodeOrNull<Control>("%SelectedCardContainer");
+        if (_selectBackstop == null || _selectedCardContainerRoot == null)
+        {
+            Entry.Logger.Error("[BookLibrary] Missing %SelectModeBackstop or %SelectedCardContainer in book_library_pile.tscn");
+            return;
+        }
+
+        _selectBackstop.Visible = false;
+        _selectBackstop.MouseFilter = MouseFilterEnum.Ignore;
+        _selectedCardContainerRoot.Connect(Control.SignalName.FocusEntered, Callable.From(OnSelectedContainerFocus));
+    }
+
+    public async Task<IEnumerable<CardModel>> RunSession(
+        CardSelectorPrefs prefs,
+        Func<CardModel, bool> filter,
+        bool includeHand)
+    {
+        if (_selectSession != null)
+        {
+            throw new InvalidOperationException("A knowledge demon card selection is already in progress.");
+        }
+
+        if (_selectBackstop == null || _selectedCardContainerRoot == null)
+        {
+            throw new InvalidOperationException("Book library select UI is not initialized.");
+        }
+
+        var session = new KnowledgeDemonCardSelectSession(this, prefs, filter, includeHand);
+        _selectSession = session;
+        try
+        {
+            return await session.RunAsync();
+        }
+        finally
+        {
+            _selectSession = null;
+        }
+    }
+
+    internal Control? SelectedCardContainerRoot => _selectedCardContainerRoot;
+
+    internal Control? SelectModeBackstop => _selectBackstop;
+
+    internal void ApplySelectBackstopPeekVisibility(bool visible)
+    {
+        if (_selectBackstop == null || _selectSession == null)
+        {
+            return;
+        }
+
+        _selectBackstop.Visible = visible;
+        _selectBackstop.MouseFilter = visible ? Control.MouseFilterEnum.Stop : Control.MouseFilterEnum.Ignore;
+    }
+
+    internal void BeginSelectedCardHand(NPlayerHand hand) => _selectedCardHand = hand;
+
+    internal IReadOnlyList<NSelectedHandCardHolder> GetSelectedCardHolders() =>
+        _selectedCardContainerRoot?.GetChildren().OfType<NSelectedHandCardHolder>().ToList() ?? [];
+
+    internal void AddSelectedLibraryCard(NHandCardHolder originalHolder)
+    {
+        ArgumentNullException.ThrowIfNull(originalHolder);
+
+        var container = _selectedCardContainerRoot;
+        if (container == null)
+        {
+            return;
+        }
+
+        var cardNode = originalHolder.CardNode;
+        if (cardNode is null)
+        {
+            return;
+        }
+
+        var globalPosition = cardNode.GlobalPosition;
+        var selectedHolder = NSelectedHandCardHolder.Create(originalHolder);
+        selectedHolder.Connect(
+            NCardHolder.SignalName.Pressed,
+            Callable.From<NCardHolder>(OnSelectedCardHolderPressed),
+            (uint)ConnectFlags.Deferred);
+        container.AddChildSafely(selectedHolder);
+        RefreshSelectedCardPositions();
+        cardNode.GlobalPosition = globalPosition;
+    }
+
+    internal void DeselectSelectedLibraryCard(CardModel card)
+    {
+        var holder = GetSelectedCardHolders().FirstOrDefault(h => h.CardNode?.Model == card);
+        if (holder != null)
+        {
+            OnSelectedCardHolderPressed(holder);
+        }
+    }
+
+    internal void ClearSelectedLibraryCards()
+    {
+        if (_selectedCardContainerRoot == null)
+        {
+            return;
+        }
+
+        foreach (var holder in GetSelectedCardHolders())
+        {
+            _selectedCardContainerRoot.RemoveChildSafely(holder);
+            holder.QueueFreeSafely();
+        }
+
+        RefreshSelectedCardPositions();
+        _selectedCardHand = null;
+    }
+
+    private void OnSelectedCardHolderPressed(NCardHolder holder)
+    {
+        var selectedHolder = (NSelectedHandCardHolder)holder;
+        if (_selectedCardHand != null
+            && selectedHolder.CardNode is { Model: CardModel model } cardNode)
+        {
+            KnowledgeDemonCardSelectSession.ActiveSession?.DeselectLibraryCard(_selectedCardHand, model, cardNode);
+        }
+
+        if (_selectedCardContainerRoot != null)
+        {
+            _selectedCardContainerRoot.RemoveChildSafely(selectedHolder);
+        }
+
+        selectedHolder.QueueFreeSafely();
+        RefreshSelectedCardPositions();
+    }
+
+    private void RefreshSelectedCardPositions()
+    {
+        if (_selectedCardContainerRoot == null)
+        {
+            return;
+        }
+
+        var holders = GetSelectedCardHolders();
+        var count = holders.Count;
+        _selectedCardContainerRoot.FocusMode = count > 0 ? FocusModeEnum.All : FocusModeEnum.None;
+        if (count == 0)
+        {
+            return;
+        }
+
+        var cardWidth = holders[0].Size.X;
+        var x = -cardWidth * (count - 1) / 2f;
+        for (var i = 0; i < count; i++)
+        {
+            holders[i].Position = new Vector2(x, 0f);
+            x += cardWidth;
+            holders[i].FocusNeighborLeft = i > 0 ? holders[i - 1].GetPath() : holders[^1].GetPath();
+            holders[i].FocusNeighborRight = i < count - 1 ? holders[i + 1].GetPath() : holders[0].GetPath();
+        }
+    }
+
+    private void OnSelectedContainerFocus()
+    {
+        GetSelectedCardHolders().FirstOrDefault()?.TryGrabFocus();
+    }
+
+    internal void ShowSelectionUi()
+    {
+        if (_selectBackstop == null)
+        {
+            return;
+        }
+
+        _selectBackstop.Visible = true;
+        _selectBackstop.MouseFilter = MouseFilterEnum.Stop;
+        _selectBackstop.SelfModulate = new Color(1f, 1f, 1f, 0f);
+        _selectBackstopTween?.Kill();
+        _selectBackstopTween = _selectBackstop.CreateTween();
+        _selectBackstopTween.TweenProperty(_selectBackstop, "self_modulate:a", 1f, 0.2f);
+    }
+
+    internal void HideSelectionUi()
+    {
+        if (_selectBackstop == null)
+        {
+            return;
+        }
+
+        _selectBackstopTween?.Kill();
+        _selectBackstop.Visible = false;
+        _selectBackstop.MouseFilter = MouseFilterEnum.Ignore;
+        _selectBackstop.CreateTween().TweenProperty(_selectBackstop, "self_modulate:a", 0f, 0.2f);
     }
 
     public void Initialize(Player player)
@@ -69,6 +269,11 @@ public partial class NBookLibraryPile : Control
         _player = player;
         UpdateVisibility();
         AttachPile(BookLibraryUtility.PileType.GetPile(player));
+        var pile = BookLibraryUtility.TryGetLibraryPile(player);
+        Entry.Logger.Info(
+            $"[BookLibrary][Initialize] visible={Visible} relic={BookLibraryUtility.PlayerHasBookLibraryRelic(player)} " +
+            $"cards={pile?.Cards.Count ?? 0} index={GetIndex()}");
+        KnowledgeDemonCardSelectSession.LogState("Initialize", this);
     }
 
     public NCard? GetCard(CardModel card) => _holders.GetValueOrDefault(card)?.CardNode;
@@ -78,6 +283,51 @@ public partial class NBookLibraryPile : Control
 
     internal IReadOnlyList<NBookLibraryCardHolder> GetHolderSnapshot() =>
         _holders.Values.Where(h => GodotObject.IsInstanceValid(h)).ToList();
+
+    /// <summary>选牌：槽位摘下卡牌节点，模型仍留在藏书库堆。</summary>
+    internal NCard? TakeCardForSelection(CardModel card)
+    {
+        if (!_holders.Remove(card, out var holder))
+        {
+            return null;
+        }
+
+        if (ReferenceEquals(_focusedHolder, holder))
+        {
+            _focusedHolder = null;
+        }
+
+        KnowledgeDemonCardSelectSession.ActiveSession?.UnregisterLibraryHolder(holder);
+
+        var cardNode = holder.CardNode;
+        holder.QueueFreeSafely();
+        return cardNode;
+    }
+
+    /// <summary>取消选牌：把卡牌节点挂回表盘槽位。</summary>
+    internal void RestoreSelectionVisual(CardModel card, NCard cardNode)
+    {
+        if (_holders.ContainsKey(card) || _dialCenter == null)
+        {
+            return;
+        }
+
+        var holder = NBookLibraryCardHolder.Create(cardNode);
+        _holders[card] = holder;
+        _dialCenter.AddChildSafely(holder);
+        holder.BindCard(cardNode);
+        holder.IsSelected = false;
+        holder.ResetCardTransform();
+        if (KnowledgeDemonCardSelectSession.ActiveSession is { IsActive: true })
+        {
+            holder.InSelectMode = true;
+        }
+
+        BookLibraryUtility.ApplyHandTableVisuals(cardNode);
+        SyncDialHolderSiblingOrder();
+        ArrangeCards(animate: true);
+        KnowledgeDemonCardSelectSession.ActiveSession?.RegisterLibraryHolder(holder);
+    }
 
     internal bool TryTakeHolderForTransform(CardModel card, out NBookLibraryCardHolder? holder)
     {
@@ -180,6 +430,8 @@ public partial class NBookLibraryPile : Control
             return;
         }
 
+        SyncDialHolderSiblingOrder(cards);
+
         var focusedPileIndex = GetFocusedPileIndex(cards);
         var holderScale = BookLibraryPosHelper.GetScale(count);
 
@@ -215,6 +467,37 @@ public partial class NBookLibraryPile : Control
             holder.SetTargetPosition(targetPos);
             holder.SetTargetScale(holderScale);
             holder.SetTargetAngle(targetRot);
+        }
+    }
+
+    private void SyncDialHolderSiblingOrder()
+    {
+        if (_pile == null)
+        {
+            return;
+        }
+
+        SyncDialHolderSiblingOrder(_pile.Cards);
+    }
+
+    /// <summary>表盘内 holder 的 sibling 顺序对齐牌堆索引，避免 deselect 后叠层错乱。</summary>
+    private void SyncDialHolderSiblingOrder(IReadOnlyList<CardModel> cards)
+    {
+        if (_dialCenter == null)
+        {
+            return;
+        }
+
+        for (var pileIndex = 0; pileIndex < cards.Count; pileIndex++)
+        {
+            if (!_holders.TryGetValue(cards[pileIndex], out var holder)
+                || !GodotObject.IsInstanceValid(holder)
+                || holder.GetParent() != _dialCenter)
+            {
+                continue;
+            }
+
+            _dialCenter.MoveChildSafely(holder, pileIndex);
         }
     }
 

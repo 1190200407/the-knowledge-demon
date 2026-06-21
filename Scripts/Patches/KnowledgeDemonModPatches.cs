@@ -9,9 +9,6 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 	public static void AddTo(ModPatcher patcher)
 	{
 		patcher.RegisterPatch<BookLibraryPileInjectPatch>();
-		patcher.RegisterPatch<KnowledgeDemonCardSelectOverlayInjectPatch>();
-		patcher.RegisterPatch<KnowledgeDemonHandCardSelectPatch>();
-		patcher.RegisterPatch<KnowledgeDemonDisableHandPlayDuringSelectPatch>();
 		patcher.RegisterPatch<BookLibraryPileActivatePatch>();
 		patcher.RegisterPatch<BookLibraryFindOnTablePatch>();
 		patcher.RegisterPatch<BookLibraryDynamicVarPreviewPatch>();

@@ -66,7 +66,7 @@
     "KNOWLEDGE_DEMON_CARD_TWISTER.title": "龙卷风",
     "KNOWLEDGE_DEMON_CARD_TWISTER.description": "造成等同于你储存伤害数值的伤害。{InCombat:\n（造成{Damage:diff()}点伤害。）|}",
     "KNOWLEDGE_DEMON_CARD_CURIOSITY.title": "求知欲",
-    "KNOWLEDGE_DEMON_CARD_CURIOSITY.description": "你在回合内[gold]抉择[/gold]时，抽{Cards:diff()}张牌。",
+    "KNOWLEDGE_DEMON_CARD_CURIOSITY.description": "你在回合内[gold]抉择[/gold]时，抽{Power:diff()}张牌。",
     "KNOWLEDGE_DEMON_CARD_PARALLEL_OBSERVATION.title": "平行观测",
     "KNOWLEDGE_DEMON_CARD_PARALLEL_OBSERVATION.description": "你可以[gold]变化[/gold]出其他颜色的牌。",
     "KNOWLEDGE_DEMON_CARD_DISPERSED_MORALE.title": "战意涣散",

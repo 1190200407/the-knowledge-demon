@@ -1,4 +1,4 @@
-[gd_resource type="VisualShader" load_steps=75 format=3 uid="uid://cu7krqg4cighe"]
+[gd_resource type="VisualShader" load_steps=75 format=3 uid="uid://kd59b66v8b4d9"]
 
 [sub_resource type="VisualShaderNodeVec2Parameter" id="VisualShaderNodeVec2Parameter_8bryw"]
 parameter_name = "Distortion1Panning"
