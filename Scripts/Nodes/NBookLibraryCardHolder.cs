@@ -11,7 +11,9 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.TestSupport;
@@ -44,8 +46,6 @@ public partial class NBookLibraryCardHolder : NCardHolder
     private CancellationTokenSource? _angleCancelToken;
     private CancellationTokenSource? _positionCancelToken;
     private CancellationTokenSource? _scaleCancelToken;
-
-    private bool _hoverInteractionEnabled = true;
 
     public bool InSelectMode { get; set; }
 
@@ -131,6 +131,11 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void OnFocus()
     {
+        if (IsHandDraggingCard())
+        {
+            return;
+        }
+
         NBookLibraryPile.Instance?.NotifyHolderFocused(this);
         base.OnFocus();
     }
@@ -222,31 +227,6 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
         _libraryIndexLabel.SetTextAutoSize(displayIndex.ToString());
         _libraryIndexLabel.Visible = displayIndex > 0 && SaveManager.Instance.PrefsSave.ShowCardIndices;
-    }
-
-    public void SetHoverInteractionEnabled(bool enabled)
-    {
-        if (_hoverInteractionEnabled == enabled)
-        {
-            return;
-        }
-
-        _hoverInteractionEnabled = enabled;
-        if (Hitbox != null)
-        {
-            Hitbox.SetEnabled(enabled);
-        }
-
-        if (!enabled)
-        {
-            if (_isHovered || _isFocused)
-            {
-                OnUnfocus();
-            }
-
-            DoCardHoverEffects(false);
-            NBookLibraryPile.Instance?.NotifyHolderUnfocused(this);
-        }
     }
 
     public void UpdateCard(bool applyLibraryTint = true)
@@ -371,9 +351,8 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void DoCardHoverEffects(bool isHovered)
     {
-        if (!_hoverInteractionEnabled)
+        if (isHovered && IsHandDraggingCard())
         {
-            ClearHoverTips();
             return;
         }
 
@@ -390,7 +369,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void OnMousePressed(InputEvent inputEvent)
     {
-        if (!InSelectMode || !_hoverInteractionEnabled)
+        if (!InSelectMode || IsHandDraggingCard())
         {
             return;
         }
@@ -400,13 +379,16 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     protected override void OnMouseReleased(InputEvent inputEvent)
     {
-        if (!InSelectMode || !_hoverInteractionEnabled)
+        if (!InSelectMode || IsHandDraggingCard())
         {
             return;
         }
 
         base.OnMouseReleased(inputEvent);
     }
+
+    private static bool IsHandDraggingCard() =>
+        NCombatRoom.Instance?.Ui?.Hand?.InCardPlay ?? false;
 
     private void StopAnimations()
     {

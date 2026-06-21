@@ -40,7 +40,6 @@ public partial class NBookLibraryPile : Control
     private CardPile? _pile;
     private Player? _player;
     private NBookLibraryCardHolder? _focusedHolder;
-    private bool _handCardPlaySuppressesHover;
 
     public static NBookLibraryPile? Instance { get; private set; }
 
@@ -360,6 +359,11 @@ public partial class NBookLibraryPile : Control
 
     internal void NotifyHolderFocused(NBookLibraryCardHolder holder)
     {
+        if (NCombatRoom.Instance?.Ui?.Hand?.InCardPlay == true)
+        {
+            return;
+        }
+
         _focusedHolder = holder;
         ArrangeCards(animate: true);
     }
@@ -386,35 +390,6 @@ public partial class NBookLibraryPile : Control
             if (GodotObject.IsInstanceValid(holder))
             {
                 holder.UpdateCard();
-            }
-        }
-    }
-
-    public override void _Process(double delta)
-    {
-        var hand = NCombatRoom.Instance?.Ui?.Hand;
-        var suppress = hand?.InCardPlay ?? false;
-        if (suppress == _handCardPlaySuppressesHover)
-        {
-            return;
-        }
-
-        _handCardPlaySuppressesHover = suppress;
-        ApplyLibraryHoverSuppression(suppress);
-    }
-
-    private void ApplyLibraryHoverSuppression(bool suppress)
-    {
-        if (suppress && _focusedHolder != null)
-        {
-            NotifyHolderUnfocused(_focusedHolder);
-        }
-
-        foreach (var holder in _holders.Values)
-        {
-            if (GodotObject.IsInstanceValid(holder))
-            {
-                holder.SetHoverInteractionEnabled(!suppress);
             }
         }
     }
