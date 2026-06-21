@@ -171,7 +171,7 @@ public static class BookLibraryCmd
 
         try
         {
-            KnowledgeDemonChooseContext.Begin(candidates);
+            KnowledgeDemonChooseContext.Begin(candidates, player);
 
             var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidates, player);
 
@@ -213,6 +213,7 @@ public static class BookLibraryCmd
 
         if (result.Chosen != null)
         {
+            KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
             await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
             await TryVanishFromLibrary(result.Chosen);
         }
@@ -227,6 +228,7 @@ public static class BookLibraryCmd
     {
         foreach (var card in unchosen)
         {
+            KnowledgeDemonChooseContext.ClearChoosePreviewFlag(card);
             if (card.IsSlyThisTurn)
             {
                 await CardCmd.AutoPlay(choiceContext, card, null, AutoPlayType.SlyDiscard);

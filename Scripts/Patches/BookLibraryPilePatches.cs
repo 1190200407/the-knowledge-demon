@@ -141,13 +141,6 @@ internal sealed class BookLibraryDynamicVarPreviewPatch : IPatchMethod
             return;
         }
 
-        var runGlobalHooks = __instance.CombatState != null
-            || __instance.UpgradePreviewType == CardUpgradePreviewType.Combat;
-        if (!runGlobalHooks)
-        {
-            return;
-        }
-
         foreach (var item in dynamicVarSet.Values.ToList())
         {
             item.UpdateCardPreview(__instance, previewMode, target, runGlobalHooks: true);
