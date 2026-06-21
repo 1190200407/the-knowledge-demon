@@ -50,7 +50,7 @@
     "KNOWLEDGE_DEMON_CARD_MEDITATION.description": "获得{Block:diff()}点[gold]格挡[/gold]。[gold]具象{Materialize}[/gold]。",
     "KNOWLEDGE_DEMON_CARD_MEDITATION.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
     "KNOWLEDGE_DEMON_CARD_TRANSCRIBE.title": "拓写",
-    "KNOWLEDGE_DEMON_CARD_TRANSCRIBE.description": "从[gold]手牌[/gold]中选择1张牌，将其[gold]记录{Record:diff()}[/gold]次。",
+    "KNOWLEDGE_DEMON_CARD_TRANSCRIBE.description": "从[gold]手牌[/gold]中选择1张牌，将其[gold]记录[/gold]{Record:diff()}次。",
     "KNOWLEDGE_DEMON_CARD_TRANSCRIBE.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]记录[/gold]。",
     "KNOWLEDGE_DEMON_CARD_KNOWLEDGE_FORTRESS.title": "知识堡垒",
     "KNOWLEDGE_DEMON_CARD_KNOWLEDGE_FORTRESS.description": "回合结束时，你的[gold]藏书库[/gold]中每有1张牌，你获得{Block:diff()}点[gold]格挡[/gold]。",
@@ -70,5 +70,13 @@
     "KNOWLEDGE_DEMON_CARD_PARALLEL_OBSERVATION.title": "平行观测",
     "KNOWLEDGE_DEMON_CARD_PARALLEL_OBSERVATION.description": "你可以[gold]变化[/gold]出其他颜色的牌。",
     "KNOWLEDGE_DEMON_CARD_DISPERSED_MORALE.title": "战意涣散",
-    "KNOWLEDGE_DEMON_CARD_DISPERSED_MORALE.description": "若有敌人意图为攻击，所有敌人失去{StrengthPower:diff()}点[gold]力量[/gold]。"
+    "KNOWLEDGE_DEMON_CARD_DISPERSED_MORALE.description": "若有敌人意图为攻击，所有敌人失去{StrengthPower:diff()}点[gold]力量[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_IT_IS_DONE.title": "此事已成",
+    "KNOWLEDGE_DEMON_CARD_IT_IS_DONE.description": "战斗胜利时，从[gold]{IfUpgraded:show:血祭+|血祭}[/gold]、[gold]{IfUpgraded:show:敛财+|敛财}[/gold]、[gold]{IfUpgraded:show:蜕形+|蜕形}[/gold]中选择一项执行。",
+    "KNOWLEDGE_DEMON_CARD_BLOOD_SACRIFICE_OPTION.title": "血祭",
+    "KNOWLEDGE_DEMON_CARD_BLOOD_SACRIFICE_OPTION.description": "回复{Heal:diff()}点[gold]生命[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_WEALTH_GATHERING_OPTION.title": "敛财",
+    "KNOWLEDGE_DEMON_CARD_WEALTH_GATHERING_OPTION.description": "获得{Gold:diff()}[gold]金币[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_METAMORPHOSIS_OPTION.title": "蜕形",
+    "KNOWLEDGE_DEMON_CARD_METAMORPHOSIS_OPTION.description": "从[gold]牌组[/gold]中选择1张牌[gold]变化[/gold]{IfUpgraded:show:并[gold]升级[/gold]|}。"
 }

@@ -8,6 +8,7 @@ using STS2RitsuLib.CardPiles;
 using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Keywords;
+using STS2RitsuLib.Combat.Rewards;
 using STS2RitsuLib.Patching.Core;
 using Godot;
 
@@ -67,6 +68,8 @@ public class Entry
 			iconPath: null,
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.AfterCardDescription,
 			includeInCardHoverTip: true);
+
+		ItIsDoneRewardRegistration.Register();
 
 		var patcher = RitsuLibFramework.CreatePatcher(ModId, "main", "knowledge-demon");
 		patcher.RegisterPatches<KnowledgeDemonModPatches>();
