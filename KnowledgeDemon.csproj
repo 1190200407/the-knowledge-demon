@@ -1,40 +1,65 @@
-<Project Sdk="Godot.NET.Sdk/4.5.1">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>true</ImplicitUsings>
-    <LangVersion>12.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-    <!-- 改成你的杀戮尖塔2目录 -->
-    <Sts2Dir>D:\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2Dir>
-    <Sts2DataDir>$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="sts2">
-      <HintPath>$(Sts2DataDir)\sts2.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-
-    <Reference Include="0Harmony">
-      <HintPath>$(Sts2DataDir)\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-
-    <PackageReference Include="STS2.RitsuLib" Version="*" />
-  </ItemGroup>
-
-  <!-- 自动复制 dll、json、res://KnowledgeDemon/ 下全部资源（场景、图、本地化） -->
-  <Target Name="Copy Mod" AfterTargets="PostBuildEvent">
-    <Message Text="Copying mod to Slay the Spire 2 mods folder..." Importance="high" />
-    <MakeDir Directories="$(Sts2Dir)\mods\" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Dir)\mods\$(MSBuildProjectName)\" />
-    <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" />
-    <ItemGroup>
-      <_KnowledgeDemonRes Include="$(MSBuildProjectDirectory)\KnowledgeDemon\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(_KnowledgeDemonRes)" DestinationFolder="$(Sts2Dir)\mods\$(MSBuildProjectName)\KnowledgeDemon\%(_KnowledgeDemonRes.RecursiveDir)" SkipUnchangedFiles="true" />
-  </Target>
-</Project>
-
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <Import Project="Sts2PathDiscovery.props" />
+  <Import Project="local.props" Condition="Exists('local.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>true</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Workshop 单 DLL 需跨 Win / macOS / Linux 加载；勿 publish -r win-x64 -->
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(Sts2DataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="0Harmony">
+      <HintPath>$(Sts2DataDir)/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <PackageReference Include="STS2.RitsuLib" Version="*" />
+  </ItemGroup>
+
+  <Target Name="ValidateSts2References" BeforeTargets="CoreCompile">
+    <Error
+      Condition="!Exists('$(Sts2DataDir)/sts2.dll')"
+      Text="sts2.dll not found at '$(Sts2DataDir)'. Install Slay the Spire 2 or set Sts2Dir / Sts2DataDir in local.props (see local.props.example)." />
+  </Target>
+
+  <!--
+    只复制 manifest + dll + pck。勿把 KnowledgeDemon/ 整包复制到 mods 下：
+    ModManager 会递归扫描子目录里所有 .json 并当作 manifest，localization 会刷屏 ERROR。
+    资源应打进 KnowledgeDemon.pck（res://KnowledgeDemon/...）。
+  -->
+  <Target Name="Copy Mod" AfterTargets="PostBuildEvent" Condition="Exists('$(Sts2DataDir)/sts2.dll')">
+    <PropertyGroup>
+      <_ModDir>$(Sts2Dir)/mods/$(MSBuildProjectName)</_ModDir>
+      <_ModPck>$(MSBuildProjectDirectory)/$(MSBuildProjectName).pck</_ModPck>
+      <_StaleLooseDir>$(_ModDir)/KnowledgeDemon</_StaleLooseDir>
+    </PropertyGroup>
+
+    <Message Text="Copying mod to $(_ModDir)..." Importance="high" />
+    <MakeDir Directories="$(_ModDir)/" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(_ModDir)/" />
+    <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(_ModDir)/" />
+    <Copy
+      SourceFiles="$(_ModPck)"
+      DestinationFolder="$(_ModDir)/"
+      Condition="Exists('$(_ModPck)')"
+      SkipUnchangedFiles="true" />
+    <Warning
+      Condition="!Exists('$(_ModPck)')"
+      Text="KnowledgeDemon.pck not found at $(_ModPck). Export the PCK before testing in-game, or resources will be missing." />
+
+    <!-- 清理旧版 PostBuild 误复制的 loose KnowledgeDemon/（含 localization/*.json） -->
+    <RemoveDir Directories="$(_StaleLooseDir)" Condition="Exists('$(_StaleLooseDir)')" />
+  </Target>
+</Project>

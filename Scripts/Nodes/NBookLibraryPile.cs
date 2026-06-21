@@ -40,6 +40,8 @@ public partial class NBookLibraryPile : Control
     private CardPile? _pile;
     private Player? _player;
     private NBookLibraryCardHolder? _focusedHolder;
+    private bool _dialOrderSyncScheduled;
+    private IReadOnlyList<CardModel>? _pendingDialOrderCards;
 
     public static NBookLibraryPile? Instance { get; private set; }
 
@@ -493,6 +495,27 @@ public partial class NBookLibraryPile : Control
         {
             return;
         }
+
+        _pendingDialOrderCards = cards;
+        if (_dialOrderSyncScheduled)
+        {
+            return;
+        }
+
+        _dialOrderSyncScheduled = true;
+        Callable.From(ApplyPendingDialHolderSiblingOrder).CallDeferred();
+    }
+
+    private void ApplyPendingDialHolderSiblingOrder()
+    {
+        _dialOrderSyncScheduled = false;
+        if (_dialCenter == null || _pendingDialOrderCards == null)
+        {
+            return;
+        }
+
+        var cards = _pendingDialOrderCards;
+        _pendingDialOrderCards = null;
 
         for (var pileIndex = 0; pileIndex < cards.Count; pileIndex++)
         {
