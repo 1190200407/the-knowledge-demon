@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class BloodSacrificeOption : KnowledgeDemonCardModel, IItIsDoneRewardOption
+public sealed class BloodSacrificeOption : KnowledgeDemonCardModel, IEnlightenmentAttainedRewardOption
 {
     private const string HealVarName = "Heal";
 
@@ -23,7 +23,7 @@ public sealed class BloodSacrificeOption : KnowledgeDemonCardModel, IItIsDoneRew
 
     public override bool CanBeGeneratedInCombat => false;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar(HealVarName, 5m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar(HealVarName, 7m)];
 
     public BloodSacrificeOption()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

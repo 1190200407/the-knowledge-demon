@@ -17,10 +17,10 @@
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.title": "平行观测",
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.description": "你可以变化出其他颜色的牌。",
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.smartDescription": "你可以[gold]变化[/gold]出其他颜色的牌。",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_POWER.title": "此事已成",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_POWER.description": "战斗胜利时，你可以选择一项奖励执行。",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_POWER.smartDescription": "战斗胜利时，从[gold]血祭[/gold]、[gold]敛财[/gold]、[gold]蜕形[/gold]中选择一项执行。",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_UPGRADED_POWER.title": "此事已成",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_UPGRADED_POWER.description": "战斗胜利时，你可以选择一项奖励执行。",
-    "KNOWLEDGE_DEMON_POWER_IT_IS_DONE_UPGRADED_POWER.smartDescription": "战斗胜利时，从[gold]血祭+[/gold]、[gold]敛财+[/gold]、[gold]蜕形+[/gold]中选择一项执行。"
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_POWER.title": "我已悟道",
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_POWER.description": "战斗胜利时，你可以选择一项奖励执行。",
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_POWER.smartDescription": "战斗胜利时，从[gold]血祭[/gold]、[gold]敛财[/gold]、[gold]蜕形[/gold]中选择一项执行。",
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_UPGRADED_POWER.title": "我已悟道",
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_UPGRADED_POWER.description": "战斗胜利时，你可以选择一项奖励执行。",
+    "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_UPGRADED_POWER.smartDescription": "战斗胜利时，从[gold]血祭+[/gold]、[gold]敛财+[/gold]、[gold]蜕形+[/gold]中选择一项执行。"
 }

@@ -165,24 +165,41 @@ public static class BookLibraryCmd
             .Take(offerCount)
             .ToList();
 
-        await KnowledgeDemonHook.BeforeChooseFromLibrary(choiceContext, player, chooseSource, candidates);
+        return await ChooseFromCandidates(choiceContext, player, candidates, chooseSource);
+    }
 
-        await ExtractCandidatesFromLibrary(player, candidates);
+    /// <summary>从指定候选中由玩家选择 1 张。</summary>
+    public static async Task<BookLibraryChooseResult> ChooseFromCandidates(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> candidates,
+        CardModel? chooseSource = null)
+    {
+        if (candidates.Count == 0)
+        {
+            return BookLibraryChooseResult.Empty;
+        }
+
+        var candidateList = candidates.ToList();
+
+        await KnowledgeDemonHook.BeforeChooseFromLibrary(choiceContext, player, chooseSource, candidateList);
+
+        await ExtractCandidatesFromLibrary(player, candidateList);
 
         try
         {
-            KnowledgeDemonChooseContext.Begin(candidates, player);
+            KnowledgeDemonChooseContext.Begin(candidateList, player);
 
-            var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidates, player);
+            var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidateList, player);
 
             await KnowledgeDemonHook.AfterChooseFromLibrary(
                 choiceContext,
                 player,
                 chooseSource,
                 chosen,
-                candidates);
+                candidateList);
 
-            return new BookLibraryChooseResult(chosen, candidates);
+            return new BookLibraryChooseResult(chosen, candidateList);
         }
         finally
         {
@@ -197,6 +214,17 @@ public static class BookLibraryCmd
         CardModel? chooseSource = null)
     {
         var result = await ChooseFromLibrary(choiceContext, player, chooseSource);
+        await ApplyChooseResult(choiceContext, player, result);
+    }
+
+    /// <summary>从指定候选中抉择 1 张并自动结算。</summary>
+    public static async Task ChooseFromCandidatesAndAutoPlay(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> candidates,
+        CardModel? chooseSource = null)
+    {
+        var result = await ChooseFromCandidates(choiceContext, player, candidates, chooseSource);
         await ApplyChooseResult(choiceContext, player, result);
     }
 

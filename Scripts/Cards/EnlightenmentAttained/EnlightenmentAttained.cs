@@ -9,7 +9,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class ItIsDone : KnowledgeDemonCardModel
+public sealed class EnlightenmentAttained : KnowledgeDemonCardModel
 {
     private const int energyCost = 2;
     private const CardType type = CardType.Power;
@@ -20,9 +20,9 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Eternal];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        ItIsDoneOptionHoverTips.All(IsUpgraded);
+        EnlightenmentAttainedOptionHoverTips.All(IsUpgraded);
 
-    public ItIsDone()
+    public EnlightenmentAttained()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
@@ -33,22 +33,22 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
 
         if (IsUpgraded)
         {
-            var basePower = Owner.Creature.GetPower<ItIsDonePower>();
+            var basePower = Owner.Creature.GetPower<EnlightenmentAttainedPower>();
             if (basePower is not null)
             {
                 await PowerCmd.Remove(basePower);
             }
 
-            await PowerCmd.Apply<ItIsDoneUpgradedPower>(
+            await PowerCmd.Apply<EnlightenmentAttainedUpgradedPower>(
                 choiceContext,
                 Owner.Creature,
                 1m,
                 Owner.Creature,
                 this);
         }
-        else if (Owner.Creature.GetPower<ItIsDoneUpgradedPower>() is null)
+        else if (Owner.Creature.GetPower<EnlightenmentAttainedUpgradedPower>() is null)
         {
-            await PowerCmd.Apply<ItIsDonePower>(
+            await PowerCmd.Apply<EnlightenmentAttainedPower>(
                 choiceContext,
                 Owner.Creature,
                 1m,

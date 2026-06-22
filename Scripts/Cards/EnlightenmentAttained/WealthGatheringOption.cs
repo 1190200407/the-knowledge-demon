@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class WealthGatheringOption : KnowledgeDemonCardModel, IItIsDoneRewardOption
+public sealed class WealthGatheringOption : KnowledgeDemonCardModel, IEnlightenmentAttainedRewardOption
 {
     private const string GoldVarName = "Gold";
 
@@ -22,7 +23,7 @@ public sealed class WealthGatheringOption : KnowledgeDemonCardModel, IItIsDoneRe
 
     public override bool CanBeGeneratedInCombat => false;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar(GoldVarName, 10m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar(GoldVarName, 15m)];
 
     public WealthGatheringOption()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

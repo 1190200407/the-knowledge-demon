@@ -9,6 +9,8 @@ public static class KnowledgeDemonUniqueUtility
 {
     private const int MaxDeckTransformAttempts = 32;
 
+    private static readonly HashSet<ModelId> DuplicateCardIdScratch = new();
+
     private static CardKeyword UniqueKeyword =>
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique);
 
@@ -44,6 +46,33 @@ public static class KnowledgeDemonUniqueUtility
 
     public static bool ShouldTransformAsDuplicate(Player player, CardModel card) =>
         IsUnique(card) && CombatContainsSameUnique(player, card, card);
+
+    public static bool HasDuplicateCardIdInHandOrLibrary(Player player)
+    {
+        DuplicateCardIdScratch.Clear();
+
+        foreach (var card in PileType.Hand.GetPile(player).Cards)
+        {
+            if (!DuplicateCardIdScratch.Add(card.Id))
+            {
+                return true;
+            }
+        }
+
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
+        if (libraryPile is not null)
+        {
+            foreach (var card in libraryPile.Cards)
+            {
+                if (!DuplicateCardIdScratch.Add(card.Id))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     public static CardModel PreferNewerDuplicate(CardModel first, CardModel second)
     {

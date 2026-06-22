@@ -69,7 +69,8 @@ public class Entry
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.AfterCardDescription,
 			includeInCardHoverTip: true);
 
-		ItIsDoneRewardRegistration.Register();
+		EnlightenmentAttainedRewardRegistration.Register();
+		RitsuLibFramework.RegisterArchaicToothTranscendenceMapping<MakeAChoice, ItIsDone>(ModId);
 
 		var patcher = RitsuLibFramework.CreatePatcher(ModId, "main", "knowledge-demon");
 		patcher.RegisterPatches<KnowledgeDemonModPatches>();

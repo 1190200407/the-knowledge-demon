@@ -9,21 +9,21 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class ItIsDoneUpgradedPower : KnowledgeDemonPowerModel
+public sealed class EnlightenmentAttainedUpgradedPower : KnowledgeDemonPowerModel
 {
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Single;
 
-    public override LocString Title => ItIsDonePowerShared.Title;
+    public override LocString Title => EnlightenmentAttainedPowerShared.Title;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        ItIsDoneOptionHoverTips.All(true);
+        EnlightenmentAttainedOptionHoverTips.All(true);
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
         var player = Owner.Player!;
-        room.AddExtraReward(player, new ItIsDoneUpgradedReward(player));
+        room.AddExtraReward(player, new EnlightenmentAttainedUpgradedReward(player));
         return Task.CompletedTask;
     }
 }

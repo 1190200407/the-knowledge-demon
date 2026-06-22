@@ -12,7 +12,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class MetamorphosisOption : KnowledgeDemonCardModel, IItIsDoneRewardOption
+public sealed class MetamorphosisOption : KnowledgeDemonCardModel, IEnlightenmentAttainedRewardOption
 {
     private const int energyCost = -1;
     private const CardType type = CardType.Skill;

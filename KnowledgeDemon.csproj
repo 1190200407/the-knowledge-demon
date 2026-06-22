@@ -55,9 +55,6 @@
       DestinationFolder="$(_ModDir)/"
       Condition="Exists('$(_ModPck)')"
       SkipUnchangedFiles="true" />
-    <Warning
-      Condition="!Exists('$(_ModPck)')"
-      Text="KnowledgeDemon.pck not found at $(_ModPck). Export the PCK before testing in-game, or resources will be missing." />
 
     <!-- 清理旧版 PostBuild 误复制的 loose KnowledgeDemon/（含 localization/*.json） -->
     <RemoveDir Directories="$(_StaleLooseDir)" Condition="Exists('$(_StaleLooseDir)')" />

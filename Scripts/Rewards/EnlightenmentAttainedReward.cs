@@ -11,11 +11,11 @@ using STS2RitsuLib.Combat.Rewards;
 
 namespace ComicChess.KnowledgeDemon;
 
-internal abstract class ItIsDoneRewardBase : ModCustomReward
+internal abstract class EnlightenmentAttainedRewardBase : ModCustomReward
 {
     internal const string CharacterIconPath = "res://KnowledgeDemon/images/charui/knowledge_demon_boss.png";
 
-    protected ItIsDoneRewardBase(Player player) : base(player)
+    protected EnlightenmentAttainedRewardBase(Player player) : base(player)
     {
     }
 
@@ -35,7 +35,7 @@ internal abstract class ItIsDoneRewardBase : ModCustomReward
             Player,
             canSkip: false);
 
-        if (chosen is IItIsDoneRewardOption option)
+        if (chosen is IEnlightenmentAttainedRewardOption option)
         {
             await option.OnChosen();
             return true;
@@ -47,38 +47,38 @@ internal abstract class ItIsDoneRewardBase : ModCustomReward
     protected abstract List<CardModel> CreateOptionCards();
 }
 
-internal sealed class ItIsDoneReward : ItIsDoneRewardBase
+internal sealed class EnlightenmentAttainedReward : EnlightenmentAttainedRewardBase
 {
-    public ItIsDoneReward(Player player) : base(player)
+    public EnlightenmentAttainedReward(Player player) : base(player)
     {
     }
 
-    public override RewardType ModRewardType => ItIsDoneRewardRegistration.BaseRewardType;
+    public override RewardType ModRewardType => EnlightenmentAttainedRewardRegistration.BaseRewardType;
 
-    protected override string DescriptionLocKey => "KNOWLEDGE_DEMON_REWARD_IT_IS_DONE";
+    protected override string DescriptionLocKey => "KNOWLEDGE_DEMON_REWARD_ENLIGHTENMENT_ATTAINED";
 
     protected override List<CardModel> CreateOptionCards() =>
-        ItIsDoneRewardOptions.Create(Player, upgraded: false);
+        EnlightenmentAttainedRewardOptions.Create(Player, upgraded: false);
 }
 
-internal sealed class ItIsDoneUpgradedReward : ItIsDoneRewardBase
+internal sealed class EnlightenmentAttainedUpgradedReward : EnlightenmentAttainedRewardBase
 {
-    public ItIsDoneUpgradedReward(Player player) : base(player)
+    public EnlightenmentAttainedUpgradedReward(Player player) : base(player)
     {
     }
 
-    public override RewardType ModRewardType => ItIsDoneRewardRegistration.UpgradedRewardType;
+    public override RewardType ModRewardType => EnlightenmentAttainedRewardRegistration.UpgradedRewardType;
 
-    protected override string DescriptionLocKey => "KNOWLEDGE_DEMON_REWARD_IT_IS_DONE_UPGRADED";
+    protected override string DescriptionLocKey => "KNOWLEDGE_DEMON_REWARD_ENLIGHTENMENT_ATTAINED_UPGRADED";
 
     protected override List<CardModel> CreateOptionCards() =>
-        ItIsDoneRewardOptions.Create(Player, upgraded: true);
+        EnlightenmentAttainedRewardOptions.Create(Player, upgraded: true);
 }
 
-internal static class ItIsDoneRewardRegistration
+internal static class EnlightenmentAttainedRewardRegistration
 {
-    internal const string BaseRewardStem = "IT_IS_DONE";
-    internal const string UpgradedRewardStem = "IT_IS_DONE_UPGRADED";
+    internal const string BaseRewardStem = "ENLIGHTENMENT_ATTAINED";
+    internal const string UpgradedRewardStem = "ENLIGHTENMENT_ATTAINED_UPGRADED";
 
     internal static RewardType BaseRewardType { get; private set; }
     internal static RewardType UpgradedRewardType { get; private set; }
@@ -91,8 +91,8 @@ internal static class ItIsDoneRewardRegistration
     }
 
     private static Reward CreateBaseFromSave(SerializableReward save, Player player, string? json) =>
-        new ItIsDoneReward(player);
+        new EnlightenmentAttainedReward(player);
 
     private static Reward CreateUpgradedFromSave(SerializableReward save, Player player, string? json) =>
-        new ItIsDoneUpgradedReward(player);
+        new EnlightenmentAttainedUpgradedReward(player);
 }
