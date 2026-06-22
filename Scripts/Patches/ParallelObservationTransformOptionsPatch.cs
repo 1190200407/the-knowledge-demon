@@ -25,16 +25,23 @@ internal sealed class ParallelObservationTransformOptionsPatch : IPatchMethod
     public static void Postfix(CardModel original, bool isInCombat, ref CardModel[] __result)
     {
         if (__result is not { Length: > 0 }
-            || original.Owner?.Creature.GetPower<ParallelObservationPower>() is null)
+            || original.Owner?.Creature is not { } owner
+            || (owner.GetPower<ParallelObservationPower>() is null
+                && owner.GetPower<ParallelObservationUpgradedPower>() is null))
         {
             return;
         }
+
+        var includeColorless = owner.GetPower<ParallelObservationUpgradedPower>() is not null;
 
         var existingIds = __result.Select(card => card.Id).ToHashSet();
         var additional = TransformOptionUtility
             .FilterTransformCandidates(
                 original,
-                TransformOptionUtility.GetOtherCharacterPoolCards(original.Owner, original.Pool),
+                TransformOptionUtility.GetOtherCharacterAndMaybeColorlessPoolCards(
+                    original.Owner,
+                    original.Pool,
+                    includeColorless),
                 isInCombat)
             .Where(card => !existingIds.Contains(card.Id))
             .ToArray();

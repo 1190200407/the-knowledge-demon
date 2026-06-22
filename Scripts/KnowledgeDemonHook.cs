@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using STS2RitsuLib.Cards.Transforms;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -181,6 +182,26 @@ public static class KnowledgeDemonHook
             await listener.AfterMaterializedFromLibrary(choiceContext, player, materialized);
         }
     }
+
+    public static async Task AfterCardTransformed(ModCardTransformContext context)
+    {
+        var player = context.Replacement.Owner;
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return;
+        }
+
+        foreach (var model in combatState.IterateHookListeners())
+        {
+            if (model is not IKnowledgeDemonEventListener listener)
+            {
+                continue;
+            }
+
+            await listener.AfterCardTransformed(player, context);
+        }
+    }
 }
 
 /// <summary>知识恶魔 mod 事件监听；未覆写的方法使用默认空实现。</summary>
@@ -220,4 +241,8 @@ public interface IKnowledgeDemonEventListener
         PlayerChoiceContext choiceContext,
         Player player,
         IReadOnlyList<CardModel> materialized) => Task.CompletedTask;
+
+    Task AfterCardTransformed(
+        Player player,
+        ModCardTransformContext context) => Task.CompletedTask;
 }

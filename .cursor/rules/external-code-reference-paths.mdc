@@ -1,9 +1,0 @@
----
-description: STS2 源码路径与 C# 命名空间
-alwaysApply: true
----
-
-- 游戏源码：`D:\My Study\Slay the Spire 2 Original`
-- RitsuLib源码：`D:\My Projects\GodotProjects\STS2-RitsuLib-0.4.20`
-- 本 mod 脚本：`namespace ComicChess.KnowledgeDemon;`（file-scoped）
-- 术语映射约定：中文“罕见”= `Uncommon`；中文“稀有”= `Rare`。

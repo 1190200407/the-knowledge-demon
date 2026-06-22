@@ -3,6 +3,7 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -15,6 +16,22 @@ internal static class TransformOptionUtility
             .SelectMany(pool => pool.GetUnlockedCards(
                 player.UnlockState,
                 player.RunState.CardMultiplayerConstraint));
+    }
+
+    internal static IEnumerable<CardModel> GetOtherCharacterAndMaybeColorlessPoolCards(
+        Player player,
+        CardPoolModel excludePool,
+        bool includeColorless)
+    {
+        var cards = GetOtherCharacterPoolCards(player, excludePool);
+        if (!includeColorless)
+        {
+            return cards;
+        }
+
+        return cards.Concat(ModelDb.CardPool<ColorlessCardPool>().GetUnlockedCards(
+            player.UnlockState,
+            player.RunState.CardMultiplayerConstraint));
     }
 
     internal static IEnumerable<CardModel> FilterTransformCandidates(

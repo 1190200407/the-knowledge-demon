@@ -9,6 +9,7 @@ using STS2RitsuLib.Content;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Combat.Rewards;
+using STS2RitsuLib.Cards.Transforms;
 using STS2RitsuLib.Patching.Core;
 using Godot;
 
@@ -71,6 +72,9 @@ public class Entry
 
 		EnlightenmentAttainedRewardRegistration.Register();
 		RitsuLibFramework.RegisterArchaicToothTranscendenceMapping<MakeAChoice, ItIsDone>(ModId);
+		ModCardTransformRegistry.For(ModId).Register(
+			"knowledge_demon_transform_events",
+			KnowledgeDemonHook.AfterCardTransformed);
 
 		var patcher = RitsuLibFramework.CreatePatcher(ModId, "main", "knowledge-demon");
 		patcher.RegisterPatches<KnowledgeDemonModPatches>();
