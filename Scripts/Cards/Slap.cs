@@ -6,7 +6,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Cards.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -20,7 +22,11 @@ public sealed class Slap : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(6m, ValueProp.Move),
+        ModCardVars.Computed("Repeat", 1m, card => GetHitCount(card)),
+    ];
 
     public Slap()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -32,7 +38,7 @@ public sealed class Slap : KnowledgeDemonCardModel
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .WithHitCount(GetHitCount())
+                .WithHitCount((int)GetHitCount(this))
                 .FromCard(this)
                 .Targeting(cardPlay.Target),
             Owner.Character,
@@ -46,16 +52,16 @@ public sealed class Slap : KnowledgeDemonCardModel
         DynamicVars.Damage.UpgradeValueBy(2m);
     }
 
-    private int GetHitCount()
+    private static decimal GetHitCount(CardModel? source)
     {
-        if (Owner.PlayerCombatState is null)
+        if (source?.Owner?.PlayerCombatState is null)
         {
             return 1;
         }
 
-        return 1 + Owner.PlayerCombatState.AllCards.Count(card =>
-            card != this
-            && card.Owner == Owner
-            && card.Id == Id);
+        return 1 + source.Owner.PlayerCombatState.AllCards.Count(card =>
+            card != source
+            && card.Owner == source.Owner
+            && card.Id == source.Id);
     }
 }
