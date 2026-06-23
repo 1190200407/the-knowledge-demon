@@ -43,6 +43,9 @@ internal sealed class KnowledgeDemonCardSelectSession
     private static readonly FieldInfo IsDisabledField =
         typeof(NPlayerHand).GetField("_isDisabled", InstanceAny)!;
 
+    private static readonly MethodInfo GetHandInsertIndexMethod =
+        typeof(NPlayerHand).GetMethod("GetHandInsertIndex", InstanceAny)!;
+
     private static readonly MethodInfo AfterCardsSelectedMethod =
         typeof(NPlayerHand).GetMethod("AfterCardsSelected", InstanceAny)!;
 
@@ -63,6 +66,7 @@ internal sealed class KnowledgeDemonCardSelectSession
     private readonly Func<CardModel, bool> _filter;
     private readonly bool _includeHand;
     private readonly HashSet<CardModel> _libraryOriginCards = [];
+    private readonly HashSet<CardModel> _sharedHandOriginCards = [];
     private readonly List<NBookLibraryCardHolder> _libraryHolders = [];
     private readonly Callable _libraryHolderPressedCallable;
 
@@ -107,8 +111,15 @@ internal sealed class KnowledgeDemonCardSelectSession
 
     internal bool IsLibraryOrigin(CardModel card) => _libraryOriginCards.Contains(card);
 
+    internal void MarkSharedHandOrigin(CardModel card) => _sharedHandOriginCards.Add(card);
+
+    internal bool IsSharedHandOrigin(CardModel card) => _sharedHandOriginCards.Contains(card);
+
     internal static List<CardModel> GetSelectedCards(NPlayerHand hand) =>
         (List<CardModel>)SelectedCardsField.GetValue(hand)!;
+
+    private static int GetHandInsertIndex(NPlayerHand hand, CardModel card) =>
+        (int)GetHandInsertIndexMethod.Invoke(hand, [card])!;
 
     internal static void RefreshHandConfirmButton(NPlayerHand hand)
     {
@@ -139,12 +150,24 @@ internal sealed class KnowledgeDemonCardSelectSession
     private static void HideSelectModeConfirmButton(NPlayerHand hand) =>
         hand.GetNode<NConfirmButton>("%SelectModeConfirmButton").Disable();
 
-    internal void DeselectLibraryCard(NPlayerHand hand, CardModel model, NCard cardNode)
+    internal void DeselectSharedSelectedCard(NPlayerHand hand, CardModel model, NCard cardNode)
     {
-        GetSelectedCards(hand).Remove(model);
-        _libraryOriginCards.Remove(model);
-        RefreshHandConfirmButton(hand);
-        _libraryPile.RestoreSelectionVisual(model, cardNode);
+        if (IsLibraryOrigin(model))
+        {
+            GetSelectedCards(hand).Remove(model);
+            _libraryOriginCards.Remove(model);
+            RefreshHandConfirmButton(hand);
+            _libraryPile.RestoreSelectionVisual(model, cardNode);
+            return;
+        }
+
+        if (!IsSharedHandOrigin(model))
+        {
+            return;
+        }
+
+        _sharedHandOriginCards.Remove(model);
+        hand.DeselectCard(cardNode);
     }
 
     internal void RestoreAllLibrarySelections()
@@ -157,12 +180,51 @@ internal sealed class KnowledgeDemonCardSelectSession
                 continue;
             }
 
-            GetSelectedCards(hand).Remove(model);
-            _libraryOriginCards.Remove(model);
-            _libraryPile.RestoreSelectionVisual(model, cardNode);
+            if (IsLibraryOrigin(model))
+            {
+                GetSelectedCards(hand).Remove(model);
+                _libraryOriginCards.Remove(model);
+                _libraryPile.RestoreSelectionVisual(model, cardNode);
+                continue;
+            }
+
+            if (IsSharedHandOrigin(model))
+            {
+                RestoreSharedHandSelection(hand, model, cardNode);
+            }
         }
 
         _libraryPile.ClearSelectedLibraryCards();
+    }
+
+    internal void SelectHandCard(NPlayerHand hand, NHandCardHolder holder)
+    {
+        if (holder.CardNode?.Model is not CardModel model)
+        {
+            return;
+        }
+
+        if (hand.PeekButton.IsPeeking)
+        {
+            hand.PeekButton.Wiggle();
+            return;
+        }
+
+        _libraryPile.BeginSelectedCardHand(hand);
+
+        var selectedCards = GetSelectedCards(hand);
+        var prefs = (CardSelectorPrefs)PrefsField.GetValue(hand)!;
+        if (selectedCards.Count >= prefs.MaxSelect)
+        {
+            DeselectSelectedCard(hand, selectedCards[^1]);
+        }
+
+        _libraryPile.AddSelectedLibraryCard(holder);
+        hand.RemoveCardHolder(holder);
+        selectedCards.Add(model);
+        MarkSharedHandOrigin(model);
+        ScheduleLibraryConfirmRefresh(hand);
+        LogState("SelectHandCard");
     }
 
     internal void RegisterLibraryHolder(NBookLibraryCardHolder holder)
@@ -276,13 +338,53 @@ internal sealed class KnowledgeDemonCardSelectSession
 
     private void DeselectSelectedCard(NPlayerHand hand, CardModel model)
     {
-        if (IsLibraryOrigin(model))
+        if (IsLibraryOrigin(model) || IsSharedHandOrigin(model))
         {
             _libraryPile.DeselectSelectedLibraryCard(model);
             return;
         }
 
         hand.GetNode<NSelectedHandCardContainer>("%SelectedHandCardContainer").DeselectCard(model);
+    }
+
+    internal void RevalidateSelectionAfterStateChange(NPlayerHand hand)
+    {
+        if (CurrentSelectionFilterField.GetValue(hand) is not Func<CardModel, bool> filter)
+        {
+            return;
+        }
+
+        foreach (var holder in _libraryPile.GetSelectedCardHolders().ToList())
+        {
+            var cardModel = holder.CardNode?.Model;
+            if (cardModel != null && !filter(cardModel))
+            {
+                _libraryPile.DeselectSelectedLibraryCard(cardModel);
+            }
+        }
+
+        UpdateSelectModeCardVisibilityMethod.Invoke(hand, null);
+        RefreshLibraryHolderVisibility();
+
+        var hasHandCandidate = hand.CardHolderContainer
+            .GetChildren()
+            .OfType<NHandCardHolder>()
+            .Any(h => h.CardNode?.Model is CardModel card && filter(card));
+        var hasLibraryCandidate = _libraryPile
+            .GetHolderSnapshot()
+            .Any(h => h.CardNode?.Model is CardModel card && filter(card));
+
+        if (GetSelectedCards(hand).Count == 0 && !hasHandCandidate && !hasLibraryCandidate)
+        {
+            if (SelectionCompletionSourceField.GetValue(hand) is TaskCompletionSource<IEnumerable<CardModel>> tcs)
+            {
+                tcs.TrySetResult([]);
+            }
+        }
+        else
+        {
+            RefreshHandConfirmButton(hand);
+        }
     }
 
     /// <summary>
@@ -466,6 +568,7 @@ internal sealed class KnowledgeDemonCardSelectSession
 
         _libraryHolders.Clear();
         _libraryOriginCards.Clear();
+        _sharedHandOriginCards.Clear();
 
         _libraryPile.HideSelectionUi();
 
@@ -484,6 +587,21 @@ internal sealed class KnowledgeDemonCardSelectSession
         }
 
         LogState("ExitLayer");
+    }
+
+    private void RestoreSharedHandSelection(NPlayerHand hand, CardModel model, NCard cardNode)
+    {
+        _sharedHandOriginCards.Remove(model);
+        if (hand.IsInCardSelection)
+        {
+            hand.DeselectCard(cardNode);
+            return;
+        }
+
+        GetSelectedCards(hand).Remove(model);
+        var holder = hand.Add(cardNode, GetHandInsertIndex(hand, model));
+        holder.InSelectMode = false;
+        holder.Visible = true;
     }
 
     private void CollectLibraryHolders()

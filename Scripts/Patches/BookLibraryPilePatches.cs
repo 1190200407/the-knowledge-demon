@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using STS2RitsuLib.Patching.Models;
@@ -145,5 +146,83 @@ internal sealed class BookLibraryDynamicVarPreviewPatch : IPatchMethod
         {
             item.UpdateCardPreview(__instance, previewMode, target, runGlobalHooks: true);
         }
+    }
+}
+
+internal sealed class BookLibrarySharedHandSimpleSelectPatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_book_library_shared_hand_simple_select";
+    public static string Description => "Route mixed hand/library selection through the shared library selected-card container";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NPlayerHand), "SelectCardInSimpleMode", [typeof(NHandCardHolder)]),
+    ];
+
+    public static bool Prefix(NPlayerHand __instance, NHandCardHolder holder)
+    {
+        var session = KnowledgeDemonCardSelectSession.ActiveSession;
+        if (session is not { IsActive: true, IncludeHand: true })
+        {
+            return true;
+        }
+
+        session.SelectHandCard(__instance, holder);
+        return false;
+    }
+}
+
+internal sealed class BookLibrarySharedHandRevalidatePatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_book_library_shared_hand_revalidate";
+    public static string Description => "Revalidate mixed hand/library selection against the shared selected-card container";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NPlayerHand), "RevalidateSelectionAfterStateChange"),
+    ];
+
+    public static bool Prefix(NPlayerHand __instance)
+    {
+        var session = KnowledgeDemonCardSelectSession.ActiveSession;
+        if (session is not { IsActive: true, IncludeHand: true })
+        {
+            return true;
+        }
+
+        session.RevalidateSelectionAfterStateChange(__instance);
+        return false;
+    }
+}
+
+internal sealed class BookLibrarySharedHandGetCardHolderPatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_book_library_shared_hand_get_card_holder";
+    public static string Description => "Allow hand lookups to find cards living in the shared library selected-card container";
+    public static bool IsCritical => false;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NPlayerHand), nameof(NPlayerHand.GetCardHolder), [typeof(CardModel)]),
+    ];
+
+    public static void Postfix(CardModel card, ref NCardHolder? __result)
+    {
+        if (__result != null)
+        {
+            return;
+        }
+
+        var session = KnowledgeDemonCardSelectSession.ActiveSession;
+        if (session is not { IsActive: true, IncludeHand: true })
+        {
+            return;
+        }
+
+        __result = NBookLibraryPile.Instance?
+            .GetSelectedCardHolders()
+            .FirstOrDefault(holder => holder.CardNode?.Model == card);
     }
 }

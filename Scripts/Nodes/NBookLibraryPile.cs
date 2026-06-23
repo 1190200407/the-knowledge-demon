@@ -196,7 +196,7 @@ public partial class NBookLibraryPile : Control
         if (_selectedCardHand != null
             && selectedHolder.CardNode is { Model: CardModel model } cardNode)
         {
-            KnowledgeDemonCardSelectSession.ActiveSession?.DeselectLibraryCard(_selectedCardHand, model, cardNode);
+            KnowledgeDemonCardSelectSession.ActiveSession?.DeselectSharedSelectedCard(_selectedCardHand, model, cardNode);
         }
 
         if (_selectedCardContainerRoot != null)
