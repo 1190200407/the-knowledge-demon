@@ -161,6 +161,31 @@ public static class KnowledgeDemonHook
         }
     }
 
+    public static async Task<CardModel> ModifyMaterializeCard(
+        Player player,
+        CardModel sourceCard,
+        CardModel materializedCard)
+    {
+        var result = materializedCard;
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return result;
+        }
+
+        foreach (var model in combatState.IterateHookListeners())
+        {
+            if (model is not IKnowledgeDemonEventListener listener)
+            {
+                continue;
+            }
+
+            result = await listener.ModifyMaterializeCard(player, sourceCard, result);
+        }
+
+        return result;
+    }
+
     public static async Task AfterMaterializedFromLibrary(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -236,6 +261,11 @@ public interface IKnowledgeDemonEventListener
         CardModel? chooseSource,
         CardModel? chosen,
         IReadOnlyList<CardModel> candidates) => Task.CompletedTask;
+
+    Task<CardModel> ModifyMaterializeCard(
+        Player player,
+        CardModel sourceCard,
+        CardModel materializedCard) => Task.FromResult(materializedCard);
 
     Task AfterMaterializedFromLibrary(
         PlayerChoiceContext choiceContext,

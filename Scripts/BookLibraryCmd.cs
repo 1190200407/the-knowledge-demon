@@ -118,8 +118,20 @@ public static class BookLibraryCmd
         var materialized = new List<CardModel>(selected.Count);
         foreach (var card in selected)
         {
-            await CardPileCmd.Add(card, PileType.Hand);
-            materialized.Add(card);
+            var resultCard = source is CardModel sourceCard
+                ? await KnowledgeDemonHook.ModifyMaterializeCard(player, sourceCard, card)
+                : card;
+
+            if (ReferenceEquals(resultCard, card))
+            {
+                await CardPileCmd.Add(card, PileType.Hand);
+            }
+            else
+            {
+                await CardPileCmd.AddGeneratedCardToCombat(resultCard, PileType.Hand, player);
+            }
+
+            materialized.Add(resultCard);
         }
 
         await KnowledgeDemonHook.AfterMaterializedFromLibrary(choiceContext, player, materialized);
@@ -230,8 +242,16 @@ public static class BookLibraryCmd
             return BookLibraryChooseResult.Empty;
         }
 
-        var offerCount = Math.Min(ChooseOfferCount, libraryPile.Cards.Count);
-        var candidates = libraryPile.Cards
+        var choosableCards = libraryPile.Cards
+            .Where(CanBeAutoChooseCandidate)
+            .ToList();
+        if (choosableCards.Count == 0)
+        {
+            return BookLibraryChooseResult.Empty;
+        }
+
+        var offerCount = Math.Min(ChooseOfferCount, choosableCards.Count);
+        var candidates = choosableCards
             .ToList()
             .StableShuffle(player.RunState.Rng.Shuffle)
             .Take(offerCount)
@@ -357,6 +377,18 @@ public static class BookLibraryCmd
 
     private static bool IsInBookLibrary(CardModel card) =>
         card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type);
+
+    private static bool CanBeAutoChooseCandidate(CardModel card)
+    {
+        if (card.CanPlay())
+        {
+            return true;
+        }
+
+        _ = card.CanPlay(out var reason, out _);
+        var resourceOnlyReasons = UnplayableReason.EnergyCostTooHigh | UnplayableReason.StarCostTooHigh;
+        return (reason & ~resourceOnlyReasons) == UnplayableReason.None;
+    }
     #endregion
 
     #region Remove
@@ -400,7 +432,14 @@ public static class BookLibraryCmd
             return;
         }
 
-        var copies = libraryPile.Cards.ToList();
+        var copies = libraryPile.Cards
+            .Where(card => !card.ShouldRetainThisTurn)
+            .ToList();
+        if (copies.Count == 0)
+        {
+            return;
+        }
+
         await CardPileCmd.RemoveFromCombat(copies, skipVisuals: false);
     }
     #endregion
