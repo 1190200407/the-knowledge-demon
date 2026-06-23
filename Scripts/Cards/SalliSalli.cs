@@ -11,7 +11,7 @@ using STS2RitsuLib.Keywords;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class SpireCardiomyopathy : KnowledgeDemonCardModel
+public sealed class SalliSalli : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
@@ -28,7 +28,7 @@ public sealed class SpireCardiomyopathy : KnowledgeDemonCardModel
     protected override bool ShouldGlowRedInternal =>
         Owner is not null && KnowledgeDemonUniqueUtility.HasDuplicateCardIdInHandOrLibrary(Owner);
 
-    public SpireCardiomyopathy()
+    public SalliSalli()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }

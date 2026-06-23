@@ -18,9 +18,10 @@ public sealed class Twister : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Token;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = false;
-    public override int MaxUpgradeLevel => 0;
 
     public override bool CanBeGeneratedInCombat => false;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(0m, ValueProp.Move)];
 
@@ -46,5 +47,10 @@ public sealed class Twister : KnowledgeDemonCardModel
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_heavy_blunt")
             .Execute(choiceContext);
+    }
+
+    protected override void OnUpgrade()
+    {
+        AddKeyword(CardKeyword.Retain);
     }
 }

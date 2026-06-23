@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -23,7 +24,7 @@ public sealed class MemoryConvergence : KnowledgeDemonCardModel
 
     public override bool GainsBlock => true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)];

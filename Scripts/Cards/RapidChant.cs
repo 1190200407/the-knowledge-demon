@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -22,11 +21,9 @@ public sealed class RapidChant : KnowledgeDemonCardModel
     private const int hitCount = 3;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose),
+        CardKeyword.Sly,
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
-
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromChoose()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(3m, ValueProp.Move)];
 
@@ -46,8 +43,6 @@ public sealed class RapidChant : KnowledgeDemonCardModel
             onlyPlayAnimOnce: true)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
-
-        await BookLibraryCmd.ChooseFromLibraryAndAutoPlay(choiceContext, Owner, this);
     }
 
     protected override void OnUpgrade()

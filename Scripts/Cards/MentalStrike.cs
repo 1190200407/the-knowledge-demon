@@ -11,35 +11,45 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class AmbushStrike : KnowledgeDemonCardModel
+public sealed class MentalStrike : KnowledgeDemonCardModel
 {
-    private const int energyCost = 0;
+    private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move)];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
 
-    public AmbushStrike()
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new CardsVar(2),
+        new DamageVar(6m, ValueProp.Move),
+    ];
+
+    public MentalStrike()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.IsAutoPlay)
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+
+        var discarded = await BookLibraryCmd.DiscardFromLibraryAndHand(
+            choiceContext,
+            Owner,
+            DynamicVars.Cards.IntValue,
+            SelectionScreenPrompt,
+            this);
+
+        if (discarded.Count == 0)
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .TargetingAllOpponents(CombatState!)
-                .WithHitFx("vfx/vfx_attack_blunt")
-                .Execute(choiceContext);
             return;
         }
 
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .WithHitCount(discarded.Count)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -48,6 +58,7 @@ public sealed class AmbushStrike : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

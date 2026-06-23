@@ -16,7 +16,6 @@ using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace ComicChess.KnowledgeDemon;
 
-/// <summary>藏书库：记录临时复制品；抉择展示并自动打出。</summary>
 public static class BookLibraryCmd
 {
     public const int ChooseOfferCount = 3;
@@ -27,10 +26,7 @@ public static class BookLibraryCmd
     private static readonly LocString ChooseDoneLine =
         MonsterModel.L10NMonsterLookup("KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.doneLine");
 
-    #region 记录
-    /// <summary>
-    /// 将牌的概念记录进藏书库：始终生成临时复制品，不移动原牌。
-    /// </summary>
+    #region Record
     public static async Task RecordToLibrary(
         PlayerChoiceContext? choiceContext,
         Player player,
@@ -72,7 +68,6 @@ public static class BookLibraryCmd
     private static bool RecordTemplatesMatch(CardModel source, CardModel finalTemplate) =>
         source.Id == finalTemplate.Id && source.IsUpgraded == finalTemplate.IsUpgraded;
 
-    /// <summary>牌实际进入弃牌堆后，在藏书库留下 1 份临时复制品（仅手动打出且原定进弃牌堆）。</summary>
     public static async Task RecordOnEnteredDiscardPile(CardModel card, PileType oldPileType)
     {
         if (oldPileType != PileType.Play
@@ -98,10 +93,7 @@ public static class BookLibraryCmd
     }
     #endregion
 
-    #region 具象
-    /// <summary>
-    /// 从藏书库中选择至多 N 张牌加入手牌（由玩家选择，不限加入顺序）。
-    /// </summary>
+    #region Materialize
     public static async Task<IReadOnlyList<CardModel>> MaterializeFromLibraryToHand(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -136,7 +128,88 @@ public static class BookLibraryCmd
     }
     #endregion
 
-    #region 抉择
+    #region Discard
+    public static async Task<IReadOnlyList<CardModel>> DiscardFromLibraryAndHand(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        int count,
+        LocString selectionPrompt,
+        AbstractModel? source = null)
+    {
+        if (count <= 0)
+        {
+            return [];
+        }
+
+        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibraryAndHand(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(selectionPrompt, 0, count),
+            filter: null,
+            source)).ToList();
+
+        if (selected.Count == 0)
+        {
+            return [];
+        }
+
+        var handCards = selected
+            .Where(card => card.Pile?.Type == PileType.Hand)
+            .ToList();
+        var libraryCards = selected
+            .Where(card => card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type))
+            .ToList();
+
+        if (handCards.Count > 0)
+        {
+            await CardCmd.Discard(choiceContext, handCards);
+        }
+
+        if (libraryCards.Count > 0)
+        {
+            await DiscardFromLibrary(choiceContext, player, libraryCards);
+        }
+
+        return selected;
+    }
+
+    private static async Task DiscardFromLibrary(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> cards)
+    {
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return;
+        }
+
+        foreach (var card in cards)
+        {
+            if (card.Pile is not { } pile || !BookLibraryUtility.IsBookLibraryPile(pile.Type))
+            {
+                continue;
+            }
+
+            var oldPileType = pile.Type;
+            card.RemoveFromCurrentPile(silent: false);
+            BookLibraryUtility.ResetCardTint(card);
+            await Hook.AfterCardChangedPiles(player.RunState, combatState, card, oldPileType, null);
+
+            CombatManager.Instance.History.CardDiscarded(combatState, card);
+            await Hook.AfterCardDiscarded(combatState, choiceContext, card);
+
+            if (card.IsSlyThisTurn)
+            {
+                await CardCmd.AutoPlay(choiceContext, card, null, AutoPlayType.SlyDiscard);
+            }
+
+            await TryVanishFromLibrary(card);
+        }
+    }
+    #endregion
+
+    #region Choose
     public static async Task PlayChooseStartPresentation(Player player)
     {
         TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
@@ -146,7 +219,6 @@ public static class BookLibraryCmd
     public static void PlayChooseDonePresentation(Player player) =>
         TalkCmd.Play(ChooseDoneLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
 
-    /// <summary>从藏书库随机展示至多 3 张牌，由玩家选择 1 张。</summary>
     public static async Task<BookLibraryChooseResult> ChooseFromLibrary(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -168,7 +240,6 @@ public static class BookLibraryCmd
         return await ChooseFromCandidates(choiceContext, player, candidates, chooseSource);
     }
 
-    /// <summary>从指定候选中由玩家选择 1 张。</summary>
     public static async Task<BookLibraryChooseResult> ChooseFromCandidates(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -207,7 +278,6 @@ public static class BookLibraryCmd
         }
     }
 
-    /// <summary>抉择并自动结算（<see cref="ChooseFromLibrary" /> + <see cref="ApplyChooseResult" />）。</summary>
     public static async Task ChooseFromLibraryAndAutoPlay(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -217,7 +287,6 @@ public static class BookLibraryCmd
         await ApplyChooseResult(choiceContext, player, result);
     }
 
-    /// <summary>从指定候选中抉择 1 张并自动结算。</summary>
     public static async Task ChooseFromCandidatesAndAutoPlay(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -228,7 +297,6 @@ public static class BookLibraryCmd
         await ApplyChooseResult(choiceContext, player, result);
     }
 
-    /// <summary>结算抉择：选中牌自动打出并消失；未选候选按奇巧规则处理并消失。</summary>
     public static async Task ApplyChooseResult(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -249,7 +317,6 @@ public static class BookLibraryCmd
         await ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);
     }
 
-    /// <summary>未抉择的候选：奇巧则自动打出，之后从战斗中消失。</summary>
     public static async Task ResolveUnchosenLibraryCandidates(
         PlayerChoiceContext choiceContext,
         IReadOnlyList<CardModel> unchosen)
@@ -266,7 +333,6 @@ public static class BookLibraryCmd
         }
     }
 
-    /// <summary>抉择展示前将候选移出藏书库（仍留在战斗内，供选择与自动打出）。</summary>
     private static async Task ExtractCandidatesFromLibrary(Player player, IReadOnlyList<CardModel> candidates)
     {
         var combatState = player.Creature.CombatState;
@@ -293,7 +359,7 @@ public static class BookLibraryCmd
         card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type);
     #endregion
 
-    #region 移除
+    #region Remove
     private static async Task TryVanishFromLibrary(CardModel card)
     {
         if (card.HasBeenRemovedFromState)
@@ -321,7 +387,6 @@ public static class BookLibraryCmd
         }
     }
 
-    /// <summary>回合结束前移除藏书库内全部临时复制品（视为消失，不进弃牌堆）。</summary>
     public static async Task DismissLibraryAtTurnEnd(PlayerChoiceContext choiceContext, Player player)
     {
         if (!BookLibraryUtility.PlayerHasBookLibraryRelic(player))

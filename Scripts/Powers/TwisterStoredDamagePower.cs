@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -24,6 +25,7 @@ public sealed class TwisterStoredDamagePower : KnowledgeDemonPowerModel
     {
         public bool BankingThisTurn;
         public decimal PendingBank;
+        public bool CreateUpgradedTwister;
     }
 
     public override PowerType Type => PowerType.Debuff;
@@ -46,6 +48,12 @@ public sealed class TwisterStoredDamagePower : KnowledgeDemonPowerModel
     {
         AssertMutable();
         GetInternalData<BankingData>().BankingThisTurn = true;
+    }
+
+    public void MarkCreatesUpgradedTwister()
+    {
+        AssertMutable();
+        GetInternalData<BankingData>().CreateUpgradedTwister = true;
     }
 
     public override Task AfterApplied(Creature? applier, CardModel? cardSource)
@@ -121,6 +129,11 @@ public sealed class TwisterStoredDamagePower : KnowledgeDemonPowerModel
 
         Flash();
         var twister = combatState.CreateCard<Twister>(player);
+        if (GetInternalData<BankingData>().CreateUpgradedTwister && !twister.IsUpgraded)
+        {
+            CardCmd.Upgrade(twister, CardPreviewStyle.None);
+        }
+
         twister.SetStoredDamage(storedDamage);
         await BookLibraryCmd.RecordToLibrary(choiceContext, player, twister, 1);
         await PowerCmd.Remove(this);

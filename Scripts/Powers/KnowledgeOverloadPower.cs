@@ -12,7 +12,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterPower]
 public sealed class KnowledgeOverloadPower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
 {
-    public const int LibraryOverflowThreshold = 4;
+    public const int LibraryOverflowThreshold = 5;
 
     public override PowerType Type => PowerType.Buff;
 

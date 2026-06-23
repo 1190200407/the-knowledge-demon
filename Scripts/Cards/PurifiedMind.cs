@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -20,9 +21,15 @@ public sealed class PurifiedMind : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        CardKeyword.Exhaust,
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+    ];
+
     public override bool GainsBlock => true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(5m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];
 
     public PurifiedMind()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -31,7 +38,7 @@ public sealed class PurifiedMind : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
+        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibraryAndHand(
             choiceContext,
             Owner,
             new CardSelectorPrefs(SelectionScreenPrompt, 1),

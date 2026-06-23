@@ -23,7 +23,7 @@ public sealed class ButterflyEffect : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.FromCard<Twister>()];
+        [HoverTipFactory.FromCard<Twister>(base.IsUpgraded)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5m, ValueProp.Move)];
 
@@ -51,7 +51,12 @@ public sealed class ButterflyEffect : KnowledgeDemonCardModel
                 this);
         }
 
-        cardPlay.Target.GetPower<TwisterStoredDamagePower>()?.EnableBankingThisTurn();
+        var storedDamagePower = cardPlay.Target.GetPower<TwisterStoredDamagePower>();
+        storedDamagePower?.EnableBankingThisTurn();
+        if (IsUpgraded)
+        {
+            storedDamagePower?.MarkCreatesUpgradedTwister();
+        }
     }
 
     protected override void OnUpgrade()
