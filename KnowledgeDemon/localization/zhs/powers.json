@@ -28,5 +28,10 @@
     "KNOWLEDGE_DEMON_POWER_ENLIGHTENMENT_ATTAINED_UPGRADED_POWER.smartDescription": "战斗胜利时，从[gold]血祭+[/gold]、[gold]敛财+[/gold]、[gold]蜕形+[/gold]中选择一项执行。",
     "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.title": "魔术戏法",
     "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.description": "你每变化1张牌，对随机敌人造成伤害。",
-    "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.smartDescription": "你每[gold]变化[/gold]1张牌，对随机敌人造成[blue]{Amount}[/blue]点伤害。"
+    "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.smartDescription": "你每[gold]变化[/gold]1张牌，对随机敌人造成[blue]{Amount}[/blue]点伤害。",
+    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.title": "拟态",
+    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.description": "回合结束后，你的卡牌奖励改为所选颜色。",
+    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "回合结束后，你的[gold]卡牌奖励[/gold]改为所选颜色。",
+    "KNOWLEDGE_DEMON_POWER_RETAIN_HAND_AND_LIBRARY_POWER.title": "谋定后动",
+    "KNOWLEDGE_DEMON_POWER_RETAIN_HAND_AND_LIBRARY_POWER.description": "本回合结束时，保留你的手牌和藏书库。"
 }

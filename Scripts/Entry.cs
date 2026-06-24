@@ -72,6 +72,7 @@ public class Entry
 
 		EnlightenmentAttainedRewardRegistration.Register();
 		RitsuLibFramework.RegisterArchaicToothTranscendenceMapping<MakeAChoice, ItIsDone>(ModId);
+		RitsuLibFramework.RegisterTouchOfOrobasRefinementMapping<CognitionVesselRelic, KnowledgeHostRelic>(ModId);
 		ModCardTransformRegistry.For(ModId).Register(
 			"knowledge_demon_transform_events",
 			KnowledgeDemonHook.AfterCardTransformed);

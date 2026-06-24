@@ -392,6 +392,28 @@ public static class BookLibraryCmd
     #endregion
 
     #region Remove
+    public static async Task SwapHandAndLibrary(Player player)
+    {
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
+        if (libraryPile is null)
+        {
+            return;
+        }
+
+        var handCards = PileType.Hand.GetPile(player).Cards.ToList();
+        var libraryCards = libraryPile.Cards.ToList();
+
+        foreach (var card in handCards)
+        {
+            await CardPileCmd.Add(card, BookLibraryUtility.PileType);
+        }
+
+        foreach (var card in libraryCards)
+        {
+            await CardPileCmd.Add(card, PileType.Hand);
+        }
+    }
+
     private static async Task TryVanishFromLibrary(CardModel card)
     {
         if (card.HasBeenRemovedFromState)

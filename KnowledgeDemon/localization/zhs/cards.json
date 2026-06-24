@@ -30,6 +30,8 @@
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.title": "记忆收束",
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.description": "获得{Block:diff()}点[gold]格挡[/gold]。[gold]具象[/gold]{Materialize}。选择的2张牌都是攻击牌或都是技能牌，则将其打出并消耗。",
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_PLAN_THEN_ACT.title": "谋定后动",
+    "KNOWLEDGE_DEMON_CARD_PLAN_THEN_ACT.description": "造成{Damage:diff()}点伤害。本回合结束时，保留[gold]手牌[/gold]和[gold]藏书库[/gold]。下回合获得1点[gold]能量[/gold]。",
     "KNOWLEDGE_DEMON_CARD_PANDORA.title": "潘多拉",
     "KNOWLEDGE_DEMON_CARD_PANDORA.description": "造成{Damage:diff()}点伤害{Repeat:diff()}次。此牌在[gold]藏书库[/gold]中时，你每打出1张攻击牌将其[gold]消耗[/gold]，并将其伤害添加到此牌中。",
     "KNOWLEDGE_DEMON_CARD_TOUCH_GOLD.title": "点石成金",
@@ -106,5 +108,12 @@
     "KNOWLEDGE_DEMON_CARD_ILLUSION.description": "回合结束时，这张牌在[gold]手牌[/gold]或[gold]藏书库[/gold]时，将一张复制品加入手牌。",
     "KNOWLEDGE_DEMON_CARD_CAUSALITY_INVERSION.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
     "KNOWLEDGE_DEMON_CARD_NIRVANA.title": "寂灭",
-    "KNOWLEDGE_DEMON_CARD_NIRVANA.description": "造成{Damage:diff()}点伤害。"
+    "KNOWLEDGE_DEMON_CARD_NIRVANA.description": "造成{Damage:diff()}点伤害。",
+    "KNOWLEDGE_DEMON_CARD_MIMICRY.title": "拟态",
+    "KNOWLEDGE_DEMON_CARD_MIMICRY.description": "从3个其他随机角色中，选择1个角色。回合结束时，将卡牌奖励替换成角色对应的颜色。",
+    "KNOWLEDGE_DEMON_CARD_MIMICRY.selectionScreenPrompt": "选择1个颜色作为卡牌奖励。",
+    "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.title": "意识转移",
+    "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.description": "获得{Amount:diff()}点[gold]能量[/gold]。将你的[gold]手牌[/gold]和[gold]藏书库[/gold]中的牌交换。",
+    "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.title": "终解",
+    "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.description": "本回合每生成1张卡，此牌造成{Damage:diff()}点伤害。{InCombat:\n（攻击{CalculatedHits:diff()}次）|}"
 }

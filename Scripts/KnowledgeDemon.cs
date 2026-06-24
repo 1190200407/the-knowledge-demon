@@ -49,6 +49,7 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
                 // 对于图片，只要是godot支持的格式都可以，例如png,jpg,svg等等，之后不再说明
                 // 人物头像路径。自适应大小。
                 IconTexturePath: "res://KnowledgeDemon/images/charui/knowledge_demon_boss.png",
+                IconOutlineTexturePath: "res://KnowledgeDemon/images/charui/knowledge_demon_boss_outline.png",
                 // 游戏左上角头像、角色统计页头像、每日挑战角色头像。这个是场景而不是图片。参考下方附赠资源搭建。
                 IconPath: "res://KnowledgeDemon/scenes/knowledge_demon_icon.tscn"
                 // 人物选择背景。
