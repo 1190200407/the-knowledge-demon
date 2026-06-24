@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
@@ -330,6 +331,14 @@ public static class BookLibraryCmd
         if (result.Chosen != null)
         {
             KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
+
+            if (ShouldAutoPlayOtherOptions(result.Chosen))
+            {
+                await ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);
+                await TryVanishFromLibrary(result.Chosen);
+                return;
+            }
+
             await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
             await TryVanishFromLibrary(result.Chosen);
         }
@@ -386,9 +395,19 @@ public static class BookLibraryCmd
         }
 
         _ = card.CanPlay(out var reason, out _);
+        if (card.Owner?.Creature.GetPower<VariantPower>() is not null
+            && reason.HasFlag(UnplayableReason.HasUnplayableKeyword))
+        {
+            return true;
+        }
+
         var resourceOnlyReasons = UnplayableReason.EnergyCostTooHigh | UnplayableReason.StarCostTooHigh;
         return (reason & ~resourceOnlyReasons) == UnplayableReason.None;
     }
+
+    private static bool ShouldAutoPlayOtherOptions(CardModel chosen) =>
+        chosen.Keywords.Contains(CardKeyword.Unplayable)
+        && chosen.Owner?.Creature.GetPower<VariantPower>() is not null;
     #endregion
 
     #region Remove
