@@ -110,7 +110,7 @@
     "KNOWLEDGE_DEMON_CARD_NIRVANA.title": "寂灭",
     "KNOWLEDGE_DEMON_CARD_NIRVANA.description": "造成{Damage:diff()}点伤害。",
     "KNOWLEDGE_DEMON_CARD_MIMICRY.title": "拟态",
-    "KNOWLEDGE_DEMON_CARD_MIMICRY.description": "从3个其他随机角色中，选择1个角色。回合结束时，将卡牌奖励替换成角色对应的颜色。",
+    "KNOWLEDGE_DEMON_CARD_MIMICRY.description": "从3个其他随机角色中，选择1个角色。战斗结束时，将卡牌奖励替换成角色对应的颜色。",
     "KNOWLEDGE_DEMON_CARD_MIMICRY.selectionScreenPrompt": "选择1个颜色作为卡牌奖励。",
     "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.title": "意识转移",
     "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.description": "获得{Amount:diff()}点[gold]能量[/gold]。将你的[gold]手牌[/gold]和[gold]藏书库[/gold]中的牌交换。",

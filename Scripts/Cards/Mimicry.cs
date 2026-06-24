@@ -52,12 +52,11 @@ public sealed class Mimicry : KnowledgeDemonCardModel
             return;
         }
 
-        var chosen = (await CardSelectCmd.FromSimpleGrid(
+        var chosen = await CardSelectCmd.FromChooseACardScreen(
             choiceContext,
             optionCards,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1)))
-            .FirstOrDefault();
+            canSkip: false);
         if (chosen is null)
         {
             return;
@@ -70,6 +69,7 @@ public sealed class Mimicry : KnowledgeDemonCardModel
             return;
         }
 
+        MimicryRewardSingleton.SetChosenCharacter(Owner, chosenCharacter);
         await PowerCmd.Remove(Owner.Creature.GetPower<MimicryPower>());
 
         var power = (MimicryPower)ModelDb.Power<MimicryPower>().ToMutable();

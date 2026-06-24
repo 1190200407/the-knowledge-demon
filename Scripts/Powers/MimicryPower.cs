@@ -1,13 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -17,11 +13,12 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class MimicryPower : KnowledgeDemonPowerModel
 {
     private ModelId? _chosenCharacterId;
-    private bool _isArmed;
 
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Single;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter")];
 
     [SavedProperty]
     public ModelId ChosenCharacterId
@@ -35,45 +32,26 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
         }
     }
 
-    [SavedProperty]
-    public bool IsArmed
-    {
-        get => _isArmed;
-        set
-        {
-            AssertMutable();
-            _isArmed = value;
-        }
-    }
-
     public void SetChosenCharacter(CharacterModel character)
     {
         ChosenCharacterId = character.Id;
+        SyncChosenCharacterVar();
     }
 
-    public override Task AfterSideTurnEnd(
-        PlayerChoiceContext choiceContext,
-        CombatSide side,
-        IEnumerable<Creature> participants)
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
-        if (side == CombatSide.Player && participants.Contains(Owner))
-        {
-            IsArmed = true;
-        }
-
+        SyncChosenCharacterVar();
         return Task.CompletedTask;
     }
 
-    public override CardCreationOptions ModifyCardRewardCreationOptions(Player player, CardCreationOptions options)
+    private void SyncChosenCharacterVar()
     {
-        if (player != Owner.Player || !IsArmed || options.Source != CardCreationSource.Encounter)
+        if (_chosenCharacterId is null)
         {
-            return options;
+            return;
         }
 
         var chosenCharacter = ModelDb.GetById<CharacterModel>(ChosenCharacterId);
-        return options
-            .WithCardPools([chosenCharacter.CardPool], options.CardPoolFilter)
-            .WithFlags(CardCreationFlags.NoCardPoolModifications);
+        ((StringVar)DynamicVars["ChosenCharacter"]).StringValue = chosenCharacter.Title.GetFormattedText();
     }
 }
