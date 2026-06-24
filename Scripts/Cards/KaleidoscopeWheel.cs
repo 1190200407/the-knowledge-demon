@@ -24,9 +24,6 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
 
     private HashSet<ModelId> _seen = new();
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
-
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(20m, ValueProp.Move)];
 
     protected override bool IsPlayable => HandAllCardsHaveDistinctIds(Owner);

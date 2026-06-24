@@ -6,53 +6,56 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
-using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class Transcribe : KnowledgeDemonCardModel
+public sealed class ShiftPerspective : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
+        new BlockVar(7m, ValueProp.Move),
+        new CardsVar(1),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new RecordVar(2)];
-
-    public Transcribe()
+    public ShiftPerspective()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
+        var count = DynamicVars.Cards.IntValue;
+        await CardPileCmd.Draw(choiceContext, count, Owner);
+
         var selection = (await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1),
+            new CardSelectorPrefs(SelectionScreenPrompt, count),
             null,
-            this)).FirstOrDefault();
+            this)).ToList();
 
-        if (selection != null)
+        if (selection.Count > 0)
         {
-            await BookLibraryCmd.RecordToLibrary(
-                choiceContext,
-                Owner,
-                selection,
-                DynamicVars[RecordVar.DefaultName].IntValue);
+            await CardCmd.Discard(choiceContext, selection);
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[RecordVar.DefaultName].UpgradeValueBy(1m);
+        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

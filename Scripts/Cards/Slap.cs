@@ -18,13 +18,13 @@ public sealed class Slap : KnowledgeDemonCardModel
 {
     private const int energyCost = 2;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Rare;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         ModCardVars.Computed("Repeat", 1m, card => GetHitCount(card)),
     ];
 
