@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class ShorthandNotebook : KnowledgeDemonCardModel
+public sealed class Deduction : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
@@ -27,40 +25,23 @@ public sealed class ShorthandNotebook : KnowledgeDemonCardModel
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
     ];
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        KnowledgeDemonKeywordHoverTips.FromRecord(),
-    ];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
 
-    public ShorthandNotebook()
+    public Deduction()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var handCards = PileType.Hand.GetPile(Owner).Cards.ToList();
-        if (handCards.Count == 0)
-        {
-            return;
-        }
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner!);
 
-        CardModel? selection;
-        if (IsUpgraded)
-        {
-            selection = (await CardSelectCmd.FromHand(
-                choiceContext,
-                Owner,
-                new CardSelectorPrefs(SelectionScreenPrompt, 1),
-                null,
-                this)).FirstOrDefault();
-        }
-        else
-        {
-            selection = handCards
-                .StableShuffle(Owner.RunState.Rng.Shuffle)
-                .FirstOrDefault();
-        }
+        var selection = (await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1),
+            null,
+            this)).FirstOrDefault();
 
         if (selection is null)
         {
@@ -68,10 +49,11 @@ public sealed class ShorthandNotebook : KnowledgeDemonCardModel
         }
 
         await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, selection, 1);
-        await CardCmd.Exhaust(choiceContext, selection);
+        await CardCmd.Discard(choiceContext, [selection]);
     }
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }
