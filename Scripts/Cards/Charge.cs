@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -26,7 +25,6 @@ public sealed class Charge : KnowledgeDemonCardModel
     private const bool shouldShowInCardLibrary = true;
     private const int requiredRetains = 3;
     private const string RemainingRetainsVarName = "RemainingRetains";
-    private const string AppliedDexterityVarName = "AppliedDexterity";
 
     private int _retainedCount;
 
@@ -45,7 +43,6 @@ public sealed class Charge : KnowledgeDemonCardModel
     [
         new DamageVar(20m, ValueProp.Unpowered),
         new DynamicVar(RemainingRetainsVarName, requiredRetains),
-        new DynamicVar(AppliedDexterityVarName, 0m),
     ];
 
     private int RetainedCount
@@ -73,15 +70,7 @@ public sealed class Charge : KnowledgeDemonCardModel
     {
         _ = flushedCards;
 
-        if (player != Owner)
-        {
-            await EnsureDexterityState(choiceContext);
-            return;
-        }
-
-        await EnsureDexterityState(choiceContext);
-
-        if (!retainedCards.Contains(this))
+        if (player != Owner || !retainedCards.Contains(this))
         {
             return;
         }
@@ -119,22 +108,6 @@ public sealed class Charge : KnowledgeDemonCardModel
         DynamicVars.Damage.UpgradeValueBy(10m);
     }
 
-    public override async Task AfterCardChangedPiles(
-        CardModel card,
-        PileType oldPileType,
-        AbstractModel? clonedBy)
-    {
-        _ = oldPileType;
-        _ = clonedBy;
-
-        if (card != this || Owner is null)
-        {
-            return;
-        }
-
-        await EnsureDexterityState(new ThrowingPlayerChoiceContext());
-    }
-
     private void SyncRemainingRetains()
     {
         DynamicVars[RemainingRetainsVarName].BaseValue = Math.Max(0, requiredRetains - RetainedCount);
@@ -142,31 +115,6 @@ public sealed class Charge : KnowledgeDemonCardModel
         if (Pile?.Type == PileType.Hand)
         {
             NCard.FindOnTable(this)?.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
-        }
-    }
-
-    private async Task EnsureDexterityState(PlayerChoiceContext choiceContext)
-    {
-        if (Owner is null)
-        {
-            return;
-        }
-
-        var shouldApply = Pile is { } pile
-            && (pile.Type == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(pile.Type));
-        var applied = DynamicVars[AppliedDexterityVarName].IntValue;
-
-        if (shouldApply && applied == 0)
-        {
-            await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-            DynamicVars[AppliedDexterityVarName].BaseValue = 1m;
-            return;
-        }
-
-        if (!shouldApply && applied > 0)
-        {
-            await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, -1m, Owner.Creature, this);
-            DynamicVars[AppliedDexterityVarName].BaseValue = 0m;
         }
     }
 }
