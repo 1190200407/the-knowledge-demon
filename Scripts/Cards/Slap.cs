@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -24,7 +25,7 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8m, ValueProp.Move),
+        new DamageVar(6m, ValueProp.Move),
         ModCardVars.Computed("Repeat", 1m, card => GetHitCount(card)),
     ];
 
@@ -35,12 +36,11 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount((int)GetHitCount(this))
                 .FromCard(this)
-                .Targeting(cardPlay.Target),
+                .TargetingRandomOpponents(CombatState!),
             Owner.Character,
             onlyPlayAnimOnce: true)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -54,14 +54,14 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     private static decimal GetHitCount(CardModel? source)
     {
-        if (source?.Owner?.PlayerCombatState is null)
+        if (source is null)
         {
             return 1;
         }
 
-        return 1 + source.Owner.PlayerCombatState.AllCards.Count(card =>
-            card != source
-            && card.Owner == source.Owner
-            && card.Id == source.Id);
+        return 1 + CombatManager.Instance.History.CardPlaysFinished.Count(entry =>
+            entry.HappenedThisTurn(source.CombatState)
+            && entry.CardPlay.Card.Owner == source.Owner
+            && entry.CardPlay.Card.Id == source.Id);
     }
 }

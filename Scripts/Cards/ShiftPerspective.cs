@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -14,17 +11,14 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class ShiftPerspective : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 0;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override bool GainsBlock => true;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(7m, ValueProp.Move),
         new CardsVar(1),
     ];
 
@@ -35,27 +29,19 @@ public sealed class ShiftPerspective : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-
         var count = DynamicVars.Cards.IntValue;
         await CardPileCmd.Draw(choiceContext, count, Owner);
 
-        var selection = (await CardSelectCmd.FromHand(
+        await BookLibraryCmd.DiscardFromLibraryAndHand(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, count),
-            null,
-            this)).ToList();
-
-        if (selection.Count > 0)
-        {
-            await CardCmd.Discard(choiceContext, selection);
-        }
+            count,
+            SelectionScreenPrompt,
+            this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
         DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

@@ -18,7 +18,6 @@ public sealed class Eureka : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.None;
     private const bool shouldShowInCardLibrary = true;
-    private const string EnergyVarName = "Amount";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -29,7 +28,7 @@ public sealed class Eureka : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DynamicVar(EnergyVarName, 1m),
+        new EnergyVar(1),
         new CardsVar(1),
     ];
 
@@ -50,13 +49,13 @@ public sealed class Eureka : KnowledgeDemonCardModel
             return;
         }
 
-        await PlayerCmd.GainEnergy(DynamicVars[EnergyVarName].BaseValue, Owner);
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
         await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), DynamicVars.Cards.BaseValue, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[EnergyVarName].UpgradeValueBy(1m);
+        DynamicVars.Energy.UpgradeValueBy(1m);
         DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

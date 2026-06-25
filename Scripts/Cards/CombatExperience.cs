@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using STS2RitsuLib.Cards.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -22,13 +21,12 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
-    private const string DamageVarName = "Damage";
-    private const string BonusVarName = "Amount";
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        ModCardVars.ComputedDamage(DamageVarName, 4m, CalculateDamage, ValueProp.Move),
-        new DynamicVar(BonusVarName, 3m),
+        new CalculationBaseVar(4m),
+        new ExtraDamageVar(3m),
+        new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateAttackCardCount),
     ];
 
     public CombatExperience()
@@ -40,7 +38,7 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -49,22 +47,14 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars[BonusVarName].UpgradeValueBy(1m);
+        DynamicVars.CalculationBase.UpgradeValueBy(2m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 
-    private decimal CalculateDamage(CardModel? card, Creature? target)
+    private static decimal CalculateAttackCardCount(CardModel card, Creature? target)
     {
         _ = target;
-        if (card is null)
-        {
-            return 0m;
-        }
-
-        var bonusPerAttack = card.DynamicVars[BonusVarName].BaseValue;
-        var attackCardCount = BookLibraryUtility.TryGetLibraryPile(card.Owner)?.Cards.Count(static libraryCard =>
+        return BookLibraryUtility.TryGetLibraryPile(card.Owner)?.Cards.Count(static libraryCard =>
             libraryCard.Type == CardType.Attack) ?? 0;
-
-        return card.DynamicVars.Damage.BaseValue + attackCardCount * bonusPerAttack;
     }
 }

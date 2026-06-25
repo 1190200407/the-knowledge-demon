@@ -30,6 +30,7 @@ public sealed class Zazen : KnowledgeDemonCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(12m, ValueProp.Move),
+        new EnergyVar(1),
     ];
 
     public Zazen()
@@ -44,7 +45,7 @@ public sealed class Zazen : KnowledgeDemonCardModel
         await PowerCmd.Apply<EnergyNextTurnPower>(
             choiceContext,
             Owner.Creature,
-            1m,
+            DynamicVars.Energy.IntValue,
             Owner.Creature,
             this);
     }

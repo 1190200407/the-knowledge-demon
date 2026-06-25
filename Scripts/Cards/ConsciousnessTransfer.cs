@@ -16,12 +16,11 @@ public sealed class ConsciousnessTransfer : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
-    private const string EnergyVarName = "Amount";
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DynamicVar(EnergyVarName, 1m)];
+        [new EnergyVar(1)];
 
     public ConsciousnessTransfer()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -30,12 +29,12 @@ public sealed class ConsciousnessTransfer : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PlayerCmd.GainEnergy(DynamicVars[EnergyVarName].BaseValue, Owner);
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
         await BookLibraryCmd.SwapHandAndLibrary(Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[EnergyVarName].UpgradeValueBy(1m);
+        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 }

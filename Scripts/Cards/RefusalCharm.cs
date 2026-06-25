@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -56,10 +57,21 @@ public sealed class RefusalCharm : KnowledgeDemonCardModel, IKnowledgeDemonEvent
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
+        if (cardPlay.Target is not null)
+        {
+            await PowerCmd.Apply<WeakPower>(
+                choiceContext,
+                cardPlay.Target,
+                DynamicVars.Weak.BaseValue,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Weak.UpgradeValueBy(1m);
     }
 }

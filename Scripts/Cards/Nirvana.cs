@@ -19,8 +19,6 @@ public sealed class Nirvana : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
-
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(30m, ValueProp.Move)];
 
     public Nirvana()
@@ -39,6 +37,11 @@ public sealed class Nirvana : KnowledgeDemonCardModel
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_heavy_blunt")
             .Execute(choiceContext);
+
+        if (!Keywords.Contains(CardKeyword.Sly))
+        {
+            CardCmd.ApplyKeyword(this, CardKeyword.Sly);
+        }
     }
 
     protected override void OnUpgrade()

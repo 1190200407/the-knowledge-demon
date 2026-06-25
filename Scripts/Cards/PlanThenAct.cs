@@ -27,7 +27,11 @@ public sealed class PlanThenAct : KnowledgeDemonCardModel
         HoverTipFactory.FromKeyword(CardKeyword.Retain),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(7m, ValueProp.Move),
+        new EnergyVar(1),
+    ];
 
     public PlanThenAct()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -53,7 +57,7 @@ public sealed class PlanThenAct : KnowledgeDemonCardModel
         await PowerCmd.Apply<EnergyNextTurnPower>(
             choiceContext,
             Owner.Creature,
-            1m,
+            DynamicVars.Energy.IntValue,
             Owner.Creature,
             this);
     }

@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using STS2RitsuLib.Cards.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -22,13 +21,12 @@ public sealed class Dualism : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
-    private const string DamageVarName = "Damage";
-    private const string BonusVarName = "Amount";
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        ModCardVars.ComputedDamage(DamageVarName, 5m, CalculateDamage, ValueProp.Move),
-        new DynamicVar(BonusVarName, 4m),
+        new CalculationBaseVar(1m),
+        new ExtraDamageVar(4m),
+        new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateUniqueCount),
     ];
 
     public Dualism()
@@ -40,7 +38,7 @@ public sealed class Dualism : KnowledgeDemonCardModel
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -49,20 +47,12 @@ public sealed class Dualism : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars[BonusVarName].UpgradeValueBy(1m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 
-    private decimal CalculateDamage(CardModel? card, Creature? target)
+    private static decimal CalculateUniqueCount(CardModel card, Creature? target)
     {
         _ = target;
-        if (card?.Owner is not { } player)
-        {
-            return 0m;
-        }
-
-        var bonusPerUnique = card.DynamicVars[BonusVarName].BaseValue;
-        var uniqueCount = PileType.Deck.GetPile(player).Cards.Count(KnowledgeDemonUniqueUtility.IsUnique);
-        return card.DynamicVars.Damage.BaseValue + uniqueCount * bonusPerUnique;
+        return PileType.Deck.GetPile(card.Owner).Cards.Count(KnowledgeDemonUniqueUtility.IsUnique);
     }
 }

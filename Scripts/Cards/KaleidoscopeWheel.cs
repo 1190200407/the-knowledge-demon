@@ -19,12 +19,12 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
     private const int energyCost = 2;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Uncommon;
-    private const TargetType targetType = TargetType.AnyEnemy;
+    private const TargetType targetType = TargetType.AllEnemies;
     private const bool shouldShowInCardLibrary = true;
 
     private HashSet<ModelId> _seen = new();
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(20m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(17m, ValueProp.Move)];
 
     protected override bool IsPlayable => HandAllCardsHaveDistinctIds(Owner);
 
@@ -52,18 +52,18 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .FromCard(this)
-                .Targeting(cardPlay.Target),
+                .TargetingAllOpponents(CombatState!),
             Owner.Character)
             .WithHitFx("vfx/vfx_attack_blunt")
+            .SpawningHitVfxOnEachCreature()
             .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(10m);
+        DynamicVars.Damage.UpgradeValueBy(8m);
     }
 }

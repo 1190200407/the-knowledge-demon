@@ -29,7 +29,7 @@ public sealed class PurifiedMind : KnowledgeDemonCardModel
 
     public override bool GainsBlock => true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(5m, ValueProp.Move)];
 
     public PurifiedMind()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
