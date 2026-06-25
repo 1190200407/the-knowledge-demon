@@ -20,7 +20,7 @@ public sealed class RefusalCharm : KnowledgeDemonCardModel, IKnowledgeDemonEvent
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Common;
-    private const TargetType targetType = TargetType.Self;
+    private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
     public override bool GainsBlock => true;
@@ -31,7 +31,10 @@ public sealed class RefusalCharm : KnowledgeDemonCardModel, IKnowledgeDemonEvent
         HoverTipFactory.FromCard<LavishTakingCharm>(),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(6m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [
+        new BlockVar(6m, ValueProp.Move),
+        new PowerVar<WeakPower>(1m),
+    ];
 
     public RefusalCharm()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

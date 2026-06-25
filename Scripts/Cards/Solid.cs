@@ -23,7 +23,6 @@ public sealed class Solid : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.None;
     private const bool shouldShowInCardLibrary = true;
-    private const string AppliedDexterityVarName = "AppliedDexterity";
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
@@ -37,8 +36,7 @@ public sealed class Solid : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DexterityPower>(1m),
-        new DynamicVar(AppliedDexterityVarName, 0m),
+        new PowerVar<DexterityPower>(1m)
     ];
 
     public Solid()
@@ -61,9 +59,8 @@ public sealed class Solid : KnowledgeDemonCardModel
 
         var inHandOrLibrary = Pile is { } pile
             && (pile.Type == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(pile.Type));
-        var applied = DynamicVars[AppliedDexterityVarName].IntValue;
 
-        if (inHandOrLibrary && applied == 0)
+        if (inHandOrLibrary)
         {
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
@@ -71,9 +68,8 @@ public sealed class Solid : KnowledgeDemonCardModel
                 1m,
                 Owner.Creature,
                 this);
-            DynamicVars[AppliedDexterityVarName].BaseValue = 1m;
         }
-        else if (!inHandOrLibrary && applied > 0)
+        else if (!inHandOrLibrary)
         {
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
@@ -81,7 +77,6 @@ public sealed class Solid : KnowledgeDemonCardModel
                 -1m,
                 Owner.Creature,
                 this);
-            DynamicVars[AppliedDexterityVarName].BaseValue = 0m;
         }
     }
 }

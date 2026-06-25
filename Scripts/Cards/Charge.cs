@@ -42,6 +42,7 @@ public sealed class Charge : KnowledgeDemonCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(20m, ValueProp.Unpowered),
+        new PowerVar<StrengthPower>(1m),
         new DynamicVar(RemainingRetainsVarName, requiredRetains),
     ];
 
@@ -80,7 +81,7 @@ public sealed class Charge : KnowledgeDemonCardModel
         await PowerCmd.Apply<StrengthPower>(
             choiceContext,
             Owner.Creature,
-            1m,
+            DynamicVars["StrengthPower"].BaseValue,
             Owner.Creature,
             this);
 

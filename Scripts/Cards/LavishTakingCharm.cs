@@ -30,7 +30,10 @@ public sealed class LavishTakingCharm : KnowledgeDemonCardModel, IKnowledgeDemon
         HoverTipFactory.FromCard<RefusalCharm>(),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [
+        new DamageVar(7m, ValueProp.Move),
+        new PowerVar<VulnerablePower>(1m),
+    ];
 
     public LavishTakingCharm()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
