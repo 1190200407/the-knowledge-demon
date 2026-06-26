@@ -18,6 +18,9 @@ public static class KnowledgeDemonKeyword
     public static readonly string Choose =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "choose");
 
+    public static readonly string KnowledgeOverload =
+        ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "knowledge_overload");
+
     public static readonly string Unique =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "unique");
 }

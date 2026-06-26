@@ -1,4 +1,4 @@
-{
+﻿{
     "KNOWLEDGE_DEMON_CARD_STRIKE_KNOWLEDGE_DEMON.title": "打击",
     "KNOWLEDGE_DEMON_CARD_STRIKE_KNOWLEDGE_DEMON.description": "造成{Damage:diff()}点伤害。",
     "KNOWLEDGE_DEMON_CARD_MAKE_A_CHOICE.title": "做出选择",
@@ -45,8 +45,6 @@
     "KNOWLEDGE_DEMON_CARD_DEJA_VU.title": "即视感",
     "KNOWLEDGE_DEMON_CARD_DEJA_VU.description": "[gold]具象[/gold]{Materialize}。被这张牌具象的牌获得[gold]奇巧[/gold]。",
     "KNOWLEDGE_DEMON_CARD_DEJA_VU.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
-    "KNOWLEDGE_DEMON_CARD_KNOWLEDGE_OVERLOAD.title": "知识过载",
-    "KNOWLEDGE_DEMON_CARD_KNOWLEDGE_OVERLOAD.description": "每当你的[gold]藏书库[/gold]中的牌超过5张时，[gold]抉择[/gold]1次。",
     "KNOWLEDGE_DEMON_CARD_AMBUSH_STRIKE.title": "蛰伏打击",
     "KNOWLEDGE_DEMON_CARD_AMBUSH_STRIKE.description": "造成{Damage:diff()}点伤害。如果此牌被自动打出，则改为对所有敌人造成伤害。",
     "KNOWLEDGE_DEMON_CARD_PURIFIED_MIND.title": "明心净念",

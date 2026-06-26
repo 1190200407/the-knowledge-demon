@@ -1,7 +1,4 @@
 {
-    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.title": "知识过载",
-    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.description": "每当你的藏书库中的牌超过4张时，你抉择1次。",
-    "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_OVERLOAD_POWER.smartDescription": "每当你的[gold]藏书库[/gold]中的牌超过5张时，[gold]抉择[/gold]1次。",
     "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.title": "知识堡垒",
     "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.description": "回合结束时，你的藏书库中每有1张牌，你获得格挡。",
     "KNOWLEDGE_DEMON_POWER_KNOWLEDGE_FORTRESS_POWER.smartDescription": "回合结束时，你的[gold]藏书库[/gold]中每有1张牌，你获得[blue]{Amount}[/blue]点[gold]格挡[/gold]。",

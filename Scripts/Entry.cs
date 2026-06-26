@@ -64,6 +64,7 @@ public class Entry
 			iconPath: null,
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.None,
 			includeInCardHoverTip: false);
+		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace("knowledge_overload");
 		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace(
 			"unique",
 			iconPath: null,

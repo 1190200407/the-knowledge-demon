@@ -69,7 +69,10 @@ public static class BookLibraryCmd
     private static bool RecordTemplatesMatch(CardModel source, CardModel finalTemplate) =>
         source.Id == finalTemplate.Id && source.IsUpgraded == finalTemplate.IsUpgraded;
 
-    public static async Task RecordOnEnteredDiscardPile(CardModel card, PileType oldPileType)
+    public static async Task RecordOnEnteredDiscardPile(
+        PlayerChoiceContext? choiceContext,
+        CardModel card,
+        PileType oldPileType)
     {
         if (oldPileType != PileType.Play
             || card.Pile is not { Type: PileType.Discard }
@@ -80,7 +83,7 @@ public static class BookLibraryCmd
             return;
         }
 
-        await RecordToLibrary(null, player, card, 1);
+        await RecordToLibrary(choiceContext, player, card, 1);
     }
 
     private static bool WasManuallyPlayedToDiscard(CardModel card)
@@ -441,6 +444,32 @@ public static class BookLibraryCmd
         }
 
         await CardPileCmd.RemoveFromCombat(libraryPile.Cards.ToList(), skipVisuals: false);
+    }
+
+    public static async Task TriggerKnowledgeOverload(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        AbstractModel? source = null)
+    {
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
+        if (libraryPile is null || libraryPile.Cards.Count == 0)
+        {
+            return;
+        }
+
+        if (player.Character is KnowledgeDemon)
+        {
+            await CreatureCmd.TriggerAnim(
+                player.Creature,
+                "superAttack",
+                KnowledgeDemon.GetSuperAttackDelayIfApplicable(player.Character));
+        }
+        while (libraryPile.Cards.Count > 0 && !CombatManager.Instance.IsOverOrEnding)
+        {
+            await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
+        }
+
+        PlayChooseDonePresentation(player);
     }
     #endregion
 }

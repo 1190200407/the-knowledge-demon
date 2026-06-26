@@ -24,6 +24,8 @@ public sealed class BookLibraryPileSingleton : HookedSingletonModel
         PileType oldPileType,
         AbstractModel? clonedBy)
     {
+        _ = clonedBy;
+
         if (BookLibraryUtility.IsBookLibraryPile(oldPileType))
         {
             BookLibraryUtility.ResetCardTint(card);
@@ -34,6 +36,6 @@ public sealed class BookLibraryPileSingleton : HookedSingletonModel
             BookLibraryUtility.RefreshCardVisual(card);
         }
 
-        await BookLibraryCmd.RecordOnEnteredDiscardPile(card, oldPileType);
+        await BookLibraryCmd.RecordOnEnteredDiscardPile(null, card, oldPileType);
     }
 }

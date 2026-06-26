@@ -1,5 +1,5 @@
 {
     "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.title": "藏书库",
-    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.description": "储存牌的临时复制品。回合结束时消失。",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.description": "储存牌的临时复制品。使用时消失。",
     "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.empty": "藏书库中没有记录。"
 }
