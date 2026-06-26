@@ -15,68 +15,63 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class HiveConsciousness : KnowledgeDemonCardModel, IKnowledgeDemonEventListener
+public sealed class HiveConsciousness : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
-    private const CardType type = CardType.Attack;
+    private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Rare;
-    private const TargetType targetType = TargetType.AnyEnemy;
+    private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move)];
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(5m, ValueProp.Move)];
 
     public HiveConsciousness()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
-    public Task<CardModel> ModifyRecordCardLate(Player player, CardModel sourceCard, CardModel recordTemplate)
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _ = choiceContext;
+
         if (Pile is not { } listenerPile || !BookLibraryUtility.IsBookLibraryPile(listenerPile.Type))
         {
-            return Task.FromResult(recordTemplate);
+            return;
         }
 
-        if (sourceCard.CardScope is null)
+        if (cardPlay.Card.Owner != Owner)
         {
-            return Task.FromResult(recordTemplate);
+            return;
         }
 
-        if (recordTemplate is HiveConsciousness)
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(Owner);
+        if (libraryPile is null || libraryPile.Cards.Count == 0)
         {
-            return Task.FromResult(recordTemplate);
+            return;
         }
 
-        var libraryPile = BookLibraryUtility.PileType.GetPile(player);
-        if (libraryPile is null || !libraryPile.Cards.Any(static c => c is HiveConsciousness))
+        foreach (var libraryCard in libraryPile.Cards.ToList())
         {
-            return Task.FromResult(recordTemplate);
-        }
+            if (libraryCard is HiveConsciousness hive && hive.IsUpgraded == IsUpgraded)
+            {
+                continue;
+            }
 
-        var hive = sourceCard.CardScope.CreateCard<HiveConsciousness>(player);
-        if (recordTemplate.IsUpgraded && !hive.IsUpgraded)
-        {
-            CardCmd.Upgrade(hive, CardPreviewStyle.None);
+            await BookLibraryUtility.TransformCard(libraryCard, CreateClone());
         }
-
-        return Task.FromResult((CardModel)hive);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await CreatureCmd.TriggerAnim(Owner.Creature, "Attack", Owner.Character.AttackAnimDelay);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
-            .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
-            .Execute(choiceContext);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

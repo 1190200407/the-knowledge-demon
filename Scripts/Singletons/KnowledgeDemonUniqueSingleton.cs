@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.TestSupport;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
 
@@ -38,6 +42,7 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
             return false;
         }
 
+        PlayDeckTransformPreviewDeferred(card, resolved);
         newCard = resolved;
         return true;
     }
@@ -47,6 +52,8 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         PileType oldPileType,
         AbstractModel? clonedBy)
     {
+        _ = clonedBy;
+
         if (card.Owner is not { } player || card.CombatState == null)
         {
             return;
@@ -73,9 +80,19 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
             while (TryFindDuplicateUnique(player, preferredDuplicate) is { } duplicate)
             {
                 preferredDuplicate = null;
-                await BookLibraryUtility.TransformToRandom(
-                    duplicate,
-                    player.RunState.Rng.Niche);
+                if (!duplicate.IsTransformable)
+                {
+                    return;
+                }
+
+                var replacement = new CardTransformation(duplicate).GetReplacement(player.RunState.Rng.Niche);
+                if (replacement is null)
+                {
+                    return;
+                }
+
+                replacement = KnowledgeDemonUniqueUtility.CreateStatePreservingReplacement(duplicate, replacement);
+                await BookLibraryUtility.TransformCard(duplicate, replacement);
             }
         }
         finally
@@ -110,5 +127,27 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         }
 
         return null;
+    }
+
+    private static void PlayDeckTransformPreviewDeferred(CardModel original, CardModel replacement)
+    {
+        if (TestMode.IsOn)
+        {
+            return;
+        }
+
+        Callable.From(() =>
+        {
+            if (replacement.Pile?.Type != PileType.Deck || NRun.Instance?.GlobalUi is not { } globalUi)
+            {
+                return;
+            }
+
+            var vfx = NCardTransformVfx.Create(original, replacement, null);
+            if (vfx is not null)
+            {
+                globalUi.CardPreviewContainer.AddChild(vfx);
+            }
+        }).CallDeferred();
     }
 }

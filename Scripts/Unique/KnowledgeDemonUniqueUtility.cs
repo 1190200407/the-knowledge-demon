@@ -1,3 +1,5 @@
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -10,6 +12,7 @@ public static class KnowledgeDemonUniqueUtility
     private const int MaxDeckTransformAttempts = 32;
 
     private static readonly HashSet<ModelId> DuplicateCardIdScratch = new();
+    private static readonly HashSet<CardModel> CombatScopeScratch = new();
 
     private static CardKeyword UniqueKeyword =>
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique);
@@ -34,11 +37,15 @@ public static class KnowledgeDemonUniqueUtility
             return [];
         }
 
-        var cards = combatState.AllCards.ToList();
-        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
-        if (libraryPile is not null)
+        CombatScopeScratch.Clear();
+        var cards = new List<CardModel>();
+
+        foreach (var card in combatState.AllCards)
         {
-            cards.AddRange(libraryPile.Cards);
+            if (CombatScopeScratch.Add(card))
+            {
+                cards.Add(card);
+            }
         }
 
         return cards;
@@ -81,14 +88,16 @@ public static class KnowledgeDemonUniqueUtility
             return second;
         }
 
-        if (ReferenceEquals(firstPile, secondPile))
+        if (firstPile.Type == PileType.Deck && secondPile.Type == PileType.Deck)
         {
             var firstIndex = IndexInPile(firstPile, first);
             var secondIndex = IndexInPile(secondPile, second);
             return secondIndex > firstIndex ? second : first;
         }
 
-        return second;
+        var firstOrder = GetCombatEntryOrder(first);
+        var secondOrder = GetCombatEntryOrder(second);
+        return secondOrder >= firstOrder ? second : first;
     }
 
     public static bool WouldViolateDeckUniqueRule(Player player, CardModel candidate, CardModel? replaced = null) =>
@@ -112,24 +121,36 @@ public static class KnowledgeDemonUniqueUtility
         {
             if (!WouldViolateDeckUniqueRule(player, candidate))
             {
-                return candidate;
+                return CreateStatePreservingReplacement(card, candidate);
             }
 
             if (!candidate.IsTransformable)
             {
-                return candidate;
+                return CreateStatePreservingReplacement(card, candidate);
             }
 
             var replacement = new CardTransformation(candidate).GetReplacement(rng);
             if (replacement == null)
             {
-                return candidate;
+                return CreateStatePreservingReplacement(card, candidate);
             }
 
             candidate = replacement;
         }
 
-        return candidate;
+        return CreateStatePreservingReplacement(card, candidate);
+    }
+
+    public static CardModel CreateStatePreservingReplacement(CardModel source, CardModel replacement)
+    {
+        if (ReferenceEquals(source, replacement))
+        {
+            return replacement;
+        }
+
+        PreserveUpgradeLevel(source, replacement);
+        PreserveEnchantment(source, replacement);
+        return replacement;
     }
 
     private static int IndexInPile(CardPile pile, CardModel card)
@@ -144,4 +165,54 @@ public static class KnowledgeDemonUniqueUtility
 
         return -1;
     }
+
+    private static long GetCombatEntryOrder(CardModel card)
+    {
+        var history = CombatManager.Instance?.History;
+        if (history is null)
+        {
+            return 0;
+        }
+
+        long order = 0;
+        long current = 1;
+        foreach (var entry in history.Entries.OfType<CardGeneratedEntry>())
+        {
+            if (ReferenceEquals(entry.Card, card))
+            {
+                order = current;
+            }
+
+            current++;
+        }
+
+        return order;
+    }
+
+    private static void PreserveUpgradeLevel(CardModel source, CardModel replacement)
+    {
+        while (replacement.CurrentUpgradeLevel < source.CurrentUpgradeLevel && replacement.IsUpgradable)
+        {
+            replacement.UpgradeInternal();
+            replacement.FinalizeUpgradeInternal();
+        }
+    }
+
+    private static void PreserveEnchantment(CardModel source, CardModel replacement)
+    {
+        if (source.Enchantment is not { } sourceEnchantment || replacement.Enchantment != null)
+        {
+            return;
+        }
+
+        var clonedEnchantment = (EnchantmentModel)sourceEnchantment.ClonePreservingMutability();
+        if (!clonedEnchantment.CanEnchant(replacement))
+        {
+            return;
+        }
+
+        replacement.EnchantInternal(clonedEnchantment, clonedEnchantment.Amount);
+        clonedEnchantment.ModifyCard();
+    }
+
 }

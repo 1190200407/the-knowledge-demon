@@ -28,7 +28,7 @@
     "KNOWLEDGE_DEMON_CARD_TWILIGHT_SIGIL_CHARM.title": "晦明咒文",
     "KNOWLEDGE_DEMON_CARD_TWILIGHT_SIGIL_CHARM.description": "造成{Damage:diff()}点伤害。获得{Block:diff()}点[gold]格挡[/gold]。",
     "KNOWLEDGE_DEMON_CARD_HIVE_CONSCIOUSNESS.title": "蜂巢意识",
-    "KNOWLEDGE_DEMON_CARD_HIVE_CONSCIOUSNESS.description": "造成{Damage:diff()}点伤害。此牌在[gold]藏书库[/gold]中时，你每[gold]记录[/gold]一张牌，将其[gold]变化[/gold]为此牌。",
+    "KNOWLEDGE_DEMON_CARD_HIVE_CONSCIOUSNESS.description": "获得{Block:diff()}点[gold]格挡[/gold]。此牌在[gold]藏书库[/gold]中时，你每打出一张牌，将藏书库里的牌变化为此牌。",
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.title": "记忆收束",
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.description": "获得{Block:diff()}点[gold]格挡[/gold]。[gold]具象[/gold]{Materialize}。选择的2张牌都是攻击牌或都是技能牌，则将其打出并消耗。",
     "KNOWLEDGE_DEMON_CARD_MEMORY_CONVERGENCE.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",

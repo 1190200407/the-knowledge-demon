@@ -334,8 +334,13 @@ public static class BookLibraryCmd
 
             if (ShouldAutoPlayOtherOptions(result.Chosen))
             {
-                await ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);
+                foreach (var card in result.Candidates)
+                {
+                    card.AddKeyword(CardKeyword.Sly);
+                }
+
                 await TryVanishFromLibrary(result.Chosen);
+                await ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);
                 return;
             }
 
@@ -389,24 +394,27 @@ public static class BookLibraryCmd
 
     private static bool CanBeAutoChooseCandidate(CardModel card)
     {
-        if (card.CanPlay())
+        if(card.Owner?.Creature.GetPower<VariantPower>() is not null)
         {
             return true;
         }
+        return !IsUnplayableForBookLibrary(card);
+    }
 
-        _ = card.CanPlay(out var reason, out _);
-        if (card.Owner?.Creature.GetPower<VariantPower>() is not null
-            && reason.HasFlag(UnplayableReason.HasUnplayableKeyword))
+    // 不能被打出的牌：带不能被打出标签的，有不能打出的条件的，不包括能耗不够的
+    private static bool IsUnplayableForBookLibrary(CardModel card)
+    {
+        bool canPlay = card.CanPlay(out var reason, out _);
+        if (canPlay)
         {
-            return true;
+            return false;
         }
-
         var resourceOnlyReasons = UnplayableReason.EnergyCostTooHigh | UnplayableReason.StarCostTooHigh;
-        return (reason & ~resourceOnlyReasons) == UnplayableReason.None;
+        return (reason & ~resourceOnlyReasons) != UnplayableReason.None;
     }
 
     private static bool ShouldAutoPlayOtherOptions(CardModel chosen) =>
-        chosen.Keywords.Contains(CardKeyword.Unplayable)
+        IsUnplayableForBookLibrary(chosen)
         && chosen.Owner?.Creature.GetPower<VariantPower>() is not null;
     #endregion
 
