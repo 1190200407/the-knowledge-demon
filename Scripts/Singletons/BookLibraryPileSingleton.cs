@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
@@ -14,9 +16,23 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterSingleton]
 public sealed class BookLibraryPileSingleton : HookedSingletonModel
 {
+    private readonly Dictionary<CardModel, PlayerChoiceContext> _pendingRecordContexts = [];
+
     public BookLibraryPileSingleton()
         : base(HookType.Combat)
     {
+    }
+
+    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (!cardPlay.IsAutoPlay
+            && cardPlay.Card.Owner is Player player
+            && BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        {
+            _pendingRecordContexts[cardPlay.Card] = choiceContext;
+        }
+
+        return Task.CompletedTask;
     }
 
     public override async Task AfterCardChangedPiles(
@@ -36,6 +52,13 @@ public sealed class BookLibraryPileSingleton : HookedSingletonModel
             BookLibraryUtility.RefreshCardVisual(card);
         }
 
-        await BookLibraryCmd.RecordOnEnteredDiscardPile(null, card, oldPileType);
+        _pendingRecordContexts.TryGetValue(card, out var choiceContext);
+
+        if (oldPileType == PileType.Play)
+        {
+            _pendingRecordContexts.Remove(card);
+        }
+
+        await BookLibraryCmd.RecordOnEnteredDiscardPile(choiceContext, card, oldPileType);
     }
 }

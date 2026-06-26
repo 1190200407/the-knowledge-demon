@@ -462,8 +462,10 @@ public static class BookLibraryCmd
             await CreatureCmd.TriggerAnim(
                 player.Creature,
                 "superAttack",
-                KnowledgeDemon.GetSuperAttackDelayIfApplicable(player.Character));
+                0f);
         }
+        TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
+        await Cmd.CustomScaledWait(0.5f, 1f);
         while (libraryPile.Cards.Count > 0 && !CombatManager.Instance.IsOverOrEnding)
         {
             await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);

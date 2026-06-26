@@ -44,10 +44,12 @@ public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDem
             return;
         }
 
+        if (choiceContext is null)
+        {
+            return;
+        }
+
         Flash();
-        await BookLibraryCmd.TriggerKnowledgeOverload(
-            choiceContext ?? new ThrowingPlayerChoiceContext(),
-            player,
-            this);
+        await BookLibraryCmd.TriggerKnowledgeOverload(choiceContext, player, this);
     }
 }
