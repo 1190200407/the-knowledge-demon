@@ -37,7 +37,7 @@
     "KNOWLEDGE_DEMON_CARD_BITE.title": "啃咬",
     "KNOWLEDGE_DEMON_CARD_BITE.description": "只有在[gold]手牌[/gold]中时可以被打出。造成{Damage:diff()}点伤害。",
     "KNOWLEDGE_DEMON_CARD_PLAN_THEN_ACT.title": "谋定后动",
-    "KNOWLEDGE_DEMON_CARD_PLAN_THEN_ACT.description": "造成{Damage:diff()}点伤害。本回合结束时，保留[gold]手牌[/gold]和[gold]藏书库[/gold]。下回合获得{Energy:energyIcons()}。",
+    "KNOWLEDGE_DEMON_CARD_PLAN_THEN_ACT.description": "造成{Damage:diff()}点伤害。本回合结束时，保留[gold]手牌[/gold]。下回合获得{Energy:energyIcons()}。",
     "KNOWLEDGE_DEMON_CARD_PANDORA.title": "潘多拉",
     "KNOWLEDGE_DEMON_CARD_PANDORA.description": "造成{Damage:diff()}点伤害{Repeat:diff()}次。此牌在[gold]藏书库[/gold]中时，你每打出1张攻击牌将其[gold]消耗[/gold]，并将其伤害添加到此牌中。",
     "KNOWLEDGE_DEMON_CARD_TOUCH_GOLD.title": "点石成金",
@@ -125,7 +125,7 @@
     "KNOWLEDGE_DEMON_CARD_OBSESSION.title": "执念",
     "KNOWLEDGE_DEMON_CARD_OBSESSION.description": "获得{Block:diff()}点[gold]格挡[/gold]。本牌被具象时不返回手牌，而是将一张0{energyPrefix:energyIcons(1)}的复制品加入手牌。",
     "KNOWLEDGE_DEMON_CARD_ILLUSION.title": "幻象",
-    "KNOWLEDGE_DEMON_CARD_ILLUSION.description": "回合结束时，这张牌在[gold]手牌[/gold]或[gold]藏书库[/gold]时，将一张复制品加入手牌。",
+    "KNOWLEDGE_DEMON_CARD_ILLUSION.description": "回合结束时，这张牌在[gold]手牌[/gold]时，将一张复制品加入手牌。",
     "KNOWLEDGE_DEMON_CARD_CAUSALITY_INVERSION.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
     "KNOWLEDGE_DEMON_CARD_NIRVANA.title": "寂灭之印",
     "KNOWLEDGE_DEMON_CARD_NIRVANA.description": "造成{Damage:diff()}点伤害。打出后，获得[gold]奇巧[/gold]。",
@@ -147,8 +147,6 @@
     "KNOWLEDGE_DEMON_CARD_SHORTHAND_NOTEBOOK.selectionScreenPrompt": "选择[blue]1[/blue]张手牌[gold]记录[/gold]。",
     "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.title": "意识转移",
     "KNOWLEDGE_DEMON_CARD_CONSCIOUSNESS_TRANSFER.description": "获得{Energy:energyIcons()}。将你的[gold]手牌[/gold]和[gold]藏书库[/gold]中的牌交换。",
-    "KNOWLEDGE_DEMON_CARD_VARIANT.title": "变式",
-    "KNOWLEDGE_DEMON_CARD_VARIANT.description": "现在在[gold]抉择[/gold]时可以选择不能被打出的牌。当你这么做时，自动打出另外2张牌。",
     "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.title": "终解",
     "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.description": "本回合每生成1张卡，此牌造成{Damage:diff()}点伤害。{InCombat:\n（攻击{CalculatedHits:diff()}次）|}"
 }

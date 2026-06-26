@@ -38,9 +38,5 @@
     "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.smartDescription": "你每[gold]变化[/gold]1张牌，对随机敌人造成[blue]{Amount}[/blue]点伤害。",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.title": "拟态",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.description": "本场战斗结束时，你的卡牌奖励改为所选角色的牌。",
-    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "本场战斗结束时，你的[gold]卡牌奖励[/gold]改为[gold]{ChosenCharacter}[/gold]的牌。",
-    "KNOWLEDGE_DEMON_POWER_RETAIN_HAND_AND_LIBRARY_POWER.title": "谋定后动",
-    "KNOWLEDGE_DEMON_POWER_RETAIN_HAND_AND_LIBRARY_POWER.description": "本回合结束时，保留你的手牌和藏书库。",
-    "KNOWLEDGE_DEMON_POWER_VARIANT_POWER.title": "变式",
-    "KNOWLEDGE_DEMON_POWER_VARIANT_POWER.description": "现在在抉择时可以选择不能被打出的牌。"
+    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "本场战斗结束时，你的[gold]卡牌奖励[/gold]改为[gold]{ChosenCharacter}[/gold]的牌。"
 }

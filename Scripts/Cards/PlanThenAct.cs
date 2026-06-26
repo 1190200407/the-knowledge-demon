@@ -47,7 +47,7 @@ public sealed class PlanThenAct : KnowledgeDemonCardModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
 
-        await PowerCmd.Apply<RetainHandAndLibraryPower>(
+        await PowerCmd.Apply<RetainHandPower>(
             choiceContext,
             Owner.Creature,
             1m,

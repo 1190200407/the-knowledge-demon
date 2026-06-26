@@ -71,7 +71,7 @@ public sealed class Charge : KnowledgeDemonCardModel
     {
         _ = flushedCards;
 
-        if (player != Owner || (!retainedCards.Contains(this) && this.Pile?.Type != BookLibraryUtility.PileType))
+        if (player != Owner || !retainedCards.Contains(this))
         {
             return;
         }

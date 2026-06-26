@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
@@ -13,6 +12,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace ComicChess.KnowledgeDemon;
@@ -243,9 +243,7 @@ public static class BookLibraryCmd
             return BookLibraryChooseResult.Empty;
         }
 
-        var choosableCards = libraryPile.Cards
-            .Where(CanBeAutoChooseCandidate)
-            .ToList();
+        var choosableCards = libraryPile.Cards.ToList();
         if (choosableCards.Count == 0)
         {
             return BookLibraryChooseResult.Empty;
@@ -253,7 +251,6 @@ public static class BookLibraryCmd
 
         var offerCount = Math.Min(ChooseOfferCount, choosableCards.Count);
         var candidates = choosableCards
-            .ToList()
             .StableShuffle(player.RunState.Rng.Shuffle)
             .Take(offerCount)
             .ToList();
@@ -331,19 +328,6 @@ public static class BookLibraryCmd
         if (result.Chosen != null)
         {
             KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
-
-            if (ShouldAutoPlayOtherOptions(result.Chosen))
-            {
-                foreach (var card in result.Candidates)
-                {
-                    card.AddKeyword(CardKeyword.Sly);
-                }
-
-                await TryVanishFromLibrary(result.Chosen);
-                await ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);
-                return;
-            }
-
             await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
             await TryVanishFromLibrary(result.Chosen);
         }
@@ -391,31 +375,6 @@ public static class BookLibraryCmd
 
     private static bool IsInBookLibrary(CardModel card) =>
         card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type);
-
-    private static bool CanBeAutoChooseCandidate(CardModel card)
-    {
-        if(card.Owner?.Creature.GetPower<VariantPower>() is not null)
-        {
-            return true;
-        }
-        return !IsUnplayableForBookLibrary(card);
-    }
-
-    // 不能被打出的牌：带不能被打出标签的，有不能打出的条件的，不包括能耗不够的
-    private static bool IsUnplayableForBookLibrary(CardModel card)
-    {
-        bool canPlay = card.CanPlay(out var reason, out _);
-        if (canPlay)
-        {
-            return false;
-        }
-        var resourceOnlyReasons = UnplayableReason.EnergyCostTooHigh | UnplayableReason.StarCostTooHigh;
-        return (reason & ~resourceOnlyReasons) != UnplayableReason.None;
-    }
-
-    private static bool ShouldAutoPlayOtherOptions(CardModel chosen) =>
-        IsUnplayableForBookLibrary(chosen)
-        && chosen.Owner?.Creature.GetPower<VariantPower>() is not null;
     #endregion
 
     #region Remove
@@ -481,15 +440,7 @@ public static class BookLibraryCmd
             return;
         }
 
-        var copies = libraryPile.Cards
-            .Where(card => !card.ShouldRetainThisTurn)
-            .ToList();
-        if (copies.Count == 0)
-        {
-            return;
-        }
-
-        await CardPileCmd.RemoveFromCombat(copies, skipVisuals: false);
+        await CardPileCmd.RemoveFromCombat(libraryPile.Cards.ToList(), skipVisuals: false);
     }
     #endregion
 }
