@@ -23,6 +23,7 @@ public sealed class Solid : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.None;
     private const bool shouldShowInCardLibrary = true;
+    private const string DexterityVarName = "DexterityPower";
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
@@ -36,7 +37,8 @@ public sealed class Solid : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DexterityPower>(1m)
+        new PowerVar<DexterityPower>(DexterityVarName, 1m),
+        new DynamicVar("DexterityLoss", 2m)
     ];
 
     public Solid()
@@ -62,21 +64,28 @@ public sealed class Solid : KnowledgeDemonCardModel
 
         if (inHandOrLibrary)
         {
+            var dexterityPower = DynamicVars["DexterityPower"].BaseValue;
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
                 Owner.Creature,
-                1m,
+                dexterityPower,
                 Owner.Creature,
                 this);
         }
         else if (!inHandOrLibrary)
         {
+            var dexterityLoss = DynamicVars["DexterityLoss"].BaseValue;
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
                 Owner.Creature,
-                -1m,
+                dexterityLoss,
                 Owner.Creature,
                 this);
         }
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["DexterityPower"].UpgradeValueBy(1m);
     }
 }

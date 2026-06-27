@@ -18,6 +18,7 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<BookLibraryChooseScreenReadyPatch>();
 		patcher.RegisterPatch<ParallelObservationTransformOptionsPatch>();
 		patcher.RegisterPatch<KnowledgeDemonUniqueTransformOptionsPatch>();
+		patcher.RegisterPatch<DustyTomeInfiniteExclusionPatch>();
 		patcher.RegisterPatch<BigMushroomGrowScalePatch>();
 		patcher.RegisterPatch<SurroundedPowerKnowledgeDemonFacingPatch>();
 		patcher.RegisterPatch<KnowledgeDemonFastModeAttackCastSpeedPatch>();

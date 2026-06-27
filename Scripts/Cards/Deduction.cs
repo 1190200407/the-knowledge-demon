@@ -25,7 +25,7 @@ public sealed class Deduction : KnowledgeDemonCardModel
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(3)];
 
     public Deduction()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

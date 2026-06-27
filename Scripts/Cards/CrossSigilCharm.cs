@@ -22,7 +22,11 @@ public sealed class CrossSigilCharm : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(3m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(3m, ValueProp.Move),
+        new EnergyVar(1),
+    ];
 
     public CrossSigilCharm()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -41,6 +45,8 @@ public sealed class CrossSigilCharm : KnowledgeDemonCardModel
             onlyPlayAnimOnce: true)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
     }
 
     protected override void OnUpgrade()

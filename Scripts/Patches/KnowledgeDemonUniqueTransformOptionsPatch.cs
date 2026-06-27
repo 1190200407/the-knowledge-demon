@@ -30,15 +30,38 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
             return;
         }
 
-        var filtered = __result
+        var candidates = __result.AsEnumerable();
+        if (original.Type == CardType.Status)
+        {
+            var existingIds = __result.Select(card => card.Id).ToHashSet();
+            var additionalStatusCards = TransformOptionUtility
+                .FilterTransformCandidates(
+                    original,
+                    TransformOptionUtility.GetKnowledgeDemonStatusPoolCards(player),
+                    original.IsInCombat)
+                .Where(card => !existingIds.Contains(card.Id));
+            candidates = candidates.Concat(additionalStatusCards);
+        }
+
+        var filtered = candidates
             .Where(candidate => original.IsInCombat
                 ? !KnowledgeDemonUniqueUtility.WouldViolateCombatUniqueRule(player, candidate, original)
                 : !KnowledgeDemonUniqueUtility.WouldViolateDeckUniqueRule(player, candidate, original))
+            .GroupBy(card => card.Id)
+            .Select(group => group.First())
             .ToArray();
 
         if (filtered.Length > 0)
         {
             __result = filtered;
+            return;
         }
+
+        if (original.Type != CardType.Status || TransformOptionUtility.GetInfiniteCard() is not { } infinite)
+        {
+            return;
+        }
+
+        __result = [infinite];
     }
 }

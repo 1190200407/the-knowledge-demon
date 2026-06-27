@@ -17,7 +17,10 @@ public static class KnowledgeDemonUniqueUtility
     private static CardKeyword UniqueKeyword =>
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique);
 
-    public static bool IsUnique(CardModel card) => card.HasModKeyword(UniqueKeyword);
+    public static bool IsUnique(CardModel card) =>
+        !IsImmuneToUnique(card) && card.HasModKeyword(UniqueKeyword);
+
+    public static bool IsImmuneToUnique(CardModel card) => card is Infinite;
 
     public static bool SharesUniqueName(CardModel left, CardModel right) => left.Id == right.Id;
 

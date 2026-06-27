@@ -24,14 +24,12 @@ public sealed class MemoryConvergence : KnowledgeDemonCardModel
 
     public override bool GainsBlock => true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
-
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6m, ValueProp.Move),
+        new BlockVar(9m, ValueProp.Move),
         new MaterializeVar(materializeCount),
     ];
 

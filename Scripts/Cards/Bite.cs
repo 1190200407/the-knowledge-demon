@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -19,9 +21,16 @@ public sealed class Bite : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(9m, ValueProp.Move)];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [HoverTipFactory.FromPower<VulnerablePower>()];
 
-    protected override bool IsPlayable => Pile?.Type == PileType.Hand;
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(10m, ValueProp.Move),
+        new PowerVar<VulnerablePower>(2m),
+    ];
+
+    protected override bool ShouldGlowGoldInternal => Pile?.Type == PileType.Hand;
 
     public Bite()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -37,10 +46,20 @@ public sealed class Bite : KnowledgeDemonCardModel
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+
+        if (!cardPlay.IsAutoPlay)
+        {
+            await PowerCmd.Apply<VulnerablePower>(
+                choiceContext,
+                cardPlay.Target,
+                DynamicVars.Vulnerable.BaseValue,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

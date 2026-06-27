@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.TestSupport;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Models;
 
 namespace ComicChess.KnowledgeDemon;
@@ -20,11 +21,14 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterSingleton]
 public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
 {
+    public static KnowledgeDemonUniqueSingleton? Instance { get; private set; }
+
     private bool _resolvingCombatViolations;
 
     public KnowledgeDemonUniqueSingleton()
         : base(HookType.Combat)
     {
+        Instance = this;
         ModHelper.SubscribeForRunStateHooks(Id.Entry, _ => [this]);
     }
 
@@ -64,7 +68,28 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
             return;
         }
 
+        TryGrantStatusUniqueFromEnvironmentTolerance(card, player);
         await ResolveCombatViolationsAsync(player, card);
+    }
+
+    public async Task AddUniqueKeywordsAndResolveAsync(Player player, IEnumerable<CardModel> cards)
+    {
+        CardModel? preferredDuplicate = null;
+
+        foreach (var card in cards)
+        {
+            if (!AddUniqueKeyword(card))
+            {
+                continue;
+            }
+
+            preferredDuplicate ??= card;
+        }
+
+        if (preferredDuplicate is not null)
+        {
+            await ResolveCombatViolationsAsync(player, preferredDuplicate);
+        }
     }
 
     private async Task ResolveCombatViolationsAsync(Player player, CardModel? preferredDuplicate = null)
@@ -149,5 +174,27 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
                 globalUi.CardPreviewContainer.AddChild(vfx);
             }
         }).CallDeferred();
+    }
+
+    private static bool TryGrantStatusUniqueFromEnvironmentTolerance(CardModel card, Player player)
+    {
+        if (card.Type != CardType.Status || player.Creature.GetPower<EnvironmentalTolerancePower>() is null)
+        {
+            return false;
+        }
+
+        return AddUniqueKeyword(card);
+    }
+
+    public static bool AddUniqueKeyword(CardModel card)
+    {
+        if (KnowledgeDemonUniqueUtility.IsImmuneToUnique(card)
+            || KnowledgeDemonUniqueUtility.IsUnique(card))
+        {
+            return false;
+        }
+
+        card.AddKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique));
+        return true;
     }
 }

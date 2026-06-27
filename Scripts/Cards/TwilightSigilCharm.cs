@@ -13,7 +13,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class TwilightSigilCharm : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 2;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
@@ -25,8 +25,8 @@ public sealed class TwilightSigilCharm : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(4m, ValueProp.Move),
-        new BlockVar(4m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
+        new BlockVar(8m, ValueProp.Move),
     ];
 
     public TwilightSigilCharm()
@@ -47,7 +47,7 @@ public sealed class TwilightSigilCharm : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

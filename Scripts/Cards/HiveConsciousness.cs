@@ -4,11 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -18,38 +15,32 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class HiveConsciousness : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
-    private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Rare;
-    private const TargetType targetType = TargetType.Self;
+    private const CardType type = CardType.Attack;
+    private const CardRarity rarity = CardRarity.Uncommon;
+    private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
 
-    public override bool GainsBlock => true;
-
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(5m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5m, ValueProp.Move)];
 
     public HiveConsciousness()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        _ = choiceContext;
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        if (Pile is not { } listenerPile || !BookLibraryUtility.IsBookLibraryPile(listenerPile.Type))
-        {
-            return;
-        }
-
-        if (cardPlay.Card.Owner != Owner)
-        {
-            return;
-        }
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_blunt")
+            .Execute(choiceContext);
 
         var libraryPile = BookLibraryUtility.TryGetLibraryPile(Owner);
-        if (libraryPile is null || libraryPile.Cards.Count == 0)
+        if (libraryPile is null || libraryPile.Cards.Count == 0 || CardScope is null)
         {
             return;
         }
@@ -61,17 +52,18 @@ public sealed class HiveConsciousness : KnowledgeDemonCardModel
                 continue;
             }
 
-            await BookLibraryUtility.TransformCard(libraryCard, CreateClone());
-        }
-    }
+            var replacement = CardScope.CreateCard<HiveConsciousness>(Owner);
+            if (IsUpgraded && !replacement.IsUpgraded)
+            {
+                CardCmd.Upgrade(replacement, MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle.None);
+            }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+            await BookLibraryUtility.TransformCard(libraryCard, replacement);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

@@ -9,6 +9,13 @@ namespace ComicChess.KnowledgeDemon;
 
 internal static class TransformOptionUtility
 {
+    internal static IEnumerable<CardModel> GetKnowledgeDemonStatusPoolCards(Player player)
+    {
+        return ModelDb.CardPool<KnowledgeDemonCardPool>()
+            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+            .Where(card => card.Type == CardType.Status && !IsInfinite(card));
+    }
+
     internal static IEnumerable<CardModel> GetOtherCharacterPoolCards(Player player, CardPoolModel excludePool)
     {
         return player.UnlockState.CharacterCardPools
@@ -64,6 +71,23 @@ internal static class TransformOptionUtility
 
         return FilterForPlayerCount(original.Owner.RunState, source);
     }
+
+    internal static IEnumerable<CardModel> GetAllCardsTransformCandidates(Player player, CardModel original)
+    {
+        return FilterForPlayerCount(
+            player.RunState,
+            ModelDb.AllCards.Where(card =>
+                card.Id != original.Id
+                && card.CanBeGeneratedInCombat
+                && card.Rarity != CardRarity.Token
+                && card.Rarity != CardRarity.Event
+                && card.Type != CardType.Quest));
+    }
+
+    internal static CardModel? GetInfiniteCard() =>
+        ModelDb.AllCards.FirstOrDefault(IsInfinite);
+
+    internal static bool IsInfinite(CardModel card) => card is Infinite;
 
     private static IEnumerable<CardModel> FilterForPlayerCount(
         MegaCrit.Sts2.Core.Runs.IRunState runState,

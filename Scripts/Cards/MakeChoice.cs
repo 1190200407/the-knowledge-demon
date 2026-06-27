@@ -8,11 +8,11 @@ using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
-[RegisterCharacterStarterCard(typeof(KnowledgeDemon), 1)]
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
+[RegisterCharacterStarterCard(typeof(KnowledgeDemon), 1)]
 public sealed class MakeAChoice : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 0;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Basic;
     private const TargetType targetType = TargetType.Self;
@@ -44,6 +44,6 @@ public sealed class MakeAChoice : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        AddKeyword(CardKeyword.Retain);
     }
 }

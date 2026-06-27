@@ -23,7 +23,7 @@ public sealed class MagicTrick : KnowledgeDemonCardModel
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DamageVar(4m, ValueProp.Unpowered)];
+        [new DamageVar(6m, ValueProp.Unpowered)];
 
     public MagicTrick()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

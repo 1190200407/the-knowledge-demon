@@ -19,6 +19,8 @@ public sealed class AmbushStrike : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move)];
 
     public AmbushStrike()
@@ -28,18 +30,12 @@ public sealed class AmbushStrike : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (cardPlay.IsAutoPlay)
-        {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .TargetingAllOpponents(CombatState!)
-                .WithHitFx("vfx/vfx_attack_blunt")
-                .Execute(choiceContext);
-            return;
-        }
-
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+        var damage = cardPlay.IsAutoPlay
+            ? DynamicVars.Damage.BaseValue * 2m
+            : DynamicVars.Damage.BaseValue;
+
+        await DamageCmd.Attack(damage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")

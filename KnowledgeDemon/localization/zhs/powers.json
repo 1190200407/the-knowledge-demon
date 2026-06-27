@@ -36,4 +36,7 @@
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.title": "拟态",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.description": "本场战斗结束时，你的卡牌奖励改为所选角色的牌。",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "本场战斗结束时，你的[gold]卡牌奖励[/gold]改为[gold]{ChosenCharacter}[/gold]的牌。"
+    ,"KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.title": "环境耐受",
+    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.description": "所有状态牌获得独一。",
+    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.smartDescription": "所有状态牌获得[gold]独一[/gold]。"
 }

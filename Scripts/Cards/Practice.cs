@@ -4,29 +4,38 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class MentalStrike : KnowledgeDemonCardModel
+public sealed class Practice : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 0;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose),
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+    ];
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [KnowledgeDemonKeywordHoverTips.FromChoose()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(9m, ValueProp.Move),
+        new DamageVar(6m, ValueProp.Move),
     ];
 
-    public MentalStrike()
+    public Practice()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
@@ -35,18 +44,13 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        await BookLibraryCmd.DiscardFromLibraryAndHand(
-            choiceContext,
-            Owner,
-            2,
-            SelectionScreenPrompt,
-            this);
-
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+
+        await BookLibraryCmd.ChooseFromLibraryAndAutoPlay(choiceContext, Owner, this);
     }
 
     protected override void OnUpgrade()

@@ -25,7 +25,7 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(6m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         ModCardVars.Computed("Repeat", 1m, card => GetHitCount(card)),
     ];
 

@@ -24,8 +24,8 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(4m),
-        new ExtraDamageVar(3m),
+        new CalculationBaseVar(6m),
+        new ExtraDamageVar(2m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateAttackCardCount),
     ];
 
@@ -47,7 +47,6 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.CalculationBase.UpgradeValueBy(2m);
         DynamicVars.ExtraDamage.UpgradeValueBy(1m);
     }
 

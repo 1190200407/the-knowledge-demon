@@ -13,7 +13,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class ItIsDone : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 0;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Ancient;
     private const TargetType targetType = TargetType.Self;
@@ -60,6 +60,6 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        AddKeyword(CardKeyword.Retain);
     }
 }

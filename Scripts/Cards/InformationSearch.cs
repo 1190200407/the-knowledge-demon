@@ -23,7 +23,7 @@ public sealed class InformationSearch : KnowledgeDemonCardModel
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(3)];
 
     public InformationSearch()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

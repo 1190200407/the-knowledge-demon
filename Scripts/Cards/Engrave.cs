@@ -26,7 +26,7 @@ public sealed class Engrave : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record)];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(9m, ValueProp.Move)];
 
     public Engrave()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
