@@ -7,7 +7,7 @@ public sealed class RecordVar : DynamicVar
     public const string DefaultName = "Record";
 
     public RecordVar(int record)
-        : this(DefaultName, record)
+        : base(DefaultName, record)
     {
     }
 

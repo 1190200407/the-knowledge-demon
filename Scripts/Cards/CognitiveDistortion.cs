@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
@@ -23,6 +25,15 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
     [
         CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
+    ];
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)];
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new RecordVar(2),
+        new MaterializeVar(1),
     ];
 
     public CognitiveDistortion()
@@ -44,7 +55,7 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
 
         var offeredCards = candidates
             .StableShuffle(Owner.RunState.Rng.Shuffle)
-            .Take(3)
+            .Take(DynamicVars[RecordVar.DefaultName].IntValue)
             .Select(card => Owner.RunState.CreateCard(card, Owner))
             .ToList();
         if (offeredCards.Count == 0)
@@ -52,21 +63,22 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
             return;
         }
 
-        var chosen = await CardSelectCmd.FromChooseACardScreen(
-            choiceContext,
-            offeredCards,
-            Owner,
-            canSkip: false);
-        if (chosen is null)
+        foreach (var offered in offeredCards)
         {
-            return;
+            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, offered, 1);
         }
 
-        await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, chosen, 1);
+        await BookLibraryCmd.MaterializeFromLibraryToHand(
+            choiceContext,
+            Owner,
+            DynamicVars[MaterializeVar.DefaultName].IntValue,
+            SelectionScreenPrompt,
+            this);
     }
 
     protected override void OnUpgrade()
     {
+        DynamicVars[RecordVar.DefaultName].UpgradeValueBy(1m);
         RemoveKeyword(CardKeyword.Exhaust);
     }
 }

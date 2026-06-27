@@ -13,7 +13,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class Nirvana : KnowledgeDemonCardModel
 {
-    private const int energyCost = 4;
+    private const int energyCost = 3;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.AnyEnemy;

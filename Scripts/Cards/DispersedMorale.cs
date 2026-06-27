@@ -32,10 +32,10 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
         CombatState is not null && !AnyEnemyIntendsToAttack;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.FromPower<StrengthPower>()];
+        [HoverTipFactory.FromPower<DispersedMoralePower>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<StrengthPower>(2m)];
+        [new PowerVar<StrengthPower>(9m)];
 
     public DispersedMorale()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -54,10 +54,10 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
         var strengthLoss = DynamicVars["StrengthPower"].BaseValue;
         foreach (Creature enemy in CombatState.HittableEnemies)
         {
-            await PowerCmd.Apply<StrengthPower>(
+            await PowerCmd.Apply<DispersedMoralePower>(
                 choiceContext,
                 enemy,
-                -strengthLoss,
+                strengthLoss,
                 Owner.Creature,
                 this);
         }
@@ -65,6 +65,6 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["StrengthPower"].UpgradeValueBy(2m);
     }
 }

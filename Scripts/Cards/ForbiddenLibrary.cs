@@ -17,7 +17,7 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 {
     private const int energyCost = 2;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
     private const string CalculatedHitsKey = "CalculatedHits";
@@ -27,7 +27,7 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move),
+        new DamageVar(13m, ValueProp.Move),
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
         new CalculatedVar(CalculatedHitsKey).WithMultiplier((card, _) =>
@@ -51,7 +51,10 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
         var toExhaust = libraryPile.Cards.ToList();
         foreach (var card in toExhaust)
         {
-            await CardCmd.Exhaust(choiceContext, card);
+            if (card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type))
+            {
+                await CardPileCmd.Add(card, PileType.Discard);
+            }
         }
 
         var hitCount = toExhaust.Count;
@@ -73,6 +76,6 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

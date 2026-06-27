@@ -6,27 +6,29 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
-using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class KnowledgeFortress : KnowledgeDemonCardModel
+public sealed class Aberrant : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Power;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
-    private const string BlockPerLibraryCardVarName = "Block";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.FromKeyword(CardKeyword.Sly)];
+    [
+        EnergyHoverTip,
+    ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<KnowledgeFortressPower>(BlockPerLibraryCardVarName, 2m)];
+    [
+        new EnergyVar(1),
+    ];
 
-    public KnowledgeFortress()
+    public Aberrant()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
@@ -34,16 +36,16 @@ public sealed class KnowledgeFortress : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<KnowledgeFortressPower>(
+        await PowerCmd.Apply<AberrantPower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars[BlockPerLibraryCardVarName].BaseValue,
+            DynamicVars.Energy.IntValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Sly);
+        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 }

@@ -6,8 +6,8 @@
     "KNOWLEDGE_DEMON_POWER_GENERATIONAL_REPAIR_POWER.description": "你消耗技能牌或攻击牌时，将其记录。",
     "KNOWLEDGE_DEMON_POWER_GENERATIONAL_REPAIR_POWER.smartDescription": "你下[blue]{Amount}[/blue]次[gold]消耗[/gold]技能牌或攻击牌时，将其[gold]记录[/gold]。",
     "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.title": "蝴蝶效应",
-    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.description": "本回合被攻击时储存受到的伤害。下回合开始时，记录龙卷风。",
-    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.smartDescription": "本回合被攻击时储存受到的伤害（已储存[blue]{Amount}[/blue]）。下回合开始时，[gold]记录[/gold][gold]龙卷风[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.description": "本回合被攻击时储存受到的伤害。下回合开始时，将龙卷风加入手牌。",
+    "KNOWLEDGE_DEMON_POWER_TWISTER_STORED_DAMAGE_POWER.smartDescription": "本回合被攻击时储存受到的伤害（已储存[blue]{Amount}[/blue]）。下回合开始时，将[gold]龙卷风[/gold]加入[gold]手牌[/gold]。",
     "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.title": "求知欲",
     "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.description": "你在回合内抉择时抽牌。",
     "KNOWLEDGE_DEMON_POWER_CURIOSITY_POWER.smartDescription": "你在回合内[gold]抉择[/gold]时，抽[blue]{Amount}[/blue]张牌。",
@@ -35,8 +35,11 @@
     "KNOWLEDGE_DEMON_POWER_MAGIC_TRICK_POWER.smartDescription": "你每[gold]变化[/gold]1张牌，对随机敌人造成[blue]{Amount}[/blue]点伤害。",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.title": "拟态",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.description": "本场战斗结束时，你的卡牌奖励改为所选角色的牌。",
-    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "本场战斗结束时，你的[gold]卡牌奖励[/gold]改为[gold]{ChosenCharacter}[/gold]的牌。"
-    ,"KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.title": "环境耐受",
+    "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "本场战斗结束时，你的[gold]卡牌奖励[/gold]改为[gold]{ChosenCharacter}[/gold]的牌。",
+    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.title": "环境耐受",
     "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.description": "所有状态牌获得独一。",
-    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.smartDescription": "所有状态牌获得[gold]独一[/gold]。"
+    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.smartDescription": "所有状态牌获得[gold]独一[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.title": "异变体",
+    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.description": "你每回合开始时获得能量，然后生成1张随机状态牌加入手牌。",
+    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.smartDescription": "你每回合开始时获得{energyPrefix:energyIcons(Amount)}，然后生成1张随机状态牌加入[gold]手牌[/gold]。"
 }

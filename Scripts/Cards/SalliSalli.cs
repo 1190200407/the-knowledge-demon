@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
@@ -19,14 +20,27 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
+    private static bool HasDuplicateCardIdInHand(Player player)
+    {
+        var seen = new HashSet<ModelId>();
+        foreach (var card in PileType.Hand.GetPile(player).Cards)
+        {
+            if (!seen.Add(card.Id))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 
     protected override bool ShouldGlowRedInternal =>
-        Owner is not null && KnowledgeDemonUniqueUtility.HasDuplicateCardIdInHandOrLibrary(Owner);
+        Owner is not null && HasDuplicateCardIdInHand(Owner);
 
     public SalliSalli()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -39,7 +53,7 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
 
         while (hand.Cards.Count < CardPile.MaxCardsInHand)
         {
-            if (KnowledgeDemonUniqueUtility.HasDuplicateCardIdInHandOrLibrary(Owner))
+            if (HasDuplicateCardIdInHand(Owner))
             {
                 break;
             }
@@ -50,7 +64,7 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
                 break;
             }
 
-            if (KnowledgeDemonUniqueUtility.HasDuplicateCardIdInHandOrLibrary(Owner))
+            if (HasDuplicateCardIdInHand(Owner))
             {
                 break;
             }
@@ -59,6 +73,6 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Exhaust);
+        AddKeyword(CardKeyword.Exhaust);
     }
 }

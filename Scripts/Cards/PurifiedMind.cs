@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
@@ -23,13 +22,10 @@ public sealed class PurifiedMind : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 
-    public override bool GainsBlock => true;
-
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(5m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
     public PurifiedMind()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -69,18 +65,14 @@ public sealed class PurifiedMind : KnowledgeDemonCardModel
             await CardCmd.Exhaust(choiceContext, card);
         }
 
-        for (int i = 0; i < sameNameCards.Count; i++)
+        if (sameNameCards.Count > 0)
         {
-            await CreatureCmd.GainBlock(
-                Owner.Creature,
-                DynamicVars.Block.BaseValue,
-                DynamicVars.Block.Props,
-                cardPlay);
+            await CardPileCmd.Draw(choiceContext, sameNameCards.Count * DynamicVars.Cards.IntValue, Owner);
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

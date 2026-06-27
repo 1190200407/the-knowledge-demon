@@ -135,7 +135,7 @@ public sealed class TwisterStoredDamagePower : KnowledgeDemonPowerModel
         }
 
         twister.SetStoredDamage(storedDamage);
-        await BookLibraryCmd.RecordToLibrary(choiceContext, player, twister, 1);
+        await CardPileCmd.AddGeneratedCardToCombat(twister, PileType.Hand, player);
         await PowerCmd.Remove(this);
     }
 

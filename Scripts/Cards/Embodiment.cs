@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -28,7 +29,11 @@ public sealed class Embodiment : KnowledgeDemonCardModel
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromChoose()];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(12m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(12m, ValueProp.Move),
+        new CardsVar(4),
+    ];
 
     public Embodiment()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -44,17 +49,19 @@ public sealed class Embodiment : KnowledgeDemonCardModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
 
-        var libraryPile = BookLibraryUtility.TryGetLibraryPile(Owner);
-        if (libraryPile is not null)
-        {
-            var zeroCostCards = libraryPile.Cards
-                .Where(card => !card.EnergyCost.CostsX && card.EnergyCost.GetWithModifiers(CostModifiers.All) == 0)
-                .ToList();
+        var drawn = (await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner)).ToList();
+        var recordAndDiscard = drawn
+            .Where(card => !card.EnergyCost.CostsX && card.EnergyCost.GetWithModifiers(CostModifiers.All) != 0)
+            .ToList();
 
-            foreach (var card in zeroCostCards)
-            {
-                await CardPileCmd.Add(card, PileType.Hand);
-            }
+        foreach (var card in recordAndDiscard)
+        {
+            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, card, 1);
+        }
+
+        if (recordAndDiscard.Count > 0)
+        {
+            await CardCmd.Discard(choiceContext, recordAndDiscard);
         }
 
         await BookLibraryCmd.ChooseFromLibraryAndAutoPlay(choiceContext, Owner, this);
@@ -63,5 +70,6 @@ public sealed class Embodiment : KnowledgeDemonCardModel
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

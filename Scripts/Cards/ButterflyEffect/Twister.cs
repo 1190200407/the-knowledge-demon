@@ -13,15 +13,18 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class Twister : KnowledgeDemonCardModel
 {
-    private const int energyCost = 0;
+    private const int energyCost = 1;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Token;
-    private const TargetType targetType = TargetType.AnyEnemy;
+    private const TargetType targetType = TargetType.AllEnemies;
     private const bool shouldShowInCardLibrary = false;
 
     public override bool CanBeGeneratedInCombat => false;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        CardKeyword.Exhaust,
+    ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(0m, ValueProp.Move)];
 
@@ -38,13 +41,12 @@ public sealed class Twister : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this)
             .WithAttackerAnim(
                 KnowledgeDemon.GetSuperAnimIfApplicable(Owner.Character),
                 KnowledgeDemon.GetSuperAttackDelayIfApplicable(Owner.Character))
-            .Targeting(cardPlay.Target)
+            .TargetingAllOpponents(CombatState!)
             .WithHitFx("vfx/vfx_heavy_blunt")
             .Execute(choiceContext);
     }
