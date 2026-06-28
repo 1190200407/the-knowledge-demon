@@ -25,15 +25,15 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
 
     public static void Postfix(CardModel original, ref CardModel[] __result)
     {
-        if (__result is not { Length: > 0 } || original.Owner is not { } player)
+        if (original.Owner is not { } player)
         {
             return;
         }
 
-        var candidates = __result.AsEnumerable();
+        var candidates = (__result ?? []).AsEnumerable();
         if (original.Type == CardType.Status)
         {
-            var existingIds = __result.Select(card => card.Id).ToHashSet();
+            var existingIds = (__result ?? []).Select(card => card.Id).ToHashSet();
             var additionalStatusCards = TransformOptionUtility
                 .FilterTransformCandidates(
                     original,
@@ -57,7 +57,7 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
             return;
         }
 
-        if (original.Type != CardType.Status || TransformOptionUtility.GetInfiniteCard() is not { } infinite)
+        if (TransformOptionUtility.GetInfiniteCard() is not { } infinite)
         {
             return;
         }

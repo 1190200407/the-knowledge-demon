@@ -16,7 +16,7 @@ public sealed class Deduction : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
@@ -25,7 +25,7 @@ public sealed class Deduction : KnowledgeDemonCardModel
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(3)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
 
     public Deduction()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

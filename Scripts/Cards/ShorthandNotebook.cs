@@ -13,7 +13,7 @@ using STS2RitsuLib.Keywords;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class ShorthandNotebook : KnowledgeDemonCardModel
+public sealed class Depiction : KnowledgeDemonCardModel
 {
     private const int energyCost = 0;
     private const CardType type = CardType.Skill;
@@ -34,7 +34,7 @@ public sealed class ShorthandNotebook : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
-    public ShorthandNotebook()
+    public Depiction()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
@@ -43,7 +43,7 @@ public sealed class ShorthandNotebook : KnowledgeDemonCardModel
     {
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner!);
 
-        var selection = (await CardSelectCmd.FromHand(
+        var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
             choiceContext,
             Owner,
             new CardSelectorPrefs(SelectionScreenPrompt, 1),

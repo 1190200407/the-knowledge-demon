@@ -1,62 +1,62 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class MemoryConvergence : KnowledgeDemonCardModel
+public sealed class ThreeAspectsPower : KnowledgeDemonCardModel
 {
-    private const int energyCost = 2;
+    private const int energyCost = 1;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
-    private const int materializeCount = 2;
 
-    public override bool GainsBlock => true;
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        CardKeyword.Exhaust,
+    ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(9m, ValueProp.Move),
-        new MaterializeVar(materializeCount),
+        new MaterializeVar(3),
     ];
 
-    public MemoryConvergence()
+    public ThreeAspectsPower()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-
         var materialized = await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,
             Owner,
-            materializeCount,
+            DynamicVars[MaterializeVar.DefaultName].IntValue,
             SelectionScreenPrompt,
             this);
 
-        if (materialized.Count != materializeCount)
+        if (materialized.Count != 3)
         {
             return;
         }
 
-        var allAttack = materialized.All(static c => c.Type == CardType.Attack);
-        var allSkill = materialized.All(static c => c.Type == CardType.Skill);
-        if (!allAttack && !allSkill)
+        var hasAttack = materialized.Any(static c => c.Type == CardType.Attack);
+        var hasSkill = materialized.Any(static c => c.Type == CardType.Skill);
+        var hasPower = materialized.Any(static c => c.Type == CardType.Power);
+        if (!hasAttack || !hasSkill || !hasPower)
         {
             return;
         }
@@ -70,6 +70,6 @@ public sealed class MemoryConvergence : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        AddKeyword(CardKeyword.Retain);
     }
 }

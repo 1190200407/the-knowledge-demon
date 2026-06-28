@@ -11,41 +11,45 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class Ponder : KnowledgeDemonCardModel
+public sealed class Collapse : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = 2;
-    private const CardType TypeValue = CardType.Power;
-    private const CardRarity RarityValue = CardRarity.Uncommon;
-    private const TargetType TargetTypeValue = TargetType.Self;
-    private const bool ShouldShowInCardLibraryValue = true;
+    public override int MaxUpgradeLevel => 0;
+
+    private const int EnergyCostValue = 0;
+    private const CardType TypeValue = CardType.Status;
+    private const CardRarity RarityValue = CardRarity.Token;
+    private const TargetType TargetTypeValue = TargetType.None;
+    private const bool ShouldShowInCardLibraryValue = false;
+
+    public override bool CanBeGeneratedInCombat => false;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        HoverTipFactory.FromPower<StrengthPower>(),
+        HoverTipFactory.FromPower<DisintegrationPower>(),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<StrengthPower>(4m),
+        new PowerVar<DisintegrationPower>(12m),
     ];
 
-    public Ponder()
+    public Collapse()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(
+        if (CombatState is null)
+        {
+            return;
+        }
+
+        await PowerCmd.Apply<DisintegrationPower>(
             choiceContext,
-            Owner.Creature,
-            DynamicVars["StrengthPower"].BaseValue,
+            CombatState.HittableEnemies,
+            DynamicVars["DisintegrationPower"].BaseValue,
             Owner.Creature,
             this);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["StrengthPower"].UpgradeValueBy(2m);
     }
 }

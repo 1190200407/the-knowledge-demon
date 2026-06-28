@@ -5,44 +5,45 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class MagicTrick : KnowledgeDemonCardModel
+public sealed class SpiderSense : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
-    private const CardType type = CardType.Power;
-    private const CardRarity rarity = CardRarity.Uncommon;
-    private const TargetType targetType = TargetType.Self;
-    private const bool shouldShowInCardLibrary = true;
+    private const int EnergyCostValue = 1;
+    private const CardType TypeValue = CardType.Power;
+    private const CardRarity RarityValue = CardRarity.Uncommon;
+    private const TargetType TargetTypeValue = TargetType.Self;
+    private const bool ShouldShowInCardLibraryValue = true;
+
+    private const string BlockVarName = "Block";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.Static(StaticHoverTip.Transform)];
+        [HoverTipFactory.FromPower<SpiderSensePower>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DamageVar(6m, ValueProp.Unpowered)];
+        [new PowerVar<SpiderSensePower>(BlockVarName, 5m)];
 
-    public MagicTrick()
-        : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
+    public SpiderSense()
+        : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<MagicTrickPower>(
+        await PowerCmd.Apply<SpiderSensePower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars.Damage.BaseValue,
+            DynamicVars[BlockVarName].BaseValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars[BlockVarName].UpgradeValueBy(2m);
     }
 }

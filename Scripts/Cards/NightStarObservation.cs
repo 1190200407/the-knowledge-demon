@@ -7,13 +7,14 @@ using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class CognitiveDistortion : KnowledgeDemonCardModel
+public sealed class NightStarObservation : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
@@ -23,7 +24,6 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
     ];
 
@@ -32,11 +32,11 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new RecordVar(2),
+        new RecordVar(3),
         new MaterializeVar(1),
     ];
 
-    public CognitiveDistortion()
+    public NightStarObservation()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
@@ -45,6 +45,8 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
     {
         var candidates = TransformOptionUtility.GetOtherCharacterPoolCards(Owner, Pool)
             .Where(card => card.CanBeGeneratedInCombat)
+            .Where(card => card.Rarity != CardRarity.Basic)
+            .Where(card => card.Rarity != CardRarity.Ancient)
             .GroupBy(card => card.Id)
             .Select(group => group.First())
             .ToList();
@@ -65,7 +67,13 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
 
         foreach (var offered in offeredCards)
         {
-            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, offered, 1);
+            var upgradedRecord = offered.CreateClone();
+            if (!upgradedRecord.IsUpgraded)
+            {
+                CardCmd.Upgrade(upgradedRecord, CardPreviewStyle.None);
+            }
+
+            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, upgradedRecord, 1);
         }
 
         await BookLibraryCmd.MaterializeFromLibraryToHand(
@@ -78,7 +86,5 @@ public sealed class CognitiveDistortion : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars[RecordVar.DefaultName].UpgradeValueBy(1m);
-        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

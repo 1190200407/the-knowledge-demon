@@ -20,6 +20,8 @@ public sealed class Infinite : KnowledgeDemonCardModel
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 

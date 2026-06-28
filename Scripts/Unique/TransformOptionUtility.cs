@@ -46,7 +46,7 @@ internal static class TransformOptionUtility
         IEnumerable<CardModel> candidates,
         bool isInCombat)
     {
-        var source = candidates;
+        var source = candidates.Where(card => !IsInfinite(card));
         var rarity = original.Rarity;
         if ((uint)(rarity - 8) > 1u)
         {
@@ -78,6 +78,7 @@ internal static class TransformOptionUtility
             player.RunState,
             ModelDb.AllCards.Where(card =>
                 card.Id != original.Id
+                && !IsInfinite(card)
                 && card.CanBeGeneratedInCombat
                 && card.Rarity != CardRarity.Token
                 && card.Rarity != CardRarity.Event

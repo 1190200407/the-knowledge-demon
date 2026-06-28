@@ -1,64 +1,64 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
-using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class PlanThenAct : KnowledgeDemonCardModel
+public sealed class HatTrick : KnowledgeDemonCardModel
 {
     private const int EnergyCostValue = 3;
-    private const CardType TypeValue = CardType.Skill;
+    private const CardType TypeValue = CardType.Power;
     private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
+    private const string RecordVarName = "Record";
+    private const string MaterializeVarName = "Materialize";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        HoverTipFactory.FromPower<PlanThenActExtraTurnPower>(),
+        KnowledgeDemonKeywordHoverTips.FromRecord(),
+        KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars),
     ];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new PowerVar<HatTrickPower>(RecordVarName, 3m),
+        new MaterializeVar(1),
+    ];
 
-    public PlanThenAct()
+    public HatTrick()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        _ = cardPlay;
-
-        var handCards = PileType.Hand.GetPile(Owner).Cards.ToList();
-        foreach (var card in handCards)
-        {
-            if (ReferenceEquals(card, this))
-            {
-                continue;
-            }
-
-            await CardCmd.Exhaust(choiceContext, card);
-        }
-
-        await PowerCmd.Apply<PlanThenActExtraTurnPower>(
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await PowerCmd.Apply<HatTrickPower>(
             choiceContext,
             Owner.Creature,
-            1,
+            DynamicVars[RecordVarName].BaseValue,
             Owner.Creature,
+            this);
+
+        await BookLibraryCmd.MaterializeFromLibraryToHand(
+            choiceContext,
+            Owner,
+            DynamicVars[MaterializeVarName].IntValue,
+            SelectionScreenPrompt,
             this);
     }
 
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
+        DynamicVars[RecordVarName].UpgradeValueBy(1m);
     }
 }

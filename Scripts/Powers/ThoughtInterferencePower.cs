@@ -1,12 +1,15 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -14,52 +17,62 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterPower]
 public sealed class ThoughtInterferencePower : KnowledgeDemonPowerModel
 {
+    private sealed class Data
+    {
+        public int choicesLeft;
+    }
+
+    private const string ChoicesLeftKey = "ChoicesLeft";
+
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Single;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
-    protected override IEnumerable<string> RegisteredKeywordIds =>
-        [KnowledgeDemonKeyword.Record];
+    public override int DisplayAmount => GetInternalData<Data>().choicesLeft;
 
-    public override async Task BeforeSideTurnStart(
-        PlayerChoiceContext choiceContext,
-        CombatSide side,
-        IReadOnlyList<Creature> participants,
-        ICombatState combatState)
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        [new DynamicVar(ChoicesLeftKey, 1m)];
+
+    protected override object InitInternalData() => new Data();
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
-        _ = participants;
+        _ = applier;
+        _ = cardSource;
+        ResetChoicesLeft();
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    {
         _ = combatState;
-
-        if (side != CombatSide.Player)
+        if (side != CombatSide.Player || !participants.Contains(Owner))
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        var player = Owner.Player;
-        if (player is null)
-        {
-            return;
-        }
+        ResetChoicesLeft();
+        return Task.CompletedTask;
+    }
 
-        var hand = PileType.Hand.GetPile(player);
-        if (hand.Cards.Count == 0)
-        {
-            return;
-        }
-
-        var selected = (await CardSelectCmd.FromHand(
-            choiceContext,
-            player,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1),
-            null,
-            this)).FirstOrDefault();
-        if (selected is null)
+    public async Task TryGrantReplayForChooseACard(PlayerChoiceContext choiceContext, CardModel chosen)
+    {
+        if (chosen.Owner != Owner.Player || GetInternalData<Data>().choicesLeft <= 0)
         {
             return;
         }
 
         Flash();
-        await BookLibraryCmd.RecordToLibrary(choiceContext, player, selected, 1);
-        await CardCmd.Exhaust(choiceContext, selected);
+        chosen.BaseReplayCount += 1;
+        CardCmd.Preview(chosen);
+        GetInternalData<Data>().choicesLeft--;
+        InvokeDisplayAmountChanged();
+        await Task.CompletedTask;
+    }
+
+    private void ResetChoicesLeft()
+    {
+        GetInternalData<Data>().choicesLeft = Math.Max(0, Amount);
+        InvokeDisplayAmountChanged();
     }
 }

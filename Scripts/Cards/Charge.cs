@@ -26,6 +26,8 @@ public sealed class Charge : KnowledgeDemonCardModel
     private const int requiredRetains = 3;
     private const string RemainingRetainsVarName = "RemainingRetains";
 
+    public override int MaxUpgradeLevel => 0;
+
     private int _retainedCount;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
@@ -41,7 +43,7 @@ public sealed class Charge : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(20m, ValueProp.Unpowered),
+        new DamageVar(25m, ValueProp.Unpowered),
         new PowerVar<StrengthPower>(1m),
         new DynamicVar(RemainingRetainsVarName, requiredRetains),
     ];

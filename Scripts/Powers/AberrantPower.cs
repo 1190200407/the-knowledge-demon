@@ -6,7 +6,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -18,6 +20,11 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.ForEnergy(this),
+    ];
+
     public override async Task BeforeSideTurnStart(
         PlayerChoiceContext choiceContext,
         CombatSide side,
@@ -25,8 +32,6 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         ICombatState combatState)
     {
         _ = participants;
-        _ = combatState;
-
         if (side != CombatSide.Player || Owner.Player is not { } player)
         {
             return;
@@ -35,10 +40,16 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         Flash();
         await PlayerCmd.GainEnergy(Amount, player);
 
-        var statusCandidates = ModelDb.CardPool<KnowledgeDemonCardPool>()
+        var statusCandidates = ModelDb.CardPool<StatusCardPool>()
             .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+            .Concat(
+                ModelDb.CardPool<KnowledgeDemonCardPool>()
+                    .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+                    .Where(card => card.Type == CardType.Status))
             .Where(card => card.Type == CardType.Status)
+            .Where(card => card is not Infinite)
             .Where(card => card.CanBeGeneratedInCombat)
+            .DistinctBy(card => card.Id)
             .ToList();
         if (statusCandidates.Count == 0)
         {
@@ -51,7 +62,7 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
             return;
         }
 
-        var generated = player.RunState.CreateCard(canonicalCard, player);
+        var generated = combatState.CreateCard(canonicalCard, player);
         await CardPileCmd.AddGeneratedCardToCombat(generated, PileType.Hand, player);
     }
 }

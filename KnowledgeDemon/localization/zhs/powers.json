@@ -15,9 +15,9 @@
     "KNOWLEDGE_DEMON_POWER_SWIFT_POWER.description": "本回合攻击牌造成的伤害提升。",
     "KNOWLEDGE_DEMON_POWER_SWIFT_POWER.smartDescription": "本回合攻击牌造成的伤害提升[blue]{Amount}%[/blue]。",
     "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.title": "思维干涉",
-    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.description": "回合开始时，选择1张牌记录，然后将其消耗。",
-    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.smartDescription": "回合开始时，选择1张牌[gold]记录[/gold]，然后将其[gold]消耗[/gold]。",
-    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.selectionScreenPrompt": "选择[blue]1[/blue]张牌[gold]记录[/gold]后[gold]消耗[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.description": "每回合前{Amount}张[gold]抉择[/gold]的牌获得重放1。",
+    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.smartDescription": "每回合前{Amount}张[gold]抉择[/gold]的牌获得重放1。",
+    "KNOWLEDGE_DEMON_POWER_THOUGHT_INTERFERENCE_POWER.selectionScreenPrompt": "你每回合前[blue]{Amount}[/blue]张[gold]抉择[/gold]的牌获得重放1。",
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.title": "平行观测",
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.description": "你可以变化出其他颜色牌。升级后也包括无色牌。",
     "KNOWLEDGE_DEMON_POWER_PARALLEL_OBSERVATION_POWER.smartDescription": "你可以[gold]变化[/gold]出其他颜色牌。",
@@ -40,6 +40,9 @@
     "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.description": "所有状态牌获得独一。",
     "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.smartDescription": "所有状态牌获得[gold]独一[/gold]。",
     "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.title": "异变体",
-    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.description": "你每回合开始时获得能量，然后生成1张随机状态牌加入手牌。",
-    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.smartDescription": "你每回合开始时获得{energyPrefix:energyIcons(Amount)}，然后生成1张随机状态牌加入[gold]手牌[/gold]。"
+    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.description": "你每回合开始时获得{Amount}点能量，然后生成1张随机状态牌加入手牌。",
+    "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.smartDescription": "你每回合开始时获得[blue]{Amount}[/blue]点能量，然后生成1张随机状态牌加入[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.title": "执念",
+    "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.description": "你每回合第1次具象时，不将其返回手牌，而是将1张其0费复制品放入手牌。",
+    "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.smartDescription": "你每回合第[blue]1[/blue]次[gold]具象[/gold]时，不将其返回[gold]手牌[/gold]，而是将1张其0{energyPrefix:energyIcons(1)}复制品放入[gold]手牌[/gold]。"
 }

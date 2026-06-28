@@ -15,7 +15,7 @@ public sealed class RapidChant : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.RandomEnemy;
     private const bool shouldShowInCardLibrary = true;
     private const int hitCount = 3;

@@ -24,7 +24,7 @@ public sealed class NodeCorrection : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(6m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(7m, ValueProp.Move)];
 
     public NodeCorrection()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -51,6 +51,6 @@ public sealed class NodeCorrection : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

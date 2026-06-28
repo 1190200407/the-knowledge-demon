@@ -18,6 +18,8 @@ public sealed class Swift : KnowledgeDemonCardModel
     private const bool shouldShowInCardLibrary = true;
     private const int damageBoostPercentPerCardPlayed = 10;
 
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         HoverTipFactory.FromPower<SwiftPower>(),
@@ -32,7 +34,7 @@ public sealed class Swift : KnowledgeDemonCardModel
 
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Pile?.Type != PileType.Hand)
+        if (Pile is not { } pile || !BookLibraryUtility.IsBookLibraryPile(pile.Type) && pile.Type != PileType.Hand)
         {
             return;
         }

@@ -19,6 +19,8 @@ public sealed class Eureka : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.None;
     private const bool shouldShowInCardLibrary = true;
 
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         EnergyHoverTip,

@@ -25,6 +25,8 @@ public sealed class Solid : KnowledgeDemonCardModel
     private const bool shouldShowInCardLibrary = true;
     private const string DexterityVarName = "DexterityPower";
 
+    public override int MaxUpgradeLevel => 0;
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
         CardKeyword.Unplayable,
@@ -37,7 +39,7 @@ public sealed class Solid : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DexterityPower>(DexterityVarName, 1m),
+        new PowerVar<DexterityPower>(DexterityVarName, 2m),
         new DynamicVar("DexterityLoss", 2m)
     ];
 
@@ -86,6 +88,6 @@ public sealed class Solid : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["DexterityPower"].UpgradeValueBy(1m);
+        DynamicVars["DexterityLoss"].UpgradeValueBy(-1m);
     }
 }

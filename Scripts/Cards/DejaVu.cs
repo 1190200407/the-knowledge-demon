@@ -12,39 +12,43 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class DejaVu : KnowledgeDemonCardModel
 {
-    private const int energyCost = 0;
-    private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Rare;
-    private const TargetType targetType = TargetType.Self;
-    private const bool shouldShowInCardLibrary = true;
+    private const int EnergyCostValue = 1;
+    private const CardType TypeValue = CardType.Power;
+    private const CardRarity RarityValue = CardRarity.Rare;
+    private const TargetType TargetTypeValue = TargetType.Self;
+    private const bool ShouldShowInCardLibraryValue = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
-
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips => [
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
         KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars),
         HoverTipFactory.FromKeyword(CardKeyword.Sly),
+        HoverTipFactory.FromPower<DejaVuPower>(),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new MaterializeVar(1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        [new MaterializeVar(1)];
 
     public DejaVu()
-        : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
+        : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var materialized = await BookLibraryCmd.MaterializeFromLibraryToHand(
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await PowerCmd.Apply<DejaVuPower>(
+            choiceContext,
+            Owner.Creature,
+            1,
+            Owner.Creature,
+            this);
+
+        await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,
             Owner,
             DynamicVars[MaterializeVar.DefaultName].IntValue,
             SelectionScreenPrompt,
             this);
-
-        foreach (var card in materialized)
-        {
-            card.AddKeyword(CardKeyword.Sly);
-        }
     }
 
     protected override void OnUpgrade()

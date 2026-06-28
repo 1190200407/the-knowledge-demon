@@ -10,15 +10,17 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
+public sealed class GoodGrace : KnowledgeDemonCardModel
 {
-    private const int energyCost = 2;
-    private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Uncommon;
-    private const TargetType targetType = TargetType.Self;
-    private const bool shouldShowInCardLibrary = true;
+    private const int EnergyCostValue = 0;
+    private const CardType TypeValue = CardType.Status;
+    private const CardRarity RarityValue = CardRarity.Token;
+    private const TargetType TargetTypeValue = TargetType.None;
+    private const bool ShouldShowInCardLibraryValue = false;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
+    public override int MaxUpgradeLevel => 0;
+
+    public override bool CanBeGeneratedInCombat => false;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -30,19 +32,13 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
         new EnergyVar(2),
     ];
 
-    public ContinuationFlameCharm()
-        : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
+    public GoodGrace()
+        : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
-    }
-
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-        AddKeyword(CardKeyword.Retain);
     }
 }

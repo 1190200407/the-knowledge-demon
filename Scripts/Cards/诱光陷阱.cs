@@ -11,46 +11,38 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class Meditation : KnowledgeDemonCardModel
+public sealed class LightTrap : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
-    private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardType type = CardType.Power;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override bool GainsBlock => true;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [];
-
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)];
+        [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new BlockVar(8m, ValueProp.Move),
-        new MaterializeVar(1),
-    ];
+        [new DamageVar(7m, ValueProp.Move)];
 
-    public Meditation()
+    public LightTrap()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-
-        await BookLibraryCmd.MaterializeFromLibraryToHand(
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await PowerCmd.Apply<MagicTrickPower>(
             choiceContext,
-            Owner,
-            DynamicVars[MaterializeVar.DefaultName].IntValue,
-            SelectionScreenPrompt,
+            Owner.Creature,
+            DynamicVars.Damage.BaseValue,
+            Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

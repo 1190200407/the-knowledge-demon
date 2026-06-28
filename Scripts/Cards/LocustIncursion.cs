@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -14,51 +12,48 @@ using STS2RitsuLib.Keywords;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class PlanThenAct : KnowledgeDemonCardModel
+public sealed class LocustIncursion : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = 3;
-    private const CardType TypeValue = CardType.Skill;
+    private const int EnergyCostValue = 1;
+    private const CardType TypeValue = CardType.Attack;
     private const CardRarity RarityValue = CardRarity.Rare;
-    private const TargetType TargetTypeValue = TargetType.Self;
+    private const TargetType TargetTypeValue = TargetType.AllEnemies;
     private const bool ShouldShowInCardLibraryValue = true;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.FromPower<PlanThenActExtraTurnPower>(),
-    ];
+        [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        [new DamageVar(10m, ValueProp.Move)];
 
-    public PlanThenAct()
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
+
+    public LocustIncursion()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        _ = cardPlay;
+        await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
+            DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+                .FromCard(this)
+                .TargetingAllOpponents(CombatState!),
+            Owner.Character)
+            .WithHitFx("vfx/vfx_attack_blunt")
+            .Execute(choiceContext);
 
-        var handCards = PileType.Hand.GetPile(Owner).Cards.ToList();
-        foreach (var card in handCards)
-        {
-            if (ReferenceEquals(card, this))
-            {
-                continue;
-            }
-
-            await CardCmd.Exhaust(choiceContext, card);
-        }
-
-        await PowerCmd.Apply<PlanThenActExtraTurnPower>(
+        await PowerCmd.Apply<LocustIncursionPower>(
             choiceContext,
             Owner.Creature,
-            1,
+            1m,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }
