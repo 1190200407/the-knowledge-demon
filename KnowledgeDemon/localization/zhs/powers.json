@@ -44,5 +44,8 @@
     "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.smartDescription": "你每回合开始时获得[blue]{Amount}[/blue]点能量，然后生成1张随机状态牌加入[gold]手牌[/gold]。",
     "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.title": "执念",
     "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.description": "你每回合第1次具象时，不将其返回手牌，而是将1张其0费复制品放入手牌。",
-    "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.smartDescription": "你每回合第[blue]1[/blue]次[gold]具象[/gold]时，不将其返回[gold]手牌[/gold]，而是将1张其0{energyPrefix:energyIcons(1)}复制品放入[gold]手牌[/gold]。"
+    "KNOWLEDGE_DEMON_POWER_OBSESSION_POWER.smartDescription": "你每回合第[blue]1[/blue]次[gold]具象[/gold]时，不将其返回[gold]手牌[/gold]，而是将1张其0{energyPrefix:energyIcons(1)}复制品放入[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_INTO_GROUND_POWER.title": "遁地",
+    "KNOWLEDGE_DEMON_POWER_INTO_GROUND_POWER.description": "回合开始时，你的[gold]格挡[/gold]不会消失。你的[gold]格挡[/gold]被打破时失效。",
+    "KNOWLEDGE_DEMON_POWER_INTO_GROUND_POWER.smartDescription": "回合开始时，你的[gold]格挡[/gold]不会消失。你的[gold]格挡[/gold]被打破时失效。"
 }
