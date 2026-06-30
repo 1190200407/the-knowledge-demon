@@ -22,11 +22,6 @@ public sealed class PlanThenAct : KnowledgeDemonCardModel
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.FromPower<PlanThenActExtraTurnPower>(),
-    ];
-
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     public PlanThenAct()

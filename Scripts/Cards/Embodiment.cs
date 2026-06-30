@@ -24,7 +24,10 @@ public sealed class Embodiment : KnowledgeDemonCardModel
     private const bool shouldShowInCardLibrary = true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose)];
+    [
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose),
+    ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromChoose()];

@@ -23,11 +23,6 @@ public sealed class Collapse : KnowledgeDemonCardModel
 
     public override bool CanBeGeneratedInCombat => false;
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.FromPower<DisintegrationPower>(),
-    ];
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<DisintegrationPower>(12m),

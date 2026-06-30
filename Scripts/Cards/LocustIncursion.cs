@@ -27,7 +27,7 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
         [new DamageVar(10m, ValueProp.Move)];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
+        [CardKeyword.Sly];
 
     public LocustIncursion()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
@@ -44,12 +44,24 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
 
-        await PowerCmd.Apply<LocustIncursionPower>(
-            choiceContext,
-            Owner.Creature,
-            1m,
-            Owner.Creature,
-            this);
+        if (IsUpgraded)
+        {
+            await PowerCmd.Apply<LocustIncursionUpgradedPower>(
+                choiceContext,
+                Owner.Creature,
+                1m,
+                Owner.Creature,
+                this);
+        }
+        else
+        {
+            await PowerCmd.Apply<LocustIncursionPower>(
+                choiceContext,
+                Owner.Creature,
+                1m,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()

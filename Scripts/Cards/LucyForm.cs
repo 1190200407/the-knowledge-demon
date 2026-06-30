@@ -2,28 +2,24 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class SpiderSense : KnowledgeDemonCardModel
+public sealed class LucyForm : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = 1;
+    private const int EnergyCostValue = 3;
     private const CardType TypeValue = CardType.Power;
-    private const CardRarity RarityValue = CardRarity.Uncommon;
+    private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    private const string BlockVarName = "Block";
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<SpiderSensePower>(BlockVarName, 5m)];
-
-    public SpiderSense()
+    public LucyForm()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
@@ -31,16 +27,24 @@ public sealed class SpiderSense : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<SpiderSensePower>(
-            choiceContext,
-            Owner.Creature,
-            DynamicVars[BlockVarName].BaseValue,
-            Owner.Creature,
-            this);
+
+        var existing = Owner.Creature.GetPower<LucyFormPower>();
+        if (existing is null)
+        {
+            await PowerCmd.Apply<LucyFormPower>(
+                choiceContext,
+                Owner.Creature,
+                7m,
+                Owner.Creature,
+                this);
+            return;
+        }
+
+        existing.SetAmount(7);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[BlockVarName].UpgradeValueBy(2m);
+        AddKeyword(CardKeyword.Innate);
     }
 }

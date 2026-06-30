@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -28,6 +29,9 @@ public sealed class Dualism : KnowledgeDemonCardModel
         new ExtraDamageVar(4m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateUniqueCount),
     ];
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
 
     public Dualism()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

@@ -18,14 +18,14 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(6m),
-        new ExtraDamageVar(2m),
+        new CalculationBaseVar(3m),
+        new ExtraDamageVar(3m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateAttackCardCount),
     ];
 

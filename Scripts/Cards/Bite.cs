@@ -26,7 +26,7 @@ public sealed class Bite : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10m, ValueProp.Move),
+        new DamageVar(9m, ValueProp.Move),
         new PowerVar<VulnerablePower>(2m),
     ];
 
@@ -60,6 +60,6 @@ public sealed class Bite : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

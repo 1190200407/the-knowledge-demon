@@ -15,7 +15,7 @@ public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDem
 {
     private const int KnowledgeOverloadThreshold = 6;
 
-    public override RelicRarity Rarity => RelicRarity.Rare;
+    public override RelicRarity Rarity => RelicRarity.Ancient;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [

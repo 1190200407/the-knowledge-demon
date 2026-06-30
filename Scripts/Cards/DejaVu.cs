@@ -21,8 +21,7 @@ public sealed class DejaVu : KnowledgeDemonCardModel
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars),
-        HoverTipFactory.FromKeyword(CardKeyword.Sly),
-        HoverTipFactory.FromPower<DejaVuPower>(),
+        HoverTipFactory.FromKeyword(CardKeyword.Sly)
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

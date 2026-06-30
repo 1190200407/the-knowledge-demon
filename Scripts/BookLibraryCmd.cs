@@ -466,7 +466,7 @@ public static class BookLibraryCmd
         }
         TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
         await Cmd.CustomScaledWait(0.5f, 1f);
-        while (libraryPile.Cards.Count > 0 && !CombatManager.Instance.IsOverOrEnding)
+        while (libraryPile.Cards.Count >= ChooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
         {
             await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
         }

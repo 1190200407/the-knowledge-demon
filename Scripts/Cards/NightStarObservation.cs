@@ -68,7 +68,7 @@ public sealed class NightStarObservation : KnowledgeDemonCardModel
         foreach (var offered in offeredCards)
         {
             var upgradedRecord = offered.CreateClone();
-            if (!upgradedRecord.IsUpgraded)
+            if (IsUpgraded)
             {
                 CardCmd.Upgrade(upgradedRecord, CardPreviewStyle.None);
             }

@@ -18,8 +18,6 @@ public sealed class HatTrick : KnowledgeDemonCardModel
     private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
-    private const string RecordVarName = "Record";
-    private const string MaterializeVarName = "Materialize";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -29,7 +27,6 @@ public sealed class HatTrick : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<HatTrickPower>(RecordVarName, 3m),
         new MaterializeVar(1),
     ];
 
@@ -41,24 +38,34 @@ public sealed class HatTrick : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<HatTrickPower>(
-            choiceContext,
-            Owner.Creature,
-            DynamicVars[RecordVarName].BaseValue,
-            Owner.Creature,
-            this);
 
-        await BookLibraryCmd.MaterializeFromLibraryToHand(
-            choiceContext,
-            Owner,
-            DynamicVars[MaterializeVarName].IntValue,
-            SelectionScreenPrompt,
-            this);
+        if (IsUpgraded)
+        {
+            var basePower = Owner.Creature.GetPower<HatTrickPower>();
+            if (basePower is not null)
+            {
+                await PowerCmd.Remove(basePower);
+            }
+
+            await PowerCmd.Apply<HatTrickUpgradedPower>(
+                choiceContext,
+                Owner.Creature,
+                1m,
+                Owner.Creature,
+                this);
+        }
+        else if (Owner.Creature.GetPower<HatTrickUpgradedPower>() is null)
+        {
+            await PowerCmd.Apply<HatTrickPower>(
+                choiceContext,
+                Owner.Creature,
+                1m,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
-        DynamicVars[RecordVarName].UpgradeValueBy(1m);
     }
 }

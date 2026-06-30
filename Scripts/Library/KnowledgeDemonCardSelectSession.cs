@@ -388,7 +388,8 @@ internal sealed class KnowledgeDemonCardSelectSession
     }
 
     /// <summary>
-    /// 接原版手牌 SimpleSelect：OnHandSelectModeEntered 抬手牌 UI；纯藏书库隐藏 CardHolderContainer。
+    /// 接原版手牌 SimpleSelect：OnHandSelectModeEntered 抬手牌 UI；纯藏书库默认隐藏 CardHolderContainer，
+    /// 但在 Peek 时重新显示，方便查看手牌。
     /// </summary>
     private async Task<IEnumerable<CardModel>> RunVanillaHandSimpleSelectAsync(NPlayerHand hand)
     {
@@ -441,10 +442,7 @@ internal sealed class KnowledgeDemonCardSelectSession
             RefreshLibraryHolderVisibility();
             RefreshHandConfirmButton(hand);
 
-            if (!_includeHand)
-            {
-                hand.CardHolderContainer.Visible = false;
-            }
+            ApplyHandVisibility(hand, hand.PeekButton.IsPeeking);
 
             LogState("SelectReady");
 
@@ -469,10 +467,7 @@ internal sealed class KnowledgeDemonCardSelectSession
             }
             finally
             {
-                if (!_includeHand)
-                {
-                    hand.CardHolderContainer.Visible = true;
-                }
+                hand.CardHolderContainer.Visible = true;
 
                 handHeader.Visible = false;
                 CancelPendingLibraryConfirmRefresh();
@@ -493,8 +488,25 @@ internal sealed class KnowledgeDemonCardSelectSession
 
     private void OnPeekButtonToggled(NPeekButton button)
     {
+        var hand = NCombatRoom.Instance?.Ui?.Hand;
+        if (hand != null)
+        {
+            ApplyHandVisibility(hand, button.IsPeeking);
+        }
+
         RefreshLibraryHolderVisibilityForPeek(button.IsPeeking);
         _libraryPile.ApplySelectBackstopPeekVisibility(!button.IsPeeking);
+    }
+
+    private void ApplyHandVisibility(NPlayerHand hand, bool isPeeking)
+    {
+        if (_includeHand)
+        {
+            hand.CardHolderContainer.Visible = true;
+            return;
+        }
+
+        hand.CardHolderContainer.Visible = isPeeking;
     }
 
     private void RefreshLibraryHolderVisibilityForPeek(bool isPeeking)

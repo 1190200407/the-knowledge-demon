@@ -163,9 +163,19 @@ internal sealed class BookLibrarySharedHandSimpleSelectPatch : IPatchMethod
     public static bool Prefix(NPlayerHand __instance, NHandCardHolder holder)
     {
         var session = KnowledgeDemonCardSelectSession.ActiveSession;
-        if (session is not { IsActive: true, IncludeHand: true })
+        if (session is not { IsActive: true })
         {
             return true;
+        }
+
+        if (!session.IncludeHand)
+        {
+            if (__instance.PeekButton.IsPeeking)
+            {
+                __instance.PeekButton.Wiggle();
+            }
+
+            return false;
         }
 
         session.SelectHandCard(__instance, holder);

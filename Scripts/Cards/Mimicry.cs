@@ -69,11 +69,11 @@ public sealed class Mimicry : KnowledgeDemonCardModel
             return;
         }
 
-        MimicryRewardSingleton.SetChosenCharacter(Owner, chosenCharacter);
+        MimicryRewardSingleton.SetChosenCharacter(Owner, chosenCharacter, IsUpgraded);
         await PowerCmd.Remove(Owner.Creature.GetPower<MimicryPower>());
 
         var power = (MimicryPower)ModelDb.Power<MimicryPower>().ToMutable();
-        power.SetChosenCharacter(chosenCharacter);
+        power.SetChosenCharacter(chosenCharacter, IsUpgraded);
         await PowerCmd.Apply(choiceContext, power, Owner.Creature, 1m, Owner.Creature, this);
     }
 

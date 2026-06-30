@@ -1,62 +1,66 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
-using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class Depiction : KnowledgeDemonCardModel
+public sealed class Whisper : KnowledgeDemonCardModel
 {
-    private const int energyCost = 0;
+    private const int energyCost = 1;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+        new BlockVar(4m, ValueProp.Move),
     ];
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [];
-
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
-
-    public Depiction()
+    public Whisper()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner!);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-        var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
+        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
             choiceContext,
             Owner,
             new CardSelectorPrefs(SelectionScreenPrompt, 1),
             null,
             this)).FirstOrDefault();
 
-        if (selection is null)
+        if (selected is null)
         {
             return;
         }
 
-        await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, selection, 1);
+        var sameNameCards = PileType.Draw.GetPile(Owner).Cards
+            .Concat(PileType.Discard.GetPile(Owner).Cards)
+            .Where(card => card.Id == selected.Id)
+            .ToList();
+
+        foreach (var card in sameNameCards)
+        {
+            await CardPileCmd.Add(card, PileType.Hand);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

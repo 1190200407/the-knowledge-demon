@@ -19,8 +19,7 @@ public sealed class Obsession : KnowledgeDemonCardModel
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        KnowledgeDemonKeywordHoverTips.FromMaterializeKeyword(),
-        HoverTipFactory.FromPower<ObsessionPower>(),
+        KnowledgeDemonKeywordHoverTips.FromMaterializeKeyword()
     ];
 
     public Obsession()

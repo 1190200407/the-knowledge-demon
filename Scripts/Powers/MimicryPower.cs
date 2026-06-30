@@ -13,12 +13,13 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class MimicryPower : KnowledgeDemonPowerModel
 {
     private ModelId? _chosenCharacterId;
+    private bool _grantsUpgradedReward;
 
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Single;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter")];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter"), new StringVar("UpgradeText")];
 
     [SavedProperty]
     public ModelId ChosenCharacterId
@@ -34,8 +35,25 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
     public void SetChosenCharacter(CharacterModel character)
     {
+        SetChosenCharacter(character, false);
+    }
+
+    public void SetChosenCharacter(CharacterModel character, bool grantsUpgradedReward)
+    {
         ChosenCharacterId = character.Id;
+        GrantsUpgradedReward = grantsUpgradedReward;
         SyncChosenCharacterVar();
+    }
+
+    [SavedProperty]
+    public bool GrantsUpgradedReward
+    {
+        get => _grantsUpgradedReward;
+        set
+        {
+            AssertMutable();
+            _grantsUpgradedReward = value;
+        }
     }
 
     public override Task AfterApplied(Creature? applier, CardModel? cardSource)
@@ -53,5 +71,6 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
         var chosenCharacter = ModelDb.GetById<CharacterModel>(ChosenCharacterId);
         ((StringVar)DynamicVars["ChosenCharacter"]).StringValue = chosenCharacter.Title.GetFormattedText();
+        ((StringVar)DynamicVars["UpgradeText"]).StringValue = GrantsUpgradedReward ? "升级过的" : string.Empty;
     }
 }

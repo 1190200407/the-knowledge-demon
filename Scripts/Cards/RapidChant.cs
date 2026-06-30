@@ -22,7 +22,6 @@ public sealed class RapidChant : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [
         CardKeyword.Sly,
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(3m, ValueProp.Move)];

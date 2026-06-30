@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
-using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -22,26 +25,34 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AllEnemies;
     private const bool shouldShowInCardLibrary = true;
 
-    private HashSet<ModelId> _seen = new();
+    private readonly HashSet<string> _seenNames = new(StringComparer.Ordinal);
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(17m, ValueProp.Move)];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromPower<VulnerablePower>(),
+        HoverTipFactory.FromPower<WeakPower>(),
+    ];
 
-    protected override bool IsPlayable => HandAllCardsHaveDistinctIds(Owner);
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(12m, ValueProp.Move),
+        new PowerVar<VulnerablePower>(1m),
+        new PowerVar<WeakPower>(1m),
+    ];
 
-    protected override bool ShouldGlowGoldInternal => IsPlayable;
+    protected override bool ShouldGlowGoldInternal => HandAllCardsHaveDistinctNames(Owner);
 
     public KaleidoscopeWheel()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
 
-    /// <summary>手牌中任意两张是否同名（与独一相同：<see cref="SharesUniqueName" /> / <see cref="ModelId" />）。</summary>
-    public bool HandAllCardsHaveDistinctIds(Player player)
+    private bool HandAllCardsHaveDistinctNames(Player player)
     {
-        _seen.Clear();
+        _seenNames.Clear();
         foreach (var card in PileType.Hand.GetPile(player).Cards)
         {
-            if (!_seen.Add(card.Id))
+            if (!_seenNames.Add(card.Title))
             {
                 return false;
             }
@@ -60,10 +71,34 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .SpawningHitVfxOnEachCreature()
             .Execute(choiceContext);
+
+        if (CombatState is null || !HandAllCardsHaveDistinctNames(Owner))
+        {
+            return;
+        }
+
+        foreach (Creature enemy in CombatState.HittableEnemies.ToList())
+        {
+            await PowerCmd.Apply<VulnerablePower>(
+                choiceContext,
+                enemy,
+                DynamicVars.Vulnerable.BaseValue,
+                Owner.Creature,
+                this);
+
+            await PowerCmd.Apply<WeakPower>(
+                choiceContext,
+                enemy,
+                DynamicVars.Weak.BaseValue,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(8m);
+        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.Vulnerable.UpgradeValueBy(1m);
+        DynamicVars.Weak.UpgradeValueBy(1m);
     }
 }

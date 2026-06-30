@@ -25,11 +25,7 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         HoverTipFactory.ForEnergy(this),
     ];
 
-    public override async Task BeforeSideTurnStart(
-        PlayerChoiceContext choiceContext,
-        CombatSide side,
-        IReadOnlyList<Creature> participants,
-        ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         _ = participants;
         if (side != CombatSide.Player || Owner.Player is not { } player)

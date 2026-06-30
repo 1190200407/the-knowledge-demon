@@ -20,11 +20,6 @@ public sealed class Swift : KnowledgeDemonCardModel
 
     public override int MaxUpgradeLevel => 0;
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.FromPower<SwiftPower>(),
-    ];
-
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Unplayable];
 
     public Swift()

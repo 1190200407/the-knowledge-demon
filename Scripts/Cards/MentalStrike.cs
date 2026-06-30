@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -15,15 +14,16 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Common;
-    private const TargetType targetType = TargetType.AnyEnemy;
+    private const CardRarity rarity = CardRarity.Uncommon;
+    private const TargetType targetType = TargetType.RandomEnemy;
     private const bool shouldShowInCardLibrary = true;
 
     protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(9m, ValueProp.Move),
+        new CardsVar(3),
+        new DamageVar(4m, ValueProp.Move),
     ];
 
     public MentalStrike()
@@ -33,24 +33,31 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target);
-
-        await BookLibraryCmd.DiscardFromLibraryAndHand(
+        var discardedCards = await BookLibraryCmd.DiscardFromLibraryAndHand(
             choiceContext,
             Owner,
-            2,
+            DynamicVars.Cards.IntValue,
             SelectionScreenPrompt,
             this);
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
-            .Targeting(cardPlay.Target)
+        if (discardedCards.Count == 0)
+        {
+            return;
+        }
+
+        await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
+            DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+                .WithHitCount(discardedCards.Count)
+                .FromCard(this)
+                .TargetingRandomOpponents(CombatState!),
+            Owner.Character,
+            onlyPlayAnimOnce: true)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

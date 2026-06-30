@@ -19,10 +19,7 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AllEnemies;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique)];
-
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(9m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(10m, ValueProp.Move)];
 
     public BrainwavePulse()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -42,6 +39,6 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

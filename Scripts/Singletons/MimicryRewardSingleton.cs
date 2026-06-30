@@ -1,7 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
@@ -11,16 +16,18 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterSingleton]
 public sealed class MimicryRewardSingleton : HookedSingletonModel
 {
-    private static readonly Dictionary<ulong, ModelId> ChosenCharacterIds = [];
+    private readonly record struct MimicryRewardData(ModelId CharacterId, bool GrantsUpgradedReward);
+
+    private static readonly Dictionary<ulong, MimicryRewardData> ChosenCharacterIds = [];
 
     public MimicryRewardSingleton()
         : base(HookType.Run)
     {
     }
 
-    public static void SetChosenCharacter(Player player, CharacterModel character)
+    public static void SetChosenCharacter(Player player, CharacterModel character, bool grantsUpgradedReward)
     {
-        ChosenCharacterIds[player.NetId] = character.Id;
+        ChosenCharacterIds[player.NetId] = new MimicryRewardData(character.Id, grantsUpgradedReward);
     }
 
     public static void Clear(Player player)
@@ -30,9 +37,14 @@ public sealed class MimicryRewardSingleton : HookedSingletonModel
 
     public static CharacterModel? GetChosenCharacter(Player player)
     {
-        return ChosenCharacterIds.TryGetValue(player.NetId, out var id)
-            ? ModelDb.GetById<CharacterModel>(id)
+        return ChosenCharacterIds.TryGetValue(player.NetId, out var data)
+            ? ModelDb.GetById<CharacterModel>(data.CharacterId)
             : null;
+    }
+
+    public static bool GrantsUpgradedReward(Player player)
+    {
+        return ChosenCharacterIds.TryGetValue(player.NetId, out var data) && data.GrantsUpgradedReward;
     }
 
     public override Task BeforeCombatStart()
@@ -50,22 +62,57 @@ public sealed class MimicryRewardSingleton : HookedSingletonModel
         return Task.CompletedTask;
     }
 
-    public override CardCreationOptions ModifyCardRewardCreationOptions(Player player, CardCreationOptions options)
+    public override bool TryModifyCardRewardOptions(Player player, List<CardCreationResult> options, CardCreationOptions creationOptions)
     {
-        if (options.Source != CardCreationSource.Encounter
-            || options.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications))
+        if (creationOptions.Source != CardCreationSource.Encounter)
         {
-            return options;
+            return false;
         }
 
         var chosenCharacter = GetChosenCharacter(player);
         if (chosenCharacter is null)
         {
-            return options;
+            return false;
         }
 
-        return options
-            .WithCardPools([chosenCharacter.CardPool], options.CardPoolFilter)
-            .WithFlags(CardCreationFlags.NoCardPoolModifications);
+        var pool = chosenCharacter.CardPool.GetUnlockedCards(
+            player.UnlockState,
+            player.RunState.CardMultiplayerConstraint);
+
+        IEnumerable<CardModel> pickFrom = pool
+            .Where(static card => card.CanBeGeneratedInCombat)
+            .Where(static card => card.Rarity != CardRarity.Basic)
+            .Where(static card => card.Rarity != CardRarity.Ancient)
+            .Where(card => options.TrueForAll(option => option.originalCard.Id != card.Id));
+
+        if (!pickFrom.Any())
+        {
+            pickFrom = pool
+                .Where(static card => card.CanBeGeneratedInCombat)
+                .Where(static card => card.Rarity != CardRarity.Basic)
+                .Where(static card => card.Rarity != CardRarity.Ancient);
+        }
+
+        if (!pickFrom.Any())
+        {
+            return false;
+        }
+
+        var rollOptions = new CardCreationOptions(pickFrom, CardCreationSource.Other, creationOptions.RarityOdds)
+            .WithFlags(CardCreationFlags.NoModifyHooks | CardCreationFlags.NoCardPoolModifications);
+        var cardModel = CardFactory.CreateForReward(player, 1, rollOptions).FirstOrDefault()?.Card;
+        if (cardModel is null)
+        {
+            return false;
+        }
+
+        if (GrantsUpgradedReward(player))
+        {
+            CardCmd.Upgrade(cardModel, CardPreviewStyle.None);
+        }
+
+        options.Add(new CardCreationResult(cardModel));
+        Clear(player);
+        return true;
     }
 }
