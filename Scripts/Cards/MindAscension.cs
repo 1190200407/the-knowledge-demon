@@ -10,7 +10,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class MindCorruption : KnowledgeDemonCardModel
+public sealed class MindAscension : KnowledgeDemonCardModel
 {
     public override int MaxUpgradeLevel => 0;
 
@@ -32,13 +32,14 @@ public sealed class MindCorruption : KnowledgeDemonCardModel
         new CardsVar(2),
     ];
 
-    public MindCorruption()
+    public MindAscension()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
-    public async Task ApplyMindCorruption(PlayerChoiceContext choiceContext)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _ = cardPlay;
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);
     }
 }

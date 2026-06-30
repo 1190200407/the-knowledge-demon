@@ -25,6 +25,7 @@ public sealed class NightStarObservation : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
+        CardKeyword.Exhaust
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

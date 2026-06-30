@@ -73,7 +73,7 @@ public sealed class Charge : KnowledgeDemonCardModel
     {
         _ = flushedCards;
 
-        if (player != Owner || !retainedCards.Contains(this))
+        if (player != Owner || !WasRetainedThisFlush(retainedCards))
         {
             return;
         }
@@ -115,9 +115,21 @@ public sealed class Charge : KnowledgeDemonCardModel
     {
         DynamicVars[RemainingRetainsVarName].BaseValue = Math.Max(0, requiredRetains - RetainedCount);
 
-        if (Pile?.Type == PileType.Hand)
+        if (Pile is { } pile && (pile.Type == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(pile.Type)))
         {
-            NCard.FindOnTable(this)?.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
+            BookLibraryUtility.RefreshCardVisual(this);
         }
+    }
+
+    private bool WasRetainedThisFlush(IReadOnlyCollection<CardModel> retainedCards)
+    {
+        if (retainedCards.Contains(this))
+        {
+            return true;
+        }
+
+        return Pile is { } pile
+            && BookLibraryUtility.IsBookLibraryPile(pile.Type)
+            && !HasBeenRemovedFromState;
     }
 }

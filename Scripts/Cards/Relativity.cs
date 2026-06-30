@@ -5,49 +5,51 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class HatTrick : KnowledgeDemonCardModel
+public sealed class Relativity : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = 3;
-    private const CardType TypeValue = CardType.Power;
+    private const int EnergyCostValue = 1;
+    private const CardType TypeValue = CardType.Skill;
     private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
+    private const string PowerVarName = "Power";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        KnowledgeDemonKeywordHoverTips.FromRecord(),
         KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars),
+        KnowledgeDemonKeywordHoverTips.FromRecord(),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
+        new PowerVar<RelativityPower>(PowerVarName, 3m),
         new MaterializeVar(1),
     ];
 
-    public HatTrick()
+    public Relativity()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _ = cardPlay;
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<HatTrickPower>(
+        await PowerCmd.Apply<RelativityPower>(
             choiceContext,
             Owner.Creature,
-            1m,
+            DynamicVars[PowerVarName].BaseValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Sly);
+        EnergyCost.UpgradeBy(-1);
     }
 }

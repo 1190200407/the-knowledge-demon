@@ -47,7 +47,7 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
         {
             Owner.RunState.CreateCard<GoodGrace>(Owner),
             Owner.RunState.CreateCard<Collapse>(Owner),
-            Owner.RunState.CreateCard<MindCorruption>(Owner),
+            Owner.RunState.CreateCard<MindAscension>(Owner),
         };
 
         foreach (var card in recordedCards)

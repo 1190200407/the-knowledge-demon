@@ -21,7 +21,7 @@ public sealed class HatTrickPower : KnowledgeDemonPowerModel
 {
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Single;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     public override LocString Title => HatTrickPowerShared.Title;
 
@@ -38,7 +38,7 @@ public sealed class HatTrickPower : KnowledgeDemonPowerModel
         await HatTrickPowerShared.RecordAndMaterializeAsync(
             choiceContext,
             player,
-            upgradeRecordedCards: false,
+            (int)System.Math.Max(1m, Amount),
             SelectionScreenPrompt,
             this);
     }
@@ -49,7 +49,7 @@ public sealed class HatTrickUpgradedPower : KnowledgeDemonPowerModel
 {
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Single;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     public override LocString Title => HatTrickPowerShared.Title;
 
@@ -66,7 +66,7 @@ public sealed class HatTrickUpgradedPower : KnowledgeDemonPowerModel
         await HatTrickPowerShared.RecordAndMaterializeAsync(
             choiceContext,
             player,
-            upgradeRecordedCards: true,
+            (int)System.Math.Max(1m, Amount),
             SelectionScreenPrompt,
             this);
     }
@@ -79,7 +79,7 @@ internal static class HatTrickPowerShared
     internal static async Task RecordAndMaterializeAsync(
         PlayerChoiceContext choiceContext,
         Player player,
-        bool upgradeRecordedCards,
+        int recordCount,
         LocString selectionPrompt,
         PowerModel? source = null)
     {
@@ -100,7 +100,7 @@ internal static class HatTrickPowerShared
 
         var selected = candidates
             .StableShuffle(player.RunState.Rng.Shuffle)
-            .Take(Math.Min(3, candidates.Count))
+            .Take(System.Math.Max(1, recordCount))
             .ToList();
 
         if (selected.Count == 0)
@@ -111,11 +111,6 @@ internal static class HatTrickPowerShared
         foreach (var template in selected)
         {
             var record = player.RunState.CreateCard(template, player);
-            if (upgradeRecordedCards && !record.IsUpgraded)
-            {
-                CardCmd.Upgrade(record, CardPreviewStyle.None);
-            }
-
             await BookLibraryCmd.RecordToLibrary(choiceContext, player, record, 1);
         }
 

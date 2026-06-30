@@ -39,8 +39,7 @@ public sealed class Solid : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DexterityPower>(DexterityVarName, 2m),
-        new DynamicVar("DexterityLoss", 2m)
+        new PowerVar<DexterityPower>(DexterityVarName, 1m),
     ];
 
     public Solid()
@@ -53,7 +52,6 @@ public sealed class Solid : KnowledgeDemonCardModel
         PileType oldPileType,
         AbstractModel? clonedBy)
     {
-        _ = oldPileType;
         _ = clonedBy;
 
         if (card != this || Owner is null)
@@ -61,10 +59,8 @@ public sealed class Solid : KnowledgeDemonCardModel
             return;
         }
 
-        var inHandOrLibrary = Pile is { } pile
-            && (pile.Type == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(pile.Type));
-
-        if (inHandOrLibrary)
+        if (Pile is { } enteredPile
+            && (enteredPile.Type == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(enteredPile.Type)))
         {
             var dexterityPower = DynamicVars["DexterityPower"].BaseValue;
             await PowerCmd.Apply<DexterityPower>(
@@ -74,20 +70,15 @@ public sealed class Solid : KnowledgeDemonCardModel
                 Owner.Creature,
                 this);
         }
-        else if (!inHandOrLibrary)
+        else if (Pile?.Type == PileType.Discard
+                 && (oldPileType == PileType.Hand || BookLibraryUtility.IsBookLibraryPile(oldPileType)))
         {
-            var dexterityLoss = DynamicVars["DexterityLoss"].BaseValue;
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
                 Owner.Creature,
-                dexterityLoss,
+                -DynamicVars["DexterityPower"].BaseValue,
                 Owner.Creature,
                 this);
         }
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars["DexterityLoss"].UpgradeValueBy(-1m);
     }
 }

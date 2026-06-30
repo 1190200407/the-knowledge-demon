@@ -46,7 +46,10 @@ public sealed class Illusion : KnowledgeDemonCardModel
             return;
         }
 
-        var shouldCopy = retainedCards.Contains(this);
+        var shouldCopy = retainedCards.Contains(this)
+            || Pile is { } pile
+               && BookLibraryUtility.IsBookLibraryPile(pile.Type)
+               && !HasBeenRemovedFromState;
         if (!shouldCopy)
         {
             return;

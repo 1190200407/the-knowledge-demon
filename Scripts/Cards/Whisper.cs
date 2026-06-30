@@ -24,7 +24,7 @@ public sealed class Whisper : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4m, ValueProp.Move),
+        new BlockVar(5m, ValueProp.Move),
     ];
 
     public Whisper()
