@@ -1,7 +1,7 @@
-[gd_resource type="SpineSkeletonDataResource" load_steps=12 format=3 uid="uid://kd69c4a6lbsd2"]
+[gd_resource type="SpineSkeletonDataResource" load_steps=12 format=3 uid="uid://cnei50gogv1uj"]
 
-[ext_resource type="SpineAtlasResource" uid="uid://kdvrghvuk7q9d" path="res://KnowledgeDemon/animations/knowledge_demon/knowledge_demon.atlas" id="1_e0nxh"]
-[ext_resource type="SpineSkeletonFileResource" uid="uid://kdzgynz7c5cvd" path="res://KnowledgeDemon/animations/knowledge_demon/knowledge_demon.skel" id="2_aodqb"]
+[ext_resource type="SpineAtlasResource" uid="uid://cm21ad2dgs0qt" path="res://KnowledgeDemon/animations/knowledge_demon/knowledge_demon.atlas" id="1_e0nxh"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://cm6psj6o7qldt" path="res://KnowledgeDemon/animations/knowledge_demon/knowledge_demon.skel" id="2_aodqb"]
 
 [sub_resource type="SpineAnimationMix" id="SpineAnimationMix_e0nxh"]
 from = "burnt_loop"

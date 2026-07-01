@@ -35,6 +35,7 @@ public partial class NBookLibraryPile : Control
     private Control? _selectBackstop;
     private Control? _selectedCardContainerRoot;
     private NPlayerHand? _selectedCardHand;
+    private NLibraryPileButton? _libraryPileButton;
     private Tween? _selectBackstopTween;
     private KnowledgeDemonCardSelectSession? _selectSession;
     private CardPile? _pile;
@@ -42,8 +43,14 @@ public partial class NBookLibraryPile : Control
     private NBookLibraryCardHolder? _focusedHolder;
     private bool _dialOrderSyncScheduled;
     private IReadOnlyList<CardModel>? _pendingDialOrderCards;
+    private bool _cardsShownByToggle = true;
+    private int _forcedCardsVisibleCount;
 
     public static NBookLibraryPile? Instance { get; private set; }
+
+    public bool AreCardsShownByToggle => _cardsShownByToggle;
+
+    public bool AreCardsEffectivelyVisible => _forcedCardsVisibleCount > 0 || _cardsShownByToggle;
 
     public override void _EnterTree()
     {
@@ -79,6 +86,7 @@ public partial class NBookLibraryPile : Control
 
         _selectBackstop = GetNodeOrNull<Control>("%SelectModeBackstop");
         _selectedCardContainerRoot = GetNodeOrNull<Control>("%SelectedCardContainer");
+        _libraryPileButton = GetNodeOrNull<NLibraryPileButton>("LibraryPile");
         if (_selectBackstop == null || _selectedCardContainerRoot == null)
         {
             Entry.Logger.Error("[BookLibrary] Missing %SelectModeBackstop or %SelectedCardContainer in book_library_pile.tscn");
@@ -88,6 +96,7 @@ public partial class NBookLibraryPile : Control
         _selectBackstop.Visible = false;
         _selectBackstop.MouseFilter = MouseFilterEnum.Ignore;
         _selectedCardContainerRoot.Connect(Control.SignalName.FocusEntered, Callable.From(OnSelectedContainerFocus));
+        ApplyCardsVisibilityState();
     }
 
     public async Task<IEnumerable<CardModel>> RunSession(
@@ -272,6 +281,8 @@ public partial class NBookLibraryPile : Control
         _player = player;
         UpdateVisibility();
         AttachPile(BookLibraryUtility.PileType.GetPile(player));
+        _libraryPileButton?.Initialize(player);
+        ApplyCardsVisibilityState();
         var pile = BookLibraryUtility.TryGetLibraryPile(player);
         Entry.Logger.Info(
             $"[BookLibrary][Initialize] visible={Visible} relic={BookLibraryUtility.PlayerHasBookLibraryRelic(player)} " +
@@ -361,6 +372,11 @@ public partial class NBookLibraryPile : Control
 
     internal void NotifyHolderFocused(NBookLibraryCardHolder holder)
     {
+        if (!AreCardsEffectivelyVisible)
+        {
+            return;
+        }
+
         if (NCombatRoom.Instance?.Ui?.Hand?.InCardPlay == true)
         {
             return;
@@ -697,6 +713,40 @@ public partial class NBookLibraryPile : Control
     private void UpdateVisibility()
     {
         Visible = _player != null && BookLibraryUtility.PlayerHasBookLibraryRelic(_player);
+        ApplyCardsVisibilityState();
+    }
+
+    public void ToggleCardsVisibleFromButton()
+    {
+        _cardsShownByToggle = !_cardsShownByToggle;
+        ApplyCardsVisibilityState();
+    }
+
+    internal void ForceShowCards()
+    {
+        _forcedCardsVisibleCount++;
+        ApplyCardsVisibilityState();
+    }
+
+    internal void ReleaseForcedShowCards()
+    {
+        _forcedCardsVisibleCount = Math.Max(0, _forcedCardsVisibleCount - 1);
+        ApplyCardsVisibilityState();
+    }
+
+    private void ApplyCardsVisibilityState()
+    {
+        if (_dialCenter != null)
+        {
+            _dialCenter.Visible = AreCardsEffectivelyVisible;
+        }
+
+        if (!AreCardsEffectivelyVisible)
+        {
+            _focusedHolder = null;
+        }
+
+        _libraryPileButton?.RefreshToggleVisual();
     }
 
     private static int IndexOfCard(CardPile pile, CardModel card)

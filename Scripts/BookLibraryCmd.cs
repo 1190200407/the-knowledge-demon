@@ -457,21 +457,29 @@ public static class BookLibraryCmd
             return;
         }
 
-        if (player.Character is KnowledgeDemon)
+        NBookLibraryPile.Instance?.ForceShowCards();
+        try
         {
-            await CreatureCmd.TriggerAnim(
-                player.Creature,
-                "superAttack",
-                0f);
-        }
-        TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
-        await Cmd.CustomScaledWait(0.5f, 1f);
-        while (libraryPile.Cards.Count >= ChooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
-        {
-            await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
-        }
+            if (player.Character is KnowledgeDemon)
+            {
+                await CreatureCmd.TriggerAnim(
+                    player.Creature,
+                    "superAttack",
+                    0f);
+            }
+            TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
+            await Cmd.CustomScaledWait(0.5f, 1f);
+            while (libraryPile.Cards.Count >= ChooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
+            {
+                await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
+            }
 
-        PlayChooseDonePresentation(player);
+            PlayChooseDonePresentation(player);
+        }
+        finally
+        {
+            NBookLibraryPile.Instance?.ReleaseForcedShowCards();
+        }
     }
     #endregion
 }

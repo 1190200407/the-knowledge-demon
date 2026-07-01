@@ -11,16 +11,16 @@ public static class KnowledgeDemonKeywordHoverTips
         Create(KnowledgeDemonKeyword.Materialize, dynamicVars[MaterializeVar.DefaultName]);
 
     public static IHoverTip FromMaterializeKeyword() =>
-        HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Materialize));
+        CreateStatic(KnowledgeDemonKeyword.Materialize);
 
     public static IHoverTip FromRecord() =>
         HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record));
 
     public static IHoverTip FromChoose() =>
-        HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose));
+        CreateStatic(KnowledgeDemonKeyword.Choose);
 
     public static IHoverTip FromKnowledgeOverload() =>
-        HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.KnowledgeOverload));
+        CreateStatic(KnowledgeDemonKeyword.KnowledgeOverload);
 
     private static IHoverTip Create(string keywordId, DynamicVar amountVar)
     {
@@ -29,6 +29,14 @@ public static class KnowledgeDemonKeywordHoverTips
         var description = new LocString(definition.DescriptionTable, definition.DescriptionKey.Replace(".description", ".smartDescription"));
         title.Add(amountVar);
         description.Add(amountVar);
+        return new HoverTip(title, description);
+    }
+
+    private static IHoverTip CreateStatic(string keywordId)
+    {
+        var definition = ModKeywordRegistry.Get(keywordId);
+        var title = new LocString(definition.TitleTable, definition.TitleKey);
+        var description = new LocString(definition.DescriptionTable, definition.DescriptionKey);
         return new HoverTip(title, description);
     }
 }

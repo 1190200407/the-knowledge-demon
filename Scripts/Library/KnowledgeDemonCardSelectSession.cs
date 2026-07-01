@@ -73,6 +73,7 @@ internal sealed class KnowledgeDemonCardSelectSession
     private int _savedLibraryIndex = -1;
     private bool _vanillaCleanupDone;
     private int _libraryConfirmRefreshVersion;
+    private bool _isForcingLibraryVisible;
 
     internal static KnowledgeDemonCardSelectSession? ActiveSession { get; private set; }
 
@@ -546,6 +547,8 @@ internal sealed class KnowledgeDemonCardSelectSession
         var ui = NCombatRoom.Instance!.Ui!;
         var library = _libraryPile;
 
+        library.ForceShowCards();
+        _isForcingLibraryVisible = true;
         _savedLibraryIndex = library.GetIndex();
         // PlayContainer 在 combat_ui 里排在 Hand 之后；抬到其上方才能让 backstop 盖住已打出牌。
         var layerIndex = ui.PlayContainer.GetIndex() + 1;
@@ -583,6 +586,11 @@ internal sealed class KnowledgeDemonCardSelectSession
         _sharedHandOriginCards.Clear();
 
         _libraryPile.HideSelectionUi();
+        if (_isForcingLibraryVisible)
+        {
+            _libraryPile.ReleaseForcedShowCards();
+            _isForcingLibraryVisible = false;
+        }
 
         if (_savedLibraryIndex >= 0)
         {

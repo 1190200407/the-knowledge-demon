@@ -63,7 +63,7 @@ public class Entry
 			"choose",
 			iconPath: null,
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.None,
-			includeInCardHoverTip: false);
+			includeInCardHoverTip: true);
 		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace("knowledge_overload");
 		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace(
 			"unique",

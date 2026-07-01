@@ -1,10 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://ces6hisynchy3"]
+[gd_scene load_steps=9 format=3 uid="uid://ces6hisynchy3"]
 
-[ext_resource type="Texture2D" uid="uid://sdtih21q6vri" path="res://images/packed/combat_ui/draw_pile.png" id="2_7m00m"]
-[ext_resource type="Texture2D" uid="uid://ce37xptc8x4au" path="res://images/packed/combat_ui/pile_button_count.png" id="3_mj3rt"]
-[ext_resource type="FontVariation" uid="uid://ux4d708e7mk6" path="res://themes/kreon_bold_glyph_space_one.tres" id="4_oohoc"]
-[ext_resource type="Shader" uid="uid://c66gb6g7tup3n" path="res://shaders/hsv.gdshader" id="6_l4ivw"]
-[ext_resource type="Texture2D" uid="uid://b5x513mavmk5v" path="res://images/ui/placeholder_controller_icon.png" id="7_acjkt"]
+[ext_resource type="Texture2D" uid="uid://up7p22i1o7n0" path="res://KnowledgeDemon/images/ui/library_pile.png" id="2_7m00m"]
+[ext_resource type="Texture2D" uid="uid://d1q5y71e14b3r" path="res://KnowledgeDemon/images/ui/pile_button_count.png" id="3_mj3rt"]
+[ext_resource type="Script" uid="uid://btt7vu62kioe2" path="res://Scripts/Nodes/NNewMegaLabel.cs" id="4_bh8ac"]
+[ext_resource type="FontVariation" uid="uid://ux4d708e7mk6" path="res://KnowledgeDemon/themes/kreon_bold_glyph_space_one.tres" id="4_oohoc"]
+[ext_resource type="Script" uid="uid://d28aely5mknxl" path="res://Scripts/Nodes/NLibraryPileButton.cs" id="5_library"]
+[ext_resource type="Shader" uid="uid://h27dgbmche1f" path="res://KnowledgeDemon/shaders/hsv.gdshader" id="6_l4ivw"]
+[ext_resource type="Texture2D" uid="uid://dyjy7ne60ulai" path="res://KnowledgeDemon/images/ui/placeholder_controller_icon.png" id="7_acjkt"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kfhi7"]
 resource_local_to_scene = true
@@ -13,12 +15,13 @@ shader_parameter/h = 1.0
 shader_parameter/s = 1.0
 shader_parameter/v = 1.0
 
-[node name="DrawPile" type="Control"]
+[node name="LibraryPile" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 80.0
 offset_bottom = 80.0
 pivot_offset = Vector2(40, 40)
+script = ExtResource("5_library")
 metadata/_edit_lock_ = true
 metadata/_edit_group_ = true
 
@@ -69,9 +72,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = -26.0
+offset_top = 6.0
 offset_right = -12.0
-offset_bottom = 26.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0.964706, 0.886275, 1)
@@ -86,9 +89,21 @@ theme_override_font_sizes/font_size = 26
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("4_bh8ac")
+AutoSizeEnabled = false
+theme_override_colors/font_color = Color(1, 0.964706, 0.886275, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.12549)
+theme_override_colors/font_outline_color = Color(0.532586, 0.122998, 0.123998, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_outline_size = 12
+theme_override_fonts/font = ExtResource("4_oohoc")
+theme_override_font_sizes/font_size = 26
 
 [node name="ControllerIcon" type="TextureRect" parent="."]
 unique_name_in_owner = true
+visible = false
 material = SubResource("ShaderMaterial_kfhi7")
 layout_mode = 1
 anchors_preset = 8

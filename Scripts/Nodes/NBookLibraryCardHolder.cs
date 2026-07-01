@@ -225,7 +225,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
             return;
         }
 
-        _libraryIndexLabel.SetTextAutoSize(displayIndex.ToString());
+        _libraryIndexLabel.Text = displayIndex.ToString();
         _libraryIndexLabel.Visible = displayIndex > 0 && SaveManager.Instance.PrefsSave.ShowCardIndices;
     }
 
