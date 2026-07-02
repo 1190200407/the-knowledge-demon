@@ -17,25 +17,27 @@ internal sealed class DustyTomeInfiniteExclusionPatch : IPatchMethod
         new(typeof(DustyTome), nameof(DustyTome.SetupForPlayer), [typeof(Player)]),
     ];
 
-    public static void Postfix(DustyTome __instance, Player player)
+    public static bool Prefix(DustyTome __instance, Player player)
     {
         var filteredAncients = player.Character.CardPool
             .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
             .Where(card => card.Rarity == CardRarity.Ancient)
+            .Where(card => !ArchaicTooth.TranscendenceCards.Contains(card))
             .Where(card => !TransformOptionUtility.IsInfinite(card))
             .ToList();
 
         if (filteredAncients.Count == 0)
         {
-            return;
+            return true;
         }
 
         var chosen = player.PlayerRng.Rewards.NextItem(filteredAncients);
         if (chosen is null)
         {
-            return;
+            return true;
         }
 
         __instance.AncientCard = chosen.Id;
+        return false;
     }
 }

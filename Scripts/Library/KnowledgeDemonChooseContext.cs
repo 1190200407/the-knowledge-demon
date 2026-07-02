@@ -5,6 +5,8 @@ using System.Reflection;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
@@ -20,6 +22,10 @@ internal static class KnowledgeDemonChooseContext
 
     private static HashSet<CardModel>? _candidates;
     private static Action<CombatState>? _combatStateHandler;
+    private static Action<ICombatState>? _creaturesChangedHandler;
+    private static NChooseACardSelectionScreen? _screen;
+    private static CombatState? _trackedCombatState;
+    private static readonly HashSet<Creature> TrackedCreatures = [];
 
     internal static bool IsChooseCandidate(CardModel card) => _candidates?.Contains(card) ?? false;
 
@@ -44,6 +50,8 @@ internal static class KnowledgeDemonChooseContext
 
             card.UpgradePreviewType = CardUpgradePreviewType.Combat;
         }
+
+        ApplyPreviewTarget(null);
     }
 
     internal static void End()
@@ -57,6 +65,9 @@ internal static class KnowledgeDemonChooseContext
         }
 
         _candidates = null;
+        _screen = null;
+        UnsubscribeFromCreatureEvents();
+        DetachCombatState();
         if (_combatStateHandler != null && CombatManager.Instance is not null)
         {
             CombatManager.Instance.StateTracker.CombatStateChanged -= _combatStateHandler;
@@ -76,23 +87,173 @@ internal static class KnowledgeDemonChooseContext
             return;
         }
 
-        _combatStateHandler = _ => RefreshChooseScreenCards(screen);
+        _screen = screen;
+        AttachCombatState(ResolveCombatState());
+        _combatStateHandler = state =>
+        {
+            AttachCombatState(state);
+            RefreshChooseScreenCards();
+        };
         if (CombatManager.Instance.IsInProgress)
         {
             CombatManager.Instance.StateTracker.CombatStateChanged += _combatStateHandler;
         }
 
-        RefreshChooseScreenCards(screen);
+        RefreshChooseScreenCards();
     }
 
-    private static void RefreshChooseScreenCards(NChooseACardSelectionScreen screen)
+    private static void RefreshChooseScreenCards()
     {
+        var screen = _screen;
+        if (screen == null || !GodotObject.IsInstanceValid(screen))
+        {
+            return;
+        }
+
+        var previewTarget = ResolvePreviewTarget();
         foreach (var holder in screen.GetNode<Control>("CardRow").GetChildren().OfType<NGridCardHolder>())
         {
             if (holder.CardNode != null)
             {
+                holder.CardNode.SetPreviewTarget(previewTarget);
                 BookLibraryUtility.ApplyLibraryCardPreviewVisuals(holder.CardNode, applyTint: false);
             }
         }
     }
+
+    private static void ApplyPreviewTarget(Creature? target)
+    {
+        var screen = _screen;
+        if (screen == null || !GodotObject.IsInstanceValid(screen))
+        {
+            return;
+        }
+
+        foreach (var holder in screen.GetNode<Control>("CardRow").GetChildren().OfType<NGridCardHolder>())
+        {
+            holder.CardNode?.SetPreviewTarget(target);
+        }
+    }
+
+    private static CombatState? ResolveCombatState() =>
+        _candidates?.Select(card => card.Owner?.Creature?.CombatState).OfType<CombatState>().FirstOrDefault();
+
+    private static Creature? ResolvePreviewTarget()
+    {
+        var combatState = _trackedCombatState ?? ResolveCombatState();
+        if (combatState == null)
+        {
+            return null;
+        }
+
+        var lastTargetedCreature = MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom.Instance?.LastTargetedCreature;
+        if (lastTargetedCreature != null && combatState.ContainsCreature(lastTargetedCreature) && lastTargetedCreature.IsHittable)
+        {
+            return lastTargetedCreature;
+        }
+
+        return combatState.HittableEnemies.FirstOrDefault();
+    }
+
+    private static void AttachCombatState(CombatState? combatState)
+    {
+        if (ReferenceEquals(_trackedCombatState, combatState))
+        {
+            SyncCreatureSubscriptions();
+            return;
+        }
+
+        DetachCombatState();
+        _trackedCombatState = combatState;
+        if (_trackedCombatState == null)
+        {
+            return;
+        }
+
+        _creaturesChangedHandler = _ =>
+        {
+            SyncCreatureSubscriptions();
+            RefreshChooseScreenCards();
+        };
+        _trackedCombatState.CreaturesChanged += _creaturesChangedHandler;
+        SyncCreatureSubscriptions();
+    }
+
+    private static void DetachCombatState()
+    {
+        UnsubscribeFromCreatureEvents();
+        if (_trackedCombatState != null && _creaturesChangedHandler != null)
+        {
+            _trackedCombatState.CreaturesChanged -= _creaturesChangedHandler;
+        }
+
+        _trackedCombatState = null;
+        _creaturesChangedHandler = null;
+    }
+
+    private static void SyncCreatureSubscriptions()
+    {
+        var creatures = _trackedCombatState?.Creatures ?? [];
+        foreach (var creature in TrackedCreatures.Except(creatures).ToList())
+        {
+            UnsubscribeFromCreatureEvents(creature);
+            TrackedCreatures.Remove(creature);
+        }
+
+        foreach (var creature in creatures)
+        {
+            if (TrackedCreatures.Add(creature))
+            {
+                SubscribeToCreatureEvents(creature);
+            }
+        }
+    }
+
+    private static void SubscribeToCreatureEvents(Creature creature)
+    {
+        creature.BlockChanged += OnCreatureNumericChanged;
+        creature.CurrentHpChanged += OnCreatureNumericChanged;
+        creature.MaxHpChanged += OnCreatureNumericChanged;
+        creature.PowerApplied += OnCreaturePowerApplied;
+        creature.PowerIncreased += OnCreaturePowerIncreased;
+        creature.PowerDecreased += OnCreaturePowerDecreased;
+        creature.PowerRemoved += OnCreaturePowerRemoved;
+        creature.Died += OnCreatureLifeStateChanged;
+        creature.Revived += OnCreatureLifeStateChanged;
+    }
+
+    private static void UnsubscribeFromCreatureEvents()
+    {
+        foreach (var creature in TrackedCreatures.ToList())
+        {
+            UnsubscribeFromCreatureEvents(creature);
+        }
+
+        TrackedCreatures.Clear();
+    }
+
+    private static void UnsubscribeFromCreatureEvents(Creature creature)
+    {
+        creature.BlockChanged -= OnCreatureNumericChanged;
+        creature.CurrentHpChanged -= OnCreatureNumericChanged;
+        creature.MaxHpChanged -= OnCreatureNumericChanged;
+        creature.PowerApplied -= OnCreaturePowerApplied;
+        creature.PowerIncreased -= OnCreaturePowerIncreased;
+        creature.PowerDecreased -= OnCreaturePowerDecreased;
+        creature.PowerRemoved -= OnCreaturePowerRemoved;
+        creature.Died -= OnCreatureLifeStateChanged;
+        creature.Revived -= OnCreatureLifeStateChanged;
+    }
+
+    private static void OnCreatureNumericChanged(int _, int __) => RefreshChooseScreenCards();
+
+    private static void OnCreaturePowerApplied(PowerModel _) => RefreshChooseScreenCards();
+
+    private static void OnCreaturePowerIncreased(PowerModel _, int __, bool ___) => RefreshChooseScreenCards();
+
+    private static void OnCreaturePowerDecreased(PowerModel _, bool __) => RefreshChooseScreenCards();
+
+    private static void OnCreaturePowerRemoved(PowerModel _) => RefreshChooseScreenCards();
+
+    private static void OnCreatureLifeStateChanged(Creature _) => RefreshChooseScreenCards();
 }
