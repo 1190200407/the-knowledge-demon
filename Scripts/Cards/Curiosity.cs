@@ -23,7 +23,7 @@ public sealed class Curiosity : KnowledgeDemonCardModel
         [KnowledgeDemonKeywordHoverTips.FromChoose()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<CuriosityPower>(PowerVarName, 2m)];
+        [new PowerVar<CuriosityPower>(PowerVarName, 1m)];
 
     public Curiosity()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

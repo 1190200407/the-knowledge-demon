@@ -35,7 +35,7 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(12m, ValueProp.Move),
+        new DamageVar(14m, ValueProp.Move),
         new PowerVar<VulnerablePower>(1m),
         new PowerVar<WeakPower>(1m),
     ];
@@ -97,7 +97,7 @@ public sealed class KaleidoscopeWheel : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
         DynamicVars.Vulnerable.UpgradeValueBy(1m);
         DynamicVars.Weak.UpgradeValueBy(1m);
     }

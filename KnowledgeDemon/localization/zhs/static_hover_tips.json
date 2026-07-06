@@ -1,5 +1,6 @@
 {
-    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.title": "藏书库",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.title": "藏书库(C)",
     "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.description": "储存卡牌的[gold]临时[/gold]复制品，使用或[gold]丢弃[/gold]时消失。\n[blue]点击此按钮显示或隐藏藏书库。[/blue]",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.hotkey": "显示或隐藏藏书库（默认快捷键：C）",
     "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.empty": "藏书库中没有记录。"
 }

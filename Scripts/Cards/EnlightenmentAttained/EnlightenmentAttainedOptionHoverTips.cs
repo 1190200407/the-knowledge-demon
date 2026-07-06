@@ -8,15 +8,6 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace ComicChess.KnowledgeDemon;
 
-internal static class EnlightenmentAttainedOptionHoverTips
-{
-    internal static IEnumerable<IHoverTip> All(bool upgraded) => [
-        HoverTipFactory.FromCard<BloodSacrificeOption>(upgrade: upgraded),
-        HoverTipFactory.FromCard<WealthGatheringOption>(upgrade: upgraded),
-        HoverTipFactory.FromCard<MetamorphosisOption>(upgrade: upgraded),
-    ];
-}
-
 internal static class EnlightenmentAttainedRewardOptions
 {
     internal static List<CardModel> Create(Player player, bool upgraded)

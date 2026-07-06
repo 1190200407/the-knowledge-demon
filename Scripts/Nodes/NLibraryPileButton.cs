@@ -85,7 +85,7 @@ public partial class NLibraryPileButton : NButton
     protected override void OnRelease()
     {
         base.OnRelease();
-        NBookLibraryPile.Instance?.ToggleCardsVisibleFromButton();
+        NBookLibraryPile.Instance?.ToggleCardsVisible();
         PlayReleaseAnim();
     }
 

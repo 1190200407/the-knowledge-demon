@@ -33,7 +33,7 @@ public sealed class LightTrap : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<MagicTrickPower>(
+        await PowerCmd.Apply<LightTrapPower>(
             choiceContext,
             Owner.Creature,
             DynamicVars.Damage.BaseValue,

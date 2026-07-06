@@ -48,6 +48,8 @@ public partial class NBookLibraryPile : Control
 
     public static NBookLibraryPile? Instance { get; private set; }
 
+    public Player? Player => _player;
+
     public bool AreCardsShownByToggle => _cardsShownByToggle;
 
     public bool AreCardsEffectivelyVisible => _forcedCardsVisibleCount > 0 || _cardsShownByToggle;
@@ -716,7 +718,7 @@ public partial class NBookLibraryPile : Control
         ApplyCardsVisibilityState();
     }
 
-    public void ToggleCardsVisibleFromButton()
+    public void ToggleCardsVisible()
     {
         _cardsShownByToggle = !_cardsShownByToggle;
         ApplyCardsVisibilityState();

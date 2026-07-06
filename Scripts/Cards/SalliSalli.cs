@@ -37,6 +37,7 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+        CardKeyword.Exhaust
     ];
 
     protected override bool ShouldGlowRedInternal =>
@@ -73,6 +74,6 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Exhaust);
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -21,6 +22,11 @@ public sealed class GoodGrace : KnowledgeDemonCardModel
     public override int MaxUpgradeLevel => 0;
 
     public override bool CanBeGeneratedInCombat => false;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+    ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [

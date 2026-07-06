@@ -42,12 +42,12 @@ public sealed class PrecognitionRunePower : KnowledgeDemonPowerModel
         _ = dealer;
         _ = cardSource;
 
-        if (target != Owner || amount <= 0m || !props.IsPoweredAttack())
+        if (target != Owner || amount <= 0m)
         {
             return amount;
         }
 
-        var disintegrationAmount = amount * Amount;
+        var disintegrationAmount = amount / 2m;
         if (disintegrationAmount > 0m)
         {
             GetInternalData<ConversionData>().PendingDisintegration += disintegrationAmount;

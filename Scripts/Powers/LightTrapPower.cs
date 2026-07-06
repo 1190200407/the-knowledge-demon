@@ -11,7 +11,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class MagicTrickPower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
+public sealed class LightTrapPower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -37,10 +37,6 @@ public sealed class MagicTrickPower : KnowledgeDemonPowerModel, IKnowledgeDemonE
         }
 
         Flash();
-        await CreatureCmd.TriggerAnim(
-            Owner,
-            KnowledgeDemon.GetHeavyAnimIfApplicable(player.Character),
-            KnowledgeDemon.GetHeavyAttackDelayIfApplicable(player.Character));
         VfxCmd.PlayOnCreatureCenter(target, "vfx/vfx_attack_blunt");
         await CreatureCmd.Damage(
             new ThrowingPlayerChoiceContext(),

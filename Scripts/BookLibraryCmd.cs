@@ -64,6 +64,7 @@ public static class BookLibraryCmd
         }
 
         await KnowledgeDemonHook.AfterRecordedToLibrary(choiceContext, player, card, recordedCopies);
+        KnowledgeDemonTelemetryEvents.CaptureRecordedToLibrary(player, card, recordedCopies);
     }
 
     private static bool RecordTemplatesMatch(CardModel source, CardModel finalTemplate) =>
@@ -139,6 +140,11 @@ public static class BookLibraryCmd
         }
 
         await KnowledgeDemonHook.AfterMaterializedFromLibrary(choiceContext, player, materialized);
+        KnowledgeDemonTelemetryEvents.CaptureMaterializedFromLibrary(
+            player,
+            source as CardModel,
+            selected,
+            materialized);
 
         return materialized;
     }
@@ -283,6 +289,10 @@ public static class BookLibraryCmd
             KnowledgeDemonChooseContext.Begin(candidateList, player);
 
             var chosen = await CardSelectCmd.FromChooseACardScreen(choiceContext, candidateList, player);
+            if (chosen != null)
+            {
+                KnowledgeDemonHistory.LogChoose(player, chooseSource, chosen);
+            }
 
             await KnowledgeDemonHook.AfterChooseFromLibrary(
                 choiceContext,
@@ -290,6 +300,7 @@ public static class BookLibraryCmd
                 chooseSource,
                 chosen,
                 candidateList);
+            KnowledgeDemonTelemetryEvents.CaptureChooseResolved(player, chooseSource, chosen, candidateList);
 
             return new BookLibraryChooseResult(chosen, candidateList);
         }
@@ -460,6 +471,8 @@ public static class BookLibraryCmd
         NBookLibraryPile.Instance?.ForceShowCards();
         try
         {
+            var libraryCountBefore = libraryPile.Cards.Count;
+            var chooseCount = 0;
             if (player.Character is KnowledgeDemon)
             {
                 await CreatureCmd.TriggerAnim(
@@ -472,9 +485,16 @@ public static class BookLibraryCmd
             while (libraryPile.Cards.Count >= ChooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
             {
                 await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
+                chooseCount++;
             }
 
             PlayChooseDonePresentation(player);
+            KnowledgeDemonTelemetryEvents.CaptureKnowledgeOverloadResolved(
+                player,
+                source as CardModel,
+                libraryCountBefore,
+                libraryPile.Cards.Count,
+                chooseCount);
         }
         finally
         {

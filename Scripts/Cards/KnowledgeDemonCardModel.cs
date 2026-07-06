@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -7,7 +8,16 @@ public abstract class KnowledgeDemonCardModel : ModCardTemplate
 {
     private const string PlaceholderPortraitPath = "res://KnowledgeDemon/images/card_portraits/card.png";
 
-    public override string PortraitPath => PlaceholderPortraitPath;
+    public override string PortraitPath
+    {
+        get
+        {
+            var portraitPath = $"res://KnowledgeDemon/images/card_portraits/{ResolvePortraitKey()}.png";
+            return ResourceLoader.Exists(portraitPath)
+                ? portraitPath
+                : PlaceholderPortraitPath;
+        }
+    }
 
     protected KnowledgeDemonCardModel(
         int energyCost,
@@ -18,4 +28,7 @@ public abstract class KnowledgeDemonCardModel : ModCardTemplate
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }
+
+    private string ResolvePortraitKey() =>
+        Id.Entry.ToUpperInvariant().Replace("KNOWLEDGE_DEMON_CARD_", "");
 }

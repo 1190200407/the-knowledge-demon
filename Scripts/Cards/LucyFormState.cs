@@ -25,6 +25,7 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
     private const CardRarity RarityValue = CardRarity.Token;
     private const TargetType TargetTypeValue = TargetType.AnyEnemy;
     private const bool ShouldShowInCardLibraryValue = false;
+    public override bool CanBeGeneratedInCombat => false;
 
     private const string DamageKey = "LucyDamage";
 
@@ -35,6 +36,10 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
         get
         {
             var baseTitle = TitleLocString.GetFormattedText();
+            if (!IsInCombat)
+            {
+                return baseTitle;
+            }
             return $"{baseTitle}{GetStage() * 10}%";
         }
     }

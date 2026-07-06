@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -22,7 +23,10 @@ public sealed class Collapse : KnowledgeDemonCardModel
     private const bool ShouldShowInCardLibraryValue = false;
 
     public override bool CanBeGeneratedInCombat => false;
-
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
+    ];
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new PowerVar<DisintegrationPower>(12m),

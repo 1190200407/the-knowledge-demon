@@ -21,7 +21,7 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
     private const bool ShouldShowInCardLibraryValue = true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record)];
+        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record), CardKeyword.Exhaust];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         IsUpgraded

@@ -27,6 +27,8 @@ public class Entry
 		var assembly = Assembly.GetExecutingAssembly();
 		RitsuLibFramework.EnsureGodotScriptsRegistered(assembly, Logger);
 		ModTypeDiscoveryHub.RegisterModAssembly(ModId, assembly);
+		KnowledgeDemonTelemetry.Register();
+		KnowledgeDemonRuntimeHotkeys.Register();
 
 
         var registry = ModCardPileRegistry.For(ModId);

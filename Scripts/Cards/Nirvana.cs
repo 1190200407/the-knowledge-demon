@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Cards.Transforms;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -23,8 +24,19 @@ public sealed class Nirvana : KnowledgeDemonCardModel, IKnowledgeDemonEventListe
     private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
+    private int _appliedChooseDiscount;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(36m, ValueProp.Move)];
+
+    private int AppliedChooseDiscount
+    {
+        get => _appliedChooseDiscount;
+        set
+        {
+            AssertMutable();
+            _appliedChooseDiscount = value;
+        }
+    }
 
     public Nirvana()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -38,14 +50,7 @@ public sealed class Nirvana : KnowledgeDemonCardModel, IKnowledgeDemonEventListe
             return Task.CompletedTask;
         }
 
-        var chooseCount = CountChooseHistory();
-        if (chooseCount <= 0)
-        {
-            return Task.CompletedTask;
-        }
-
-        EnergyCost.AddThisCombat(-chooseCount);
-        InvokeEnergyCostChanged();
+        SyncChooseDiscount();
         return Task.CompletedTask;
     }
 
@@ -66,8 +71,18 @@ public sealed class Nirvana : KnowledgeDemonCardModel, IKnowledgeDemonEventListe
             return Task.CompletedTask;
         }
 
-        EnergyCost.AddThisCombat(-1);
-        InvokeEnergyCostChanged();
+        SyncChooseDiscount();
+        return Task.CompletedTask;
+    }
+
+    public Task AfterCardTransformed(Player player, ModCardTransformContext context)
+    {
+        if (player != Owner || !ReferenceEquals(context.Replacement, this))
+        {
+            return Task.CompletedTask;
+        }
+
+        SyncChooseDiscount();
         return Task.CompletedTask;
     }
 
@@ -96,8 +111,22 @@ public sealed class Nirvana : KnowledgeDemonCardModel, IKnowledgeDemonEventListe
             return 0;
         }
 
-        return CombatManager.Instance.History.CardPlaysFinished.Count(playFinished =>
-            playFinished.CardPlay.Card.Owner == Owner
-            && playFinished.CardPlay.Card is TouchGold or Practice or Embodiment or MakeAChoice or ItIsDone);
+        return CombatManager.Instance.History.Entries
+            .OfType<KnowledgeDemonChooseEntry>()
+            .Count(entry => entry.Player == Owner);
+    }
+
+    private void SyncChooseDiscount()
+    {
+        var chooseCount = CountChooseHistory();
+        var delta = chooseCount - AppliedChooseDiscount;
+        if (delta <= 0)
+        {
+            return;
+        }
+
+        EnergyCost.AddThisCombat(-delta);
+        AppliedChooseDiscount = chooseCount;
+        InvokeEnergyCostChanged();
     }
 }

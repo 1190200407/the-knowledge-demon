@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -11,6 +12,9 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class EnlightenmentAttained : KnowledgeDemonCardModel
 {
+    private const string HealVarName = "Heal";
+    private const string GoldVarName = "Gold";
+
     private const int energyCost = 2;
     private const CardType type = CardType.Power;
     private const CardRarity rarity = CardRarity.Ancient;
@@ -19,8 +23,11 @@ public sealed class EnlightenmentAttained : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Eternal];
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        EnlightenmentAttainedOptionHoverTips.All(IsUpgraded);
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new IntVar(HealVarName, 7m),
+        new IntVar(GoldVarName, 15m),
+    ];
 
     public EnlightenmentAttained()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -55,5 +62,11 @@ public sealed class EnlightenmentAttained : KnowledgeDemonCardModel
                 Owner.Creature,
                 this);
         }
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars[HealVarName].UpgradeValueBy(3m);
+        DynamicVars[GoldVarName].UpgradeValueBy(5m);
     }
 }
