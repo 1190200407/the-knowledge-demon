@@ -29,8 +29,12 @@ public sealed class LocustIncursionPower : KnowledgeDemonPowerModel
         }
 
         Flash();
-        var card = player.RunState.CreateCard<LocustIncursion>(player);
-        await BookLibraryCmd.RecordToLibrary(choiceContext, player, card, Amount);
+        var records = Enumerable
+            .Range(0, (int)System.Math.Max(1m, Amount))
+            .Select(_ => player.RunState.CreateCard<LocustIncursion>(player))
+            .ToList();
+        await RelativityPowerShared.RecordCardsWithDelayAsync(choiceContext, player, records);
+        await Cmd.CustomScaledWait(0.5f, 0.5f);
         await PowerCmd.Decrement(this);
     }
 }

@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://8naheu4f4w7h"]
+
+[ext_resource type="Texture2D" uid="uid://gijsoce1e1l8" path="res://KnowledgeDemon/images/charui/select_bg.jpg" id="1_6mvrm"]
+
+[node name="KnowledgeDemonBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CharSelectBg" type="Sprite2D" parent="."]
+position = Vector2(1345, 543.99994)
+scale = Vector2(1.5968494, 1.4028891)
+texture = ExtResource("1_6mvrm")
+flip_h = true

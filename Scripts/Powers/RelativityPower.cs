@@ -76,6 +76,18 @@ internal static class RelativityPowerShared
 {
     internal static readonly LocString Title = new("powers", "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.title");
 
+    internal static async Task RecordCardsWithDelayAsync(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> cards)
+    {
+        foreach (var card in cards)
+        {
+            await Cmd.CustomScaledWait(0.1f, 0.1f);
+            await BookLibraryCmd.RecordToLibrary(choiceContext, player, card, 1);
+        }
+    }
+
     internal static async Task RecordAndMaterializeAsync(
         PlayerChoiceContext choiceContext,
         Player player,
@@ -108,13 +120,13 @@ internal static class RelativityPowerShared
             return;
         }
 
-        foreach (var template in selected)
-        {
-            var record = player.RunState.CreateCard(template, player);
-            await BookLibraryCmd.RecordToLibrary(choiceContext, player, record, 1);
-        }
+        var records = selected
+            .Select(template => player.RunState.CreateCard(template, player))
+            .ToList();
 
-        await Cmd.CustomScaledWait(0.25f, 0.45f);
+        await RecordCardsWithDelayAsync(choiceContext, player, records);
+
+        await Cmd.CustomScaledWait(0.5f, 0.5f);
 
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,

@@ -9,6 +9,19 @@ namespace ComicChess.KnowledgeDemon;
 
 internal static class TransformOptionUtility
 {
+    internal static IEnumerable<CardModel> GetInfiniteTransformationStatusCandidates(Player player)
+    {
+        return FilterForPlayerCount(
+                player.RunState,
+                ModelDb.CardPool<StatusCardPool>().GetUnlockedCards(
+                    player.UnlockState,
+                    player.RunState.CardMultiplayerConstraint)
+                    .Concat(GetKnowledgeDemonStatusPoolCards(player)))
+            .Where(card => card.Type == CardType.Status && !IsInfinite(card))
+            .GroupBy(card => card.Id)
+            .Select(group => group.First());
+    }
+
     internal static IEnumerable<CardModel> GetKnowledgeDemonStatusPoolCards(Player player)
     {
         return ModelDb.CardPool<KnowledgeDemonCardPool>()
