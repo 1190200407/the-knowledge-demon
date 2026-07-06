@@ -23,12 +23,11 @@ public sealed class Depiction : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
         CardKeyword.Exhaust
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [];
+        [KnowledgeDemonKeywordHoverTips.FromRecord(),];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1), new IntVar("Record", 1)];
 
@@ -44,16 +43,19 @@ public sealed class Depiction : KnowledgeDemonCardModel
         var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1, DynamicVars.Cards.IntValue),
+            new CardSelectorPrefs(SelectionScreenPrompt, DynamicVars.Cards.IntValue),
             null,
-            this)).FirstOrDefault();
+            this));
 
         if (selection is null)
         {
             return;
         }
 
-        await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, selection, DynamicVars["Record"].IntValue);
+        foreach (var card in selection)
+        {
+            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, card, 1);
+        }
     }
 
     protected override void OnUpgrade()

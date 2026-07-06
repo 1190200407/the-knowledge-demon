@@ -1,126 +1,50 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class HatTrickPower : KnowledgeDemonPowerModel
+public sealed class HatTrickPower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
 {
+    private static readonly LocString MaterializePrompt =
+        new("cards", "KNOWLEDGE_DEMON_CARD_HAT_TRICK.selectionScreenPrompt");
+
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override LocString Title => HatTrickPowerShared.Title;
+    protected override IEnumerable<string> RegisteredKeywordIds =>
+        [KnowledgeDemonKeyword.Record, KnowledgeDemonKeyword.Materialize];
 
-    public override async Task AfterPlayerTurnStart(
-        PlayerChoiceContext choiceContext,
-        Player player)
-    {
-        if (Owner.Player != player)
-        {
-            return;
-        }
-
-        Flash();
-        await HatTrickPowerShared.RecordAndMaterializeAsync(
-            choiceContext,
-            player,
-            (int)System.Math.Max(1m, Amount),
-            SelectionScreenPrompt,
-            this);
-    }
-}
-
-[RegisterPower]
-public sealed class HatTrickUpgradedPower : KnowledgeDemonPowerModel
-{
-    public override PowerType Type => PowerType.Buff;
-
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override LocString Title => HatTrickPowerShared.Title;
-
-    public override async Task AfterPlayerTurnStart(
-        PlayerChoiceContext choiceContext,
-        Player player)
-    {
-        if (Owner.Player != player)
-        {
-            return;
-        }
-
-        Flash();
-        await HatTrickPowerShared.RecordAndMaterializeAsync(
-            choiceContext,
-            player,
-            (int)System.Math.Max(1m, Amount),
-            SelectionScreenPrompt,
-            this);
-    }
-}
-
-internal static class HatTrickPowerShared
-{
-    internal static readonly LocString Title = new("powers", "KNOWLEDGE_DEMON_POWER_HAT_TRICK_POWER.title");
-
-    internal static async Task RecordAndMaterializeAsync(
-        PlayerChoiceContext choiceContext,
+    public async Task AfterRecordedToLibrary(
+        PlayerChoiceContext? choiceContext,
         Player player,
-        int recordCount,
-        LocString selectionPrompt,
-        PowerModel? source = null)
+        CardModel sourceCard,
+        IReadOnlyList<CardModel> recordedCopies)
     {
-        var candidates = player.Character.CardPool
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Where(card => card.Type == CardType.Power)
-            .Where(card => card.CanBeGeneratedInCombat)
-            .Where(card => card.Rarity != CardRarity.Basic)
-            .Where(card => card.Rarity != CardRarity.Ancient)
-            .GroupBy(card => card.Id)
-            .Select(group => group.First())
-            .ToList();
+        _ = sourceCard;
+        _ = recordedCopies;
 
-        if (candidates.Count == 0)
+        if (Amount <= 0 || player.Creature != Owner || choiceContext is null)
         {
             return;
         }
 
-        var selected = candidates
-            .StableShuffle(player.RunState.Rng.Shuffle)
-            .Take(System.Math.Max(1, recordCount))
-            .ToList();
-
-        if (selected.Count == 0)
-        {
-            return;
-        }
-
-        foreach (var template in selected)
-        {
-            var record = player.RunState.CreateCard(template, player);
-            await BookLibraryCmd.RecordToLibrary(choiceContext, player, record, 1);
-        }
-
-        await Cmd.CustomScaledWait(0.25f, 0.45f);
-
+        Flash();
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,
             player,
             1,
-            selectionPrompt,
-            source);
+            MaterializePrompt,
+            this);
+        await PowerCmd.Decrement(this);
     }
 }

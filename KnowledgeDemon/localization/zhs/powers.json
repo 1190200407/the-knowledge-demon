@@ -76,5 +76,10 @@
     "KNOWLEDGE_DEMON_POWER_LIGHT_TRAP_POWER.smartDescription": "你每变化1张牌，对随机敌人造成[blue]{Amount}[/blue]点伤害。",
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.title": "相对论",
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.description": "回合开始时，记录随机能力牌，[gold]具象[/gold]1。",
-    "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.smartDescription": "回合开始时，记录[blue]{Amount}[/blue]张随机能力牌，[gold]具象[/gold]1。"
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.smartDescription": "回合开始时，记录[blue]{Amount}[/blue]张随机能力牌，[gold]具象[/gold]1。",
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_POWER.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.title": "相对论",
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.description": "回合开始时，记录随机能力牌，[gold]具象[/gold]1。",
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.smartDescription": "回合开始时，记录[blue]{Amount}[/blue]张随机能力牌，[gold]具象[/gold]1。",
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。"
 }
