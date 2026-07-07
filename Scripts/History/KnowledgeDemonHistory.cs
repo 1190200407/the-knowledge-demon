@@ -33,4 +33,31 @@ public static class KnowledgeDemonHistory
 
         AddMethod.Invoke(history, [combatState, entry]);
     }
+
+    public static void LogRecorded(Player player, CardModel? sourceCard, ModelId recordedCardId, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        var combatState = player.Creature.CombatState;
+        var history = CombatManager.Instance?.History;
+        if (combatState is null || history is null)
+        {
+            return;
+        }
+
+        var entry = new KnowledgeDemonRecordedEntry(
+            player,
+            sourceCard,
+            recordedCardId,
+            count,
+            combatState.RoundNumber,
+            combatState.CurrentSide,
+            history,
+            combatState.Players);
+
+        AddMethod.Invoke(history, [combatState, entry]);
+    }
 }

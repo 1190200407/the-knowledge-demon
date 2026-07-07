@@ -12,7 +12,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 {
-    private const int energyCost = 2;
+    private const int energyCost = 1;
     private const CardType type = CardType.Skill;
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
@@ -27,7 +27,7 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(2),
+        new EnergyVar(1),
     ];
 
     public ContinuationFlameCharm()
@@ -42,6 +42,6 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Energy.UpgradeValueBy(1m);
     }
 }

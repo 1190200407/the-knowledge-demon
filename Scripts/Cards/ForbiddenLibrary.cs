@@ -27,7 +27,7 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(13m, ValueProp.Move),
+        new DamageVar(10m, ValueProp.Move),
         new CalculationBaseVar(0m),
         new CalculationExtraVar(1m),
         new CalculatedVar(CalculatedHitsKey).WithMultiplier((card, _) =>

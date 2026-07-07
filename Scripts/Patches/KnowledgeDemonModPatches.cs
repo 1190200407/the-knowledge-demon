@@ -19,7 +19,7 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<ThoughtInterferenceChoosePatch>();
 		patcher.RegisterPatch<ParallelObservationTransformOptionsPatch>();
 		patcher.RegisterPatch<KnowledgeDemonUniqueTransformOptionsPatch>();
-		patcher.RegisterPatch<DustyTomeInfiniteExclusionPatch>();
+		patcher.RegisterPatch<DustyTomeInfiniteAncientCardSetterPatch>();
 		patcher.RegisterPatch<BigMushroomGrowScalePatch>();
 		patcher.RegisterPatch<SurroundedPowerKnowledgeDemonFacingPatch>();
 		patcher.RegisterPatch<KnowledgeDemonFastModeAttackCastSpeedPatch>();

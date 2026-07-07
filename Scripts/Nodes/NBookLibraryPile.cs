@@ -535,6 +535,7 @@ public partial class NBookLibraryPile : Control
         var cards = _pendingDialOrderCards;
         _pendingDialOrderCards = null;
 
+        var childIndex = 0;
         for (var pileIndex = 0; pileIndex < cards.Count; pileIndex++)
         {
             if (!_holders.TryGetValue(cards[pileIndex], out var holder)
@@ -544,7 +545,7 @@ public partial class NBookLibraryPile : Control
                 continue;
             }
 
-            _dialCenter.MoveChildSafely(holder, pileIndex);
+            _dialCenter.MoveChildSafely(holder, childIndex++);
         }
     }
 

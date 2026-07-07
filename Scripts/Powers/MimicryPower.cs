@@ -4,7 +4,6 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -21,7 +20,6 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter"), new StringVar("UpgradeText")];
 
-    [SavedProperty]
     public ModelId ChosenCharacterId
     {
         get => _chosenCharacterId
@@ -45,7 +43,6 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
         SyncChosenCharacterVar();
     }
 
-    [SavedProperty]
     public bool GrantsUpgradedReward
     {
         get => _grantsUpgradedReward;
@@ -64,6 +61,15 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
     private void SyncChosenCharacterVar()
     {
+        if (_chosenCharacterId is null && Owner?.Player is { } player)
+        {
+            if (MimicryRewardSingleton.GetChosenCharacter(player) is { } savedCharacter)
+            {
+                _chosenCharacterId = savedCharacter.Id;
+                _grantsUpgradedReward = MimicryRewardSingleton.GrantsUpgradedReward(player);
+            }
+        }
+
         if (_chosenCharacterId is null)
         {
             return;

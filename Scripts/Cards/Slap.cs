@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -23,9 +23,11 @@ public sealed class Slap : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(9m, ValueProp.Move),
+        new DamageVar(7m, ValueProp.Move),
         ModCardVars.Computed("Repeat", 1m, card => GetHitCount(card)),
     ];
 
@@ -36,11 +38,13 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount((int)GetHitCount(this))
                 .FromCard(this)
-                .TargetingRandomOpponents(CombatState!),
+                .Targeting(cardPlay.Target),
             Owner.Character,
             onlyPlayAnimOnce: true)
             .WithHitFx("vfx/vfx_attack_blunt")
@@ -49,19 +53,25 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 
     private static decimal GetHitCount(CardModel? source)
     {
-        if (source is null)
+        if (source is not Slap slap || slap.Owner is not { } owner)
         {
             return 1;
         }
 
-        return 1 + CombatManager.Instance.History.CardPlaysFinished.Count(entry =>
-            entry.HappenedThisTurn(source.CombatState)
-            && entry.CardPlay.Card.Owner == source.Owner
-            && entry.CardPlay.Card.Id == source.Id);
+        var history = CombatManager.Instance?.History;
+        if (history is null)
+        {
+            return 1;
+        }
+
+        return 1 + history.Entries
+            .OfType<KnowledgeDemonRecordedEntry>()
+            .Where(entry => entry.Player == owner && entry.RecordedCardId == slap.Id)
+            .Sum(entry => entry.Count);
     }
 }

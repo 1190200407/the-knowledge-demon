@@ -81,5 +81,7 @@
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.title": "相对论",
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.description": "回合开始时，记录随机能力牌，[gold]具象[/gold]1。",
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.smartDescription": "回合开始时，记录[blue]{Amount}[/blue]张随机能力牌，[gold]具象[/gold]1。",
-    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。"
+    "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
+    "DISINTEGRATION_POWER.description": "在敌人的回合结束时，受到伤害。",
+    "DISINTEGRATION_POWER.smartDescription": "在{OnPlayer:玩家|敌人}的回合结束时，受到[blue]{Amount}[/blue]点伤害。"
 }

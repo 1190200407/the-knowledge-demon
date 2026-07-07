@@ -64,6 +64,15 @@ public static class BookLibraryCmd
         }
 
         await KnowledgeDemonHook.AfterRecordedToLibrary(choiceContext, player, card, recordedCopies);
+        foreach (var recordedGroup in recordedCopies.GroupBy(recorded => recorded.Id))
+        {
+            KnowledgeDemonHistory.LogRecorded(
+                player,
+                card,
+                recordedGroup.Key,
+                recordedGroup.Count());
+        }
+
         KnowledgeDemonTelemetryEvents.CaptureRecordedToLibrary(player, card, recordedCopies);
     }
 

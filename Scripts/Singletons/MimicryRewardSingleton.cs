@@ -8,17 +8,27 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
+using STS2RitsuLib;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Models;
+using STS2RitsuLib.RunData;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterSingleton]
 public sealed class MimicryRewardSingleton : HookedSingletonModel
 {
-    private readonly record struct MimicryRewardData(ModelId CharacterId, bool GrantsUpgradedReward);
+    private static readonly PlayerRunSavedData<MimicryRewardData> SavedData =
+        RitsuLibFramework.GetRunSavedDataStore(Entry.ModId).RegisterPerPlayer(
+            "mimicry_reward",
+            () => new MimicryRewardData(),
+            new RunSavedDataOptions { WritePolicy = RunSavedDataWritePolicy.WhenNonDefault });
 
-    private static readonly Dictionary<ulong, MimicryRewardData> ChosenCharacterIds = [];
+    public sealed class MimicryRewardData
+    {
+        public string? CharacterId { get; set; }
+        public bool GrantsUpgradedReward { get; set; }
+    }
 
     public MimicryRewardSingleton()
         : base(HookType.Run)
@@ -27,24 +37,61 @@ public sealed class MimicryRewardSingleton : HookedSingletonModel
 
     public static void SetChosenCharacter(Player player, CharacterModel character, bool grantsUpgradedReward)
     {
-        ChosenCharacterIds[player.NetId] = new MimicryRewardData(character.Id, grantsUpgradedReward);
+        if (!TryGetRunState(player, out var runState))
+        {
+            return;
+        }
+
+        SavedData.Set(runState, player.NetId, new MimicryRewardData
+        {
+            CharacterId = character.Id.ToString(),
+            GrantsUpgradedReward = grantsUpgradedReward,
+        });
     }
 
     public static void Clear(Player player)
     {
-        ChosenCharacterIds.Remove(player.NetId);
+        if (TryGetRunState(player, out var runState))
+        {
+            SavedData.Remove(runState, player.NetId);
+        }
     }
 
     public static CharacterModel? GetChosenCharacter(Player player)
     {
-        return ChosenCharacterIds.TryGetValue(player.NetId, out var data)
-            ? ModelDb.GetById<CharacterModel>(data.CharacterId)
+        return TryGetData(player, out var data)
+            ? ModelDb.GetByIdOrNull<CharacterModel>(ModelId.Deserialize(data.CharacterId!))
             : null;
     }
 
     public static bool GrantsUpgradedReward(Player player)
     {
-        return ChosenCharacterIds.TryGetValue(player.NetId, out var data) && data.GrantsUpgradedReward;
+        return TryGetData(player, out var data) && data.GrantsUpgradedReward;
+    }
+
+    private static bool TryGetData(Player player, out MimicryRewardData data)
+    {
+        if (!TryGetRunState(player, out var runState)
+            || !SavedData.TryGet(runState, player.NetId, out data))
+        {
+            data = null!;
+            return false;
+        }
+
+        return !string.IsNullOrWhiteSpace(data.CharacterId);
+    }
+
+    private static bool TryGetRunState(Player player, out RunState runState)
+    {
+        if (player.RunState is RunState concreteRunState)
+        {
+            runState = concreteRunState;
+            return true;
+        }
+
+        runState = null!;
+        Entry.Logger.Warn("[Mimicry] Player does not belong to a concrete RunState.");
+        return false;
     }
 
     public override Task BeforeCombatStart()

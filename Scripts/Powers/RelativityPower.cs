@@ -83,7 +83,7 @@ internal static class RelativityPowerShared
     {
         foreach (var card in cards)
         {
-            await Cmd.CustomScaledWait(0.1f, 0.1f);
+            await Cmd.CustomScaledWait(0.1f, 0.25f);
             await BookLibraryCmd.RecordToLibrary(choiceContext, player, card, 1);
         }
     }
@@ -126,7 +126,7 @@ internal static class RelativityPowerShared
 
         await RecordCardsWithDelayAsync(choiceContext, player, records);
 
-        await Cmd.CustomScaledWait(0.5f, 0.5f);
+        await Cmd.CustomScaledWait(0.5f, 1f);
 
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,

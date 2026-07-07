@@ -42,7 +42,7 @@ public sealed class LocustIncursionUpgradedPower : KnowledgeDemonPowerModel
             })
             .ToList();
         await RelativityPowerShared.RecordCardsWithDelayAsync(choiceContext, player, records);
-        await Cmd.CustomScaledWait(0.5f, 0.5f);
+        await Cmd.CustomScaledWait(0.5f, 1f);
         await PowerCmd.Decrement(this);
     }
 }

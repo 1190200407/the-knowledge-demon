@@ -52,6 +52,7 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
 
         foreach (var card in recordedCards)
         {
+            await Cmd.CustomScaledWait(0.1f, 0.25f);
             await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, card, DynamicVars["Record"].IntValue);
         }
 
@@ -59,6 +60,8 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
         {
             return;
         }
+
+        await Cmd.CustomScaledWait(0.5f, 1f);
 
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,

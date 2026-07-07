@@ -22,9 +22,11 @@ public sealed class Whisper : KnowledgeDemonCardModel
 
     public override bool GainsBlock => true;
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move),
+        new BlockVar(8m, ValueProp.Move),
     ];
 
     public Whisper()
@@ -48,8 +50,13 @@ public sealed class Whisper : KnowledgeDemonCardModel
             return;
         }
 
-        var sameNameCards = PileType.Draw.GetPile(Owner).Cards
-            .Concat(PileType.Discard.GetPile(Owner).Cards)
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(Owner);
+        if (libraryPile is null)
+        {
+            return;
+        }
+
+        var sameNameCards = libraryPile.Cards
             .Where(card => card.Id == selected.Id)
             .ToList();
 
@@ -61,6 +68,6 @@ public sealed class Whisper : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }
