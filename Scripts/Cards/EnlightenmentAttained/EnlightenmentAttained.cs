@@ -21,8 +21,6 @@ public sealed class EnlightenmentAttained : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Eternal];
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar(HealVarName, 7m),

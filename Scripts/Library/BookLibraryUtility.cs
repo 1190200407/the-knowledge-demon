@@ -51,6 +51,35 @@ public static class BookLibraryUtility
         NBookLibraryPile.Instance?.TryGetHolder(card)?.UpdateCard();
     }
 
+    public static void RefreshHandCardVisual(CardModel card)
+    {
+        if (card.Pile?.Type != PileType.Hand)
+        {
+            return;
+        }
+
+        var ncard = NCard.FindOnTable(card);
+        if (ncard != null)
+        {
+            ApplyRealHandTableVisuals(ncard);
+            return;
+        }
+
+        Callable.From(() =>
+        {
+            if (card.Pile?.Type != PileType.Hand)
+            {
+                return;
+            }
+
+            var deferredCard = NCard.FindOnTable(card);
+            if (deferredCard != null)
+            {
+                ApplyRealHandTableVisuals(deferredCard);
+            }
+        }).CallDeferred();
+    }
+
     public static void ApplyLibraryCardPreviewVisuals(NCard ncard, bool applyTint = true)
     {
         if (!GodotObject.IsInstanceValid(ncard))
@@ -65,6 +94,19 @@ public static class BookLibraryUtility
         {
             ApplyLibraryCardTint(ncard);
         }
+    }
+
+    public static void ApplyHandCardPreviewVisuals(NCard ncard)
+    {
+        if (!GodotObject.IsInstanceValid(ncard))
+        {
+            return;
+        }
+
+        ncard.SetForceUnpoweredPreview(false);
+        ncard.SetPretendCardCanBePlayed(false);
+        ncard.Modulate = Colors.White;
+        ncard.UpdateVisuals(PileType.Hand, CardPreviewMode.Normal);
     }
 
     public static void ApplyHandTableVisuals(NCard ncard)
@@ -88,6 +130,30 @@ public static class BookLibraryUtility
             }
 
             ApplyLibraryCardPreviewVisuals(ncard);
+        }).CallDeferred();
+    }
+
+    public static void ApplyRealHandTableVisuals(NCard ncard)
+    {
+        if (!GodotObject.IsInstanceValid(ncard))
+        {
+            return;
+        }
+
+        if (ncard.IsNodeReady())
+        {
+            ApplyHandCardPreviewVisuals(ncard);
+            return;
+        }
+
+        Callable.From(() =>
+        {
+            if (!GodotObject.IsInstanceValid(ncard) || !ncard.IsNodeReady())
+            {
+                return;
+            }
+
+            ApplyHandCardPreviewVisuals(ncard);
         }).CallDeferred();
     }
 

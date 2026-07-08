@@ -15,7 +15,7 @@ using STS2RitsuLib.Keywords;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class Embodiment : KnowledgeDemonCardModel
+public sealed class Farewell : KnowledgeDemonCardModel
 {
     private const int energyCost = 3;
     private const CardType type = CardType.Attack;
@@ -34,11 +34,11 @@ public sealed class Embodiment : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(12m, ValueProp.Move),
+        new DamageVar(17m, ValueProp.Move),
         new CardsVar(4),
     ];
 
-    public Embodiment()
+    public Farewell()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
     }

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
-using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
+using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -19,7 +20,7 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    private const int MaxLibrarySelectCount = 3;
+    private const int ChooseCount = 3;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose)];
@@ -40,22 +41,43 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
             return;
         }
 
-        var maxSelect = Math.Min(MaxLibrarySelectCount, libraryPile.Cards.Count);
-        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
-            choiceContext,
-            Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1, maxSelect),
-            filter: null,
-            source: this)).ToList();
+        await BookLibraryCmd.PlayChooseStartPresentation(Owner);
 
-        if (selected.Count == 0)
+        for (var i = 0; i < ChooseCount; i++)
         {
-            return;
+            if (CombatManager.Instance.IsOverOrEnding || libraryPile.Cards.Count == 0)
+            {
+                break;
+            }
+
+            var result = await BookLibraryCmd.ChooseFromLibrary(choiceContext, Owner, this);
+            if (!result.HasCandidates)
+            {
+                break;
+            }
+
+            await ApplyItIsDoneChooseResult(choiceContext, result);
         }
 
-        await BookLibraryCmd.PlayChooseStartPresentation(Owner);
-        await BookLibraryCmd.ChooseFromCandidatesAndAutoPlay(choiceContext, Owner, selected, this);
         BookLibraryCmd.PlayChooseDonePresentation(Owner);
+    }
+
+    private static async Task ApplyItIsDoneChooseResult(
+        PlayerChoiceContext choiceContext,
+        BookLibraryChooseResult result)
+    {
+        if (result.Chosen != null)
+        {
+            KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
+            await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
+        }
+
+        foreach (var card in result.Unchosen)
+        {
+            KnowledgeDemonChooseContext.ClearChoosePreviewFlag(card);
+            await CardPileCmd.Add(card, BookLibraryUtility.PileType);
+            await Cmd.CustomScaledWait(0.5f, 1f);
+        }
     }
 
     protected override void OnUpgrade()

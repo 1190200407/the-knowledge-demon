@@ -58,10 +58,17 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     private static decimal GetHitCount(CardModel? source)
     {
-        if (source is not Slap slap || slap.Owner is not { } owner)
+        if (source is not { IsMutable: true })
         {
             return 1;
         }
+
+        if (source is not Slap slap)
+        {
+            return 1;
+        }
+
+        var owner = slap.Owner;
 
         var history = CombatManager.Instance?.History;
         if (history is null)

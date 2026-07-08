@@ -63,6 +63,7 @@ public sealed class Whisper : KnowledgeDemonCardModel
         foreach (var card in sameNameCards)
         {
             await CardPileCmd.Add(card, PileType.Hand);
+            BookLibraryUtility.RefreshHandCardVisual(card);
         }
     }
 

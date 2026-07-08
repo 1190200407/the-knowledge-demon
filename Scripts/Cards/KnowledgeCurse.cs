@@ -25,8 +25,8 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         IsUpgraded
-            ? [KnowledgeDemonKeywordHoverTips.FromRecord(), KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars)]
-            : [KnowledgeDemonKeywordHoverTips.FromRecord()];
+            ? [KnowledgeDemonKeywordHoverTips.FromRecord(), KnowledgeDemonKeywordHoverTips.FromMaterialize(DynamicVars), HoverTipFactory.FromCard<GoodGrace>(), HoverTipFactory.FromCard<Collapse>(), HoverTipFactory.FromCard<MindAscension>()]
+            : [KnowledgeDemonKeywordHoverTips.FromRecord(), HoverTipFactory.FromCard<GoodGrace>(), HoverTipFactory.FromCard<Collapse>(), HoverTipFactory.FromCard<MindAscension>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [

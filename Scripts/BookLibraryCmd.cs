@@ -139,10 +139,12 @@ public static class BookLibraryCmd
             if (ReferenceEquals(resultCard, card))
             {
                 await CardPileCmd.Add(card, PileType.Hand);
+                BookLibraryUtility.RefreshHandCardVisual(card);
             }
             else
             {
                 await CardPileCmd.AddGeneratedCardToCombat(resultCard, PileType.Hand, player);
+                BookLibraryUtility.RefreshHandCardVisual(resultCard);
             }
 
             materialized.Add(resultCard);
@@ -415,11 +417,13 @@ public static class BookLibraryCmd
         foreach (var card in handCards)
         {
             await CardPileCmd.Add(card, BookLibraryUtility.PileType);
+            BookLibraryUtility.RefreshCardVisual(card);
         }
 
         foreach (var card in libraryCards)
         {
             await CardPileCmd.Add(card, PileType.Hand);
+            BookLibraryUtility.RefreshHandCardVisual(card);
         }
     }
 
