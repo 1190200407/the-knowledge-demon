@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Cards.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -30,6 +31,9 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
     private const string DamageKey = "LucyDamage";
 
     public override int MaxUpgradeLevel => 0;
+
+    [SavedProperty]
+    public int Stage { get; set; }
 
     public override string Title
     {
@@ -58,6 +62,18 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
     {
     }
 
+    public override Task AfterCardEnteredCombat(CardModel card)
+    {
+        if (!ReferenceEquals(card, this))
+        {
+            return Task.CompletedTask;
+        }
+
+        InheritStageFromCloneIfNeeded();
+        SyncCombatCost();
+        return Task.CompletedTask;
+    }
+
     public override Task AfterCardGeneratedForCombat(CardModel card, Player? creator)
     {
         if (!ReferenceEquals(card, this) || creator != Owner)
@@ -65,8 +81,15 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
             return Task.CompletedTask;
         }
 
+        InheritStageFromCloneIfNeeded();
         SyncCombatCost();
         return Task.CompletedTask;
+    }
+
+    public void InitializeStage(int stage)
+    {
+        Stage = Math.Clamp(stage, 1, 10);
+        SyncCombatCost();
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -96,6 +119,11 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
 
     private int GetStage()
     {
+        if (Stage > 0)
+        {
+            return Stage;
+        }
+
         if (Owner is null)
         {
             return 1;
@@ -120,5 +148,15 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
             .OfType<CardGeneratedEntry>()
             .Count(entry => entry.Creator == Owner && entry.Card is LucyFormState);
         return Math.Clamp(Math.Max(1, fallbackCount), 1, 10);
+    }
+
+    private void InheritStageFromCloneIfNeeded()
+    {
+        if (Stage > 0 || CloneOf is not LucyFormState source || source.Stage <= 0)
+        {
+            return;
+        }
+
+        Stage = source.Stage;
     }
 }

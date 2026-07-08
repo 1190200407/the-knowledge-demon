@@ -26,6 +26,8 @@ public sealed class LavishTakingCharm : KnowledgeDemonCardModel, IKnowledgeDemon
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
+        HoverTipFactory.FromPower<VulnerablePower>(),
+        KnowledgeDemonKeywordHoverTips.FromRecord(),
         HoverTipFactory.Static(StaticHoverTip.Transform),
         HoverTipFactory.FromCard<RefusalCharm>(),
     ];

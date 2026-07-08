@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -19,6 +20,9 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class LucyFormPower : KnowledgeDemonPowerModel
 {
     private bool _isTransforming;
+
+    [SavedProperty]
+    public int CreatedLucyFormCount { get; set; }
 
     public override PowerType Type => PowerType.Buff;
 
@@ -61,6 +65,9 @@ public sealed class LucyFormPower : KnowledgeDemonPowerModel
 
         var replacement = card.CardScope?.CreateCard<LucyFormState>(card.Owner)
             ?? card.Owner.RunState.CreateCard<LucyFormState>(card.Owner);
+        var stage = Math.Clamp(CreatedLucyFormCount + 1, 1, 10);
+        replacement.InitializeStage(stage);
+        CreatedLucyFormCount = stage;
 
         _isTransforming = true;
         try

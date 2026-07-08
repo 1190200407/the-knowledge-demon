@@ -19,7 +19,8 @@ public sealed class LucyForm : KnowledgeDemonCardModel
     private const bool ShouldShowInCardLibraryValue = true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips => [HoverTipFactory.FromCard<LucyFormState>()];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [HoverTipFactory.Static(StaticHoverTip.Transform), HoverTipFactory.FromCard<LucyFormState>()];
 
     public LucyForm()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)

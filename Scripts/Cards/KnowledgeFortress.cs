@@ -21,7 +21,7 @@ public sealed class KnowledgeFortress : KnowledgeDemonCardModel
     private const string BlockPerLibraryCardVarName = "Block";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.FromKeyword(CardKeyword.Sly)];
+        [HoverTipFactory.FromKeyword(CardKeyword.Sly), HoverTipFactory.Static(StaticHoverTip.Block)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [new PowerVar<KnowledgeFortressPower>(BlockPerLibraryCardVarName, 2m)];

@@ -30,7 +30,7 @@ public sealed class Farewell : KnowledgeDemonCardModel
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromChoose()];
+        [KnowledgeDemonKeywordHoverTips.FromChoose(), KnowledgeDemonKeywordHoverTips.FromRecord()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -22,7 +23,7 @@ public sealed class Infinite : KnowledgeDemonCardModel
     private const bool ShouldShowInCardLibraryValue = true;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.Static(StaticHoverTip.Transform)];
+        [HoverTipFactory.Static(StaticHoverTip.Transform), HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique))];
 
     public Infinite()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)

@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Characters;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -57,17 +59,12 @@ public sealed class Mimicry : KnowledgeDemonCardModel
             optionCards,
             Owner,
             canSkip: false);
-        if (chosen is null)
+        if (chosen is not MimicryCharacterOption chosenOption || chosenOption.ChosenCharacterId is not { } chosenCharacterId)
         {
             return;
         }
 
-        var chosenCharacter = ModelDb.AllCharacters
-            .FirstOrDefault(character => character.CardPool.Id == chosen.Pool.Id);
-        if (chosenCharacter is null)
-        {
-            return;
-        }
+        var chosenCharacter = ModelDb.GetById<CharacterModel>(chosenCharacterId);
 
         MimicryRewardSingleton.SetChosenCharacter(Owner, chosenCharacter, IsUpgraded);
         await PowerCmd.Remove(Owner.Creature.GetPower<MimicryPower>());
@@ -84,8 +81,21 @@ public sealed class Mimicry : KnowledgeDemonCardModel
 
     private CardModel? CreateCharacterOptionCard(CharacterModel character)
     {
-        var previewSource = character.StartingDeck.FirstOrDefault(card => card.Tags.Contains(CardTag.Defend))
+        CardModel? previewSource = character.Id == ModelDb.Character<Ironclad>().Id
+            ? ModelDb.Card<ShrugItOff>()
+            : null;
+
+        previewSource ??= character.StartingDeck.FirstOrDefault(card => card.Tags.Contains(CardTag.Defend))
             ?? character.StartingDeck.FirstOrDefault();
-        return previewSource is null ? null : Owner.RunState.CreateCard(previewSource, Owner);
+        if (previewSource is null)
+        {
+            return null;
+        }
+
+        var option = Owner.RunState.CreateCard<MimicryCharacterOption>(Owner);
+        option.SetChosenCharacter(character, previewSource);
+        if (base.IsUpgraded)
+            CardCmd.Upgrade(option);
+        return option;
     }
 }

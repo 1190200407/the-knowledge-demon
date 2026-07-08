@@ -20,6 +20,9 @@ public sealed class SpiderSense : KnowledgeDemonCardModel
 
     private const string BlockVarName = "Block";
 
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [HoverTipFactory.Static(StaticHoverTip.Block)];
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [new PowerVar<SpiderSensePower>(BlockVarName, 5m)];
 
