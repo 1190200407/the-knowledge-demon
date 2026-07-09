@@ -23,7 +23,7 @@ public sealed class LightTrap : KnowledgeDemonCardModel
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DamageVar(7m, ValueProp.Move)];
+        [new DamageVar(7m, ValueProp.Unpowered)];
 
     public LightTrap()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)

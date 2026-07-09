@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
@@ -34,6 +35,31 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
 
     [SavedProperty]
     public int Stage { get; set; }
+
+    public override string PortraitPath
+    {
+        get
+        {
+            var stage = Stage;
+            if (stage <= 0)
+            {
+                return base.PortraitPath;
+            }
+
+            var portraitIndex = stage switch
+            {
+                <= 3 => 1,
+                <= 6 => 2,
+                <= 9 => 3,
+                _ => 4,
+            };
+
+            var portraitPath = $"res://KnowledgeDemon/images/card_portraits/LUCY_FORM_STATE_{portraitIndex}.png";
+            return ResourceLoader.Exists(portraitPath)
+                ? portraitPath
+                : base.PortraitPath;
+        }
+    }
 
     public override string Title
     {
@@ -96,12 +122,27 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
+        var stage = GetStage();
         var damage = ((ComputedDynamicVar)DynamicVars[DamageKey]).Calculate(cardPlay.Target);
-        await DamageCmd.Attack(damage)
+        var attack = DamageCmd.Attack(damage)
             .FromCard(this)
             .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
-            .Execute(choiceContext);
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (stage >= 7)
+        {
+            attack = attack.WithAttackerAnim(
+                KnowledgeDemon.GetSuperAnimIfApplicable(Owner.Character),
+                KnowledgeDemon.GetSuperAttackDelayIfApplicable(Owner.Character));
+        }
+        else if (stage >= 4)
+        {
+            attack = attack.WithAttackerAnim(
+                KnowledgeDemon.GetHeavyAnimIfApplicable(Owner.Character),
+                KnowledgeDemon.GetHeavyAttackDelayIfApplicable(Owner.Character));
+        }
+
+        await attack.Execute(choiceContext);
     }
 
     private void SyncCombatCost()

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -29,6 +32,8 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         [CardKeyword.Sly];
 
+    protected override bool ShouldGlowGoldInternal => ShouldRecordAgainThisPlay();
+
     public LocustIncursion()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
@@ -44,28 +49,38 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
 
-        if (IsUpgraded)
+        if (ShouldRecordAgainThisPlay())
         {
-            await PowerCmd.Apply<LocustIncursionUpgradedPower>(
-                choiceContext,
-                Owner.Creature,
-                1m,
-                Owner.Creature,
-                this);
-        }
-        else
-        {
-            await PowerCmd.Apply<LocustIncursionPower>(
-                choiceContext,
-                Owner.Creature,
-                1m,
-                Owner.Creature,
-                this);
+            await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, this, 1);
         }
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(3m);
+    }
+
+    private bool ShouldRecordAgainThisPlay()
+    {
+        if (Owner?.Creature.CombatState is not { } combatState)
+        {
+            return false;
+        }
+
+        var threshold = IsUpgraded ? 5 : 3;
+        return CountPlayedCardsThisTurn(combatState) < threshold;
+    }
+
+    private int CountPlayedCardsThisTurn(ICombatState combatState)
+    {
+        var history = CombatManager.Instance?.History;
+        if (history is null)
+        {
+            return 0;
+        }
+
+        return history.CardPlaysFinished.Count(entry =>
+            entry.HappenedThisTurn(combatState)
+            && entry.CardPlay.Card.Owner == Owner);
     }
 }
