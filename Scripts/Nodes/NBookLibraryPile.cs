@@ -29,12 +29,37 @@ public partial class NBookLibraryPile : Control
     public const string ScenePath = "res://KnowledgeDemon/scenes/book_library_pile.tscn";
     public static readonly Vector2 DefaultPosition = Vector2.Zero;
 
+    [Export]
+    public bool EnableBottomHoverLift { get; set; } = true;
+
+    [Export]
+    public Rect2 HoverTriggerViewportRect { get; set; } = new(0f, 920f, 1920f, 160f);
+
+    [Export]
+    public float DialCenterCollapsedY { get; set; } = 1000f;
+
+    [Export]
+    public float DialCenterExpandedY { get; set; } = 950f;
+
+    [Export]
+    public float HoverLiftTweenDuration { get; set; } = 0.12f;
+
+    [Export]
+    public bool AutoSizeHoverTriggerZone { get; set; } = true;
+
+    [Export]
+    public float HoverTriggerHorizontalPadding { get; set; } = 120f;
+
+    [Export]
+    public float HoverTriggerMinWidth { get; set; } = 700f;
+
     private readonly Dictionary<CardModel, NBookLibraryCardHolder> _holders = [];
 
     /// <summary>变化时从 map 摘下的槽位，等新模型入堆时挂回（只处理这一张，不挡其它加牌）。</summary>
     private NBookLibraryCardHolder? _pendingTransformHolder;
 
     private Control? _dialCenter;
+    private Control? _hoverTriggerZone;
     private Control? _selectBackstop;
     private Control? _selectedCardContainerRoot;
     private NPlayerHand? _selectedCardHand;
@@ -47,6 +72,8 @@ public partial class NBookLibraryPile : Control
     private IReadOnlyList<CardModel>? _pendingDialOrderCards;
     private bool _cardsShownByToggle = true;
     private int _forcedCardsVisibleCount;
+    private Tween? _hoverLiftTween;
+    private bool _isBottomHoverExpanded;
 
     public static NBookLibraryPile? Instance { get; private set; }
 
@@ -87,6 +114,7 @@ public partial class NBookLibraryPile : Control
         }
 
         _dialCenter.MouseFilter = MouseFilterEnum.Ignore;
+        _hoverTriggerZone = GetNodeOrNull<Control>("%HoverTriggerZone");
 
         _selectBackstop = GetNodeOrNull<Control>("%SelectModeBackstop");
         _selectedCardContainerRoot = GetNodeOrNull<Control>("%SelectedCardContainer");
@@ -100,6 +128,15 @@ public partial class NBookLibraryPile : Control
         _selectBackstop.MouseFilter = MouseFilterEnum.Ignore;
         _selectedCardContainerRoot.Connect(Control.SignalName.FocusEntered, Callable.From(OnSelectedContainerFocus));
         ApplyCardsVisibilityState();
+        UpdateHoverTriggerZoneSize();
+        UpdateBottomHoverLift(force: true, immediate: true);
+    }
+
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+        _ = delta;
+        UpdateBottomHoverLift();
     }
 
     public async Task<IEnumerable<CardModel>> RunSession(
@@ -290,6 +327,8 @@ public partial class NBookLibraryPile : Control
             $"[BookLibrary][Initialize] visible={Visible} relic={BookLibraryUtility.PlayerHasBookLibraryRelic(player)} " +
             $"cards={pile?.Cards.Count ?? 0} index={GetIndex()}");
         KnowledgeDemonCardSelectSession.LogState("Initialize", this);
+        UpdateHoverTriggerZoneSize();
+        UpdateBottomHoverLift(force: true, immediate: true);
     }
 
     public NCard? GetCard(CardModel card) => _holders.GetValueOrDefault(card)?.CardNode;
@@ -494,6 +533,8 @@ public partial class NBookLibraryPile : Control
             holder.SetTargetScale(holderScale);
             holder.SetTargetAngle(targetRot);
         }
+
+        UpdateHoverTriggerZoneSize();
     }
 
     private void SyncDialHolderSiblingOrder()
@@ -750,6 +791,94 @@ public partial class NBookLibraryPile : Control
         }
 
         NLibraryPileButton.Instance?.RefreshToggleVisual();
+        UpdateHoverTriggerZoneSize();
+        UpdateBottomHoverLift(force: true, immediate: true);
+    }
+
+    private void UpdateHoverTriggerZoneSize()
+    {
+        if (!AutoSizeHoverTriggerZone
+            || _hoverTriggerZone == null
+            || _dialCenter == null)
+        {
+            return;
+        }
+
+        var cardCount = _pile?.Cards.Count ?? 0;
+        var focusedPileIndex = _pile == null ? -1 : GetFocusedPileIndex(_pile.Cards);
+        var halfWidth = HoverTriggerMinWidth * 0.5f;
+
+        if (cardCount > 0)
+        {
+            var scale = BookLibraryPosHelper.GetScale(cardCount);
+            var cardHalfWidth = NCard.defaultSize.X * scale.X * 0.5f;
+            var minX = float.PositiveInfinity;
+            var maxX = float.NegativeInfinity;
+
+            for (var pileIndex = 0; pileIndex < cardCount; pileIndex++)
+            {
+                var position = BookLibraryPosHelper.GetPosition(cardCount, pileIndex);
+                position += BookLibraryPosHelper.GetHoverSpreadOffset(focusedPileIndex, pileIndex);
+                minX = MathF.Min(minX, position.X - cardHalfWidth);
+                maxX = MathF.Max(maxX, position.X + cardHalfWidth);
+            }
+
+            if (!float.IsInfinity(minX) && !float.IsInfinity(maxX))
+            {
+                halfWidth = MathF.Max(halfWidth, MathF.Max(MathF.Abs(minX), MathF.Abs(maxX)) + HoverTriggerHorizontalPadding);
+            }
+        }
+
+        _hoverTriggerZone.OffsetLeft = -halfWidth;
+        _hoverTriggerZone.OffsetRight = halfWidth;
+    }
+
+    private void UpdateBottomHoverLift(bool force = false, bool immediate = false)
+    {
+        if (_dialCenter == null)
+        {
+            return;
+        }
+
+        var shouldExpand = ShouldExpandDialCenterForMouse();
+        if (!force && shouldExpand == _isBottomHoverExpanded)
+        {
+            return;
+        }
+
+        _isBottomHoverExpanded = shouldExpand;
+        var target = _dialCenter.Position with
+        {
+            Y = shouldExpand ? DialCenterExpandedY : DialCenterCollapsedY
+        };
+
+        _hoverLiftTween?.Kill();
+        if (immediate || !IsInsideTree() || HoverLiftTweenDuration <= 0f)
+        {
+            _dialCenter.Position = target;
+            return;
+        }
+
+        _hoverLiftTween = CreateTween();
+        _hoverLiftTween.TweenProperty(_dialCenter, "position", target, HoverLiftTweenDuration)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+    }
+
+    private bool ShouldExpandDialCenterForMouse()
+    {
+        if (!EnableBottomHoverLift || !Visible || !AreCardsEffectivelyVisible || _selectSession != null)
+        {
+            return false;
+        }
+
+        var mousePosition = GetViewport().GetMousePosition();
+        if (_hoverTriggerZone != null && GodotObject.IsInstanceValid(_hoverTriggerZone))
+        {
+            return _hoverTriggerZone.GetGlobalRect().HasPoint(mousePosition);
+        }
+
+        return HoverTriggerViewportRect.HasPoint(mousePosition);
     }
 
     private static int IndexOfCard(CardPile pile, CardModel card)
