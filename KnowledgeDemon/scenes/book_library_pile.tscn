@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://ckka0y5aeh2r8"]
+[gd_scene load_steps=2 format=3 uid="uid://ckka0y5aeh2r8"]
 
 [ext_resource type="Script" uid="uid://dk7xfmnmfu6ir" path="res://Scripts/Nodes/NBookLibraryPile.cs" id="1_watch"]
-[ext_resource type="PackedScene" uid="uid://ces6hisynchy3" path="res://KnowledgeDemon/scenes/library_pile.tscn" id="2_3wqsl"]
 
 [node name="BookLibraryPile" type="Control"]
 layout_mode = 3
@@ -12,13 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_watch")
-
-[node name="LibraryPile" parent="." instance=ExtResource("2_3wqsl")]
-layout_mode = 0
-offset_left = 125.0
-offset_top = 985.0
-offset_right = 205.0
-offset_bottom = 1065.0
 
 [node name="SelectModeBackstop" type="ColorRect" parent="."]
 unique_name_in_owner = true

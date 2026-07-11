@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -10,47 +11,42 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using STS2RitsuLib.Scaffolding.Godot.NodeAttachments;
 using STS2RitsuLib.Patching.Models;
 
 namespace ComicChess.KnowledgeDemon;
 
-internal sealed class BookLibraryPileInjectPatch : IPatchMethod
+internal sealed class LibraryPileButtonInitializePatch : IPatchMethod
 {
-    public static string PatchId => "knowledgedemon_book_library_pile_inject";
-    public static string Description => "Inject NBookLibraryPile into NCombatUi";
+    public static string PatchId => "knowledgedemon_library_pile_button_initialize";
+    public static string Description => "Initialize attached NLibraryPileButton on combat pile container initialize";
     public static bool IsCritical => true;
 
     public static ModPatchTarget[] GetTargets() =>
     [
-        new(typeof(NCombatUi), nameof(NCombatUi._Ready)),
+        new(typeof(NCombatPilesContainer), nameof(NCombatPilesContainer.Initialize), [typeof(Player)]),
     ];
 
-    public static void Postfix(NCombatUi __instance)
+    public static void Postfix(NCombatPilesContainer __instance, Player player)
     {
-        if (__instance.GetChildren().OfType<NBookLibraryPile>().Any())
+        if (!ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatPilesContainer, NLibraryPileButton>(
+                    __instance,
+                    NLibraryPileButton.NodeAttachmentLocalId,
+                    out var pileButton)
+            || pileButton == null)
         {
             return;
         }
 
-        if (!ResourceLoader.Exists(NBookLibraryPile.ScenePath))
-        {
-            Entry.Logger.Error($"[BookLibrary] Scene missing: {NBookLibraryPile.ScenePath}");
-            return;
-        }
-
-        var watch = ResourceLoader.Load<PackedScene>(NBookLibraryPile.ScenePath)
-            .Instantiate<NBookLibraryPile>(PackedScene.GenEditState.Disabled);
-        __instance.AddChildSafely(watch);
-        __instance.MoveChildSafely(watch, __instance.Hand.GetIndex());
-        Entry.Logger.Info(
-            $"[BookLibrary][Inject] handIndex={__instance.Hand.GetIndex()} pileIndex={watch.GetIndex()}");
+        pileButton.Initialize(player);
     }
 }
 
-internal sealed class BookLibraryPileActivatePatch : IPatchMethod
+internal sealed class BookLibraryPileInitializePatch : IPatchMethod
 {
-    public static string PatchId => "knowledgedemon_book_library_pile_activate";
-    public static string Description => "Initialize NBookLibraryPile on combat UI activate";
+    public static string PatchId => "knowledgedemon_book_library_pile_initialize";
+    public static string Description => "Initialize attached NBookLibraryPile on combat UI activate";
     public static bool IsCritical => true;
 
     public static ModPatchTarget[] GetTargets() =>
@@ -66,10 +62,17 @@ internal sealed class BookLibraryPileActivatePatch : IPatchMethod
             return;
         }
 
-        foreach (var watch in __instance.GetChildren().OfType<NBookLibraryPile>())
+        if (!ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatUi, NBookLibraryPile>(
+                    __instance,
+                    NBookLibraryPile.NodeAttachmentLocalId,
+                    out var pile)
+            || pile == null)
         {
-            watch.Initialize(me);
+            return;
         }
+
+        pile.Initialize(me);
     }
 }
 

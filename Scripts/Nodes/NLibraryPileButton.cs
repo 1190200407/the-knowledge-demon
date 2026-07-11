@@ -13,6 +13,11 @@ namespace ComicChess.KnowledgeDemon;
 
 public partial class NLibraryPileButton : NButton
 {
+    public const string NodeAttachmentLocalId = "library_pile_button";
+    public const string NodeAttachmentName = "LibraryPileButton";
+    public const string ScenePath = "res://KnowledgeDemon/scenes/library_pile_button.tscn";
+    public static readonly Vector2 DefaultPosition = new(95f, 985f);
+
     private static readonly Vector2 HoverScale = Vector2.One * 1.25f;
     private static readonly Color PressedColor = Colors.DarkGray;
 
@@ -21,6 +26,14 @@ public partial class NLibraryPileButton : NButton
     private Tween? _bumpTween;
     private CardPile? _pile;
     private Player? _player;
+
+    public static NLibraryPileButton? Instance { get; private set; }
+
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        Instance = this;
+    }
 
     public override void _Ready()
     {
@@ -42,6 +55,11 @@ public partial class NLibraryPileButton : NButton
     public override void _ExitTree()
     {
         base._ExitTree();
+        if (ReferenceEquals(Instance, this))
+        {
+            Instance = null;
+        }
+
         DetachPile();
     }
 

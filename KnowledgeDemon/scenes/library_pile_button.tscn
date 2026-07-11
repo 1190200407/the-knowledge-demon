@@ -1,27 +1,27 @@
 [gd_scene load_steps=9 format=3 uid="uid://ces6hisynchy3"]
 
-[ext_resource type="Texture2D" uid="uid://up7p22i1o7n0" path="res://KnowledgeDemon/images/ui/library_pile.png" id="2_7m00m"]
-[ext_resource type="Texture2D" uid="uid://d1q5y71e14b3r" path="res://KnowledgeDemon/images/ui/pile_button_count.png" id="3_mj3rt"]
-[ext_resource type="Script" uid="uid://btt7vu62kioe2" path="res://Scripts/Nodes/NNewMegaLabel.cs" id="4_bh8ac"]
-[ext_resource type="FontVariation" uid="uid://ux4d708e7mk6" path="res://KnowledgeDemon/themes/kreon_bold_glyph_space_one.tres" id="4_oohoc"]
-[ext_resource type="Script" uid="uid://d28aely5mknxl" path="res://Scripts/Nodes/NLibraryPileButton.cs" id="5_library"]
-[ext_resource type="Shader" uid="uid://h27dgbmche1f" path="res://KnowledgeDemon/shaders/hsv.gdshader" id="6_l4ivw"]
-[ext_resource type="Texture2D" uid="uid://dyjy7ne60ulai" path="res://KnowledgeDemon/images/ui/placeholder_controller_icon.png" id="7_acjkt"]
+[ext_resource type="Script" uid="uid://d28aely5mknxl" path="res://Scripts/Nodes/NLibraryPileButton.cs" id="1_frlyi"]
+[ext_resource type="Texture2D" uid="uid://up7p22i1o7n0" path="res://KnowledgeDemon/images/ui/library_pile.png" id="2_t78ol"]
+[ext_resource type="Texture2D" uid="uid://d1q5y71e14b3r" path="res://KnowledgeDemon/images/ui/pile_button_count.png" id="3_wry1q"]
+[ext_resource type="FontVariation" uid="uid://ux4d708e7mk6" path="res://KnowledgeDemon/themes/kreon_bold_glyph_space_one.tres" id="4_wyaxo"]
+[ext_resource type="Script" uid="uid://btt7vu62kioe2" path="res://Scripts/Nodes/NNewMegaLabel.cs" id="5_0emig"]
+[ext_resource type="Shader" uid="uid://h27dgbmche1f" path="res://KnowledgeDemon/shaders/hsv.gdshader" id="6_vqmi5"]
+[ext_resource type="Texture2D" uid="uid://dyjy7ne60ulai" path="res://KnowledgeDemon/images/ui/placeholder_controller_icon.png" id="7_brpqe"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kfhi7"]
 resource_local_to_scene = true
-shader = ExtResource("6_l4ivw")
+shader = ExtResource("6_vqmi5")
 shader_parameter/h = 1.0
 shader_parameter/s = 1.0
 shader_parameter/v = 1.0
 
-[node name="LibraryPile" type="Control"]
+[node name="LibraryPileButton" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 80.0
 offset_bottom = 80.0
 pivot_offset = Vector2(40, 40)
-script = ExtResource("5_library")
+script = ExtResource("1_frlyi")
 metadata/_edit_lock_ = true
 metadata/_edit_group_ = true
 
@@ -34,7 +34,7 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(40, 40)
 mouse_filter = 2
-texture = ExtResource("2_7m00m")
+texture = ExtResource("2_t78ol")
 expand_mode = 2
 stretch_mode = 5
 
@@ -62,7 +62,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3_mj3rt")
+texture = ExtResource("3_wry1q")
 expand_mode = 2
 stretch_mode = 5
 
@@ -84,12 +84,12 @@ theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 1
 theme_override_constants/outline_size = 12
 theme_override_constants/shadow_outline_size = 12
-theme_override_fonts/font = ExtResource("4_oohoc")
+theme_override_fonts/font = ExtResource("4_wyaxo")
 theme_override_font_sizes/font_size = 26
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
-script = ExtResource("4_bh8ac")
+script = ExtResource("5_0emig")
 AutoSizeEnabled = false
 theme_override_colors/font_color = Color(1, 0.964706, 0.886275, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.12549)
@@ -98,7 +98,7 @@ theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 1
 theme_override_constants/outline_size = 12
 theme_override_constants/shadow_outline_size = 12
-theme_override_fonts/font = ExtResource("4_oohoc")
+theme_override_fonts/font = ExtResource("4_wyaxo")
 theme_override_font_sizes/font_size = 26
 
 [node name="ControllerIcon" type="TextureRect" parent="."]
@@ -120,6 +120,6 @@ grow_vertical = 2
 scale = Vector2(0.5, 0.5)
 pivot_offset = Vector2(256, 128)
 mouse_filter = 2
-texture = ExtResource("7_acjkt")
+texture = ExtResource("7_brpqe")
 expand_mode = 1
 stretch_mode = 5

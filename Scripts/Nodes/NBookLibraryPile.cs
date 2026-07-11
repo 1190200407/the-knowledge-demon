@@ -24,7 +24,10 @@ namespace ComicChess.KnowledgeDemon;
 /// </summary>
 public partial class NBookLibraryPile : Control
 {
+    public const string NodeAttachmentLocalId = "book_library_pile";
+    public const string NodeAttachmentName = "BookLibraryPile";
     public const string ScenePath = "res://KnowledgeDemon/scenes/book_library_pile.tscn";
+    public static readonly Vector2 DefaultPosition = Vector2.Zero;
 
     private readonly Dictionary<CardModel, NBookLibraryCardHolder> _holders = [];
 
@@ -35,7 +38,6 @@ public partial class NBookLibraryPile : Control
     private Control? _selectBackstop;
     private Control? _selectedCardContainerRoot;
     private NPlayerHand? _selectedCardHand;
-    private NLibraryPileButton? _libraryPileButton;
     private Tween? _selectBackstopTween;
     private KnowledgeDemonCardSelectSession? _selectSession;
     private CardPile? _pile;
@@ -88,7 +90,6 @@ public partial class NBookLibraryPile : Control
 
         _selectBackstop = GetNodeOrNull<Control>("%SelectModeBackstop");
         _selectedCardContainerRoot = GetNodeOrNull<Control>("%SelectedCardContainer");
-        _libraryPileButton = GetNodeOrNull<NLibraryPileButton>("LibraryPile");
         if (_selectBackstop == null || _selectedCardContainerRoot == null)
         {
             Entry.Logger.Error("[BookLibrary] Missing %SelectModeBackstop or %SelectedCardContainer in book_library_pile.tscn");
@@ -283,7 +284,6 @@ public partial class NBookLibraryPile : Control
         _player = player;
         UpdateVisibility();
         AttachPile(BookLibraryUtility.PileType.GetPile(player));
-        _libraryPileButton?.Initialize(player);
         ApplyCardsVisibilityState();
         var pile = BookLibraryUtility.TryGetLibraryPile(player);
         Entry.Logger.Info(
@@ -749,7 +749,7 @@ public partial class NBookLibraryPile : Control
             _focusedHolder = null;
         }
 
-        _libraryPileButton?.RefreshToggleVisual();
+        NLibraryPileButton.Instance?.RefreshToggleVisual();
     }
 
     private static int IndexOfCard(CardPile pile, CardModel card)

@@ -11,7 +11,9 @@ using STS2RitsuLib.Keywords;
 using STS2RitsuLib.Combat.Rewards;
 using STS2RitsuLib.Cards.Transforms;
 using STS2RitsuLib.Patching.Core;
+using STS2RitsuLib.Scaffolding.Godot.NodeAttachments;
 using Godot;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -30,6 +32,34 @@ public class Entry
 		KnowledgeDemonTelemetry.Register();
 		KnowledgeDemonRuntimeHotkeys.Register();
 
+        ModNodeAttachmentRegistry.For(ModId)
+            .RegisterReadyChildFromScene<NCombatPilesContainer, NLibraryPileButton>(
+                NLibraryPileButton.NodeAttachmentLocalId,
+                NLibraryPileButton.ScenePath,
+                static (_, pileButton) =>
+                {
+                    pileButton.Position = NLibraryPileButton.DefaultPosition;
+                },
+                new NodeAttachmentOptions
+                {
+                    Name = NLibraryPileButton.NodeAttachmentName,
+                    DuplicatePolicy = NodeAttachmentDuplicatePolicy.ThrowIfExistingByName,
+                });
+
+        ModNodeAttachmentRegistry.For(ModId)
+            .RegisterReadyChildFromScene<NCombatUi, NBookLibraryPile>(
+                NBookLibraryPile.NodeAttachmentLocalId,
+                NBookLibraryPile.ScenePath,
+                static (_, pile) =>
+                {
+                    pile.Position = NBookLibraryPile.DefaultPosition;
+                },
+                new NodeAttachmentOptions
+                {
+                    Name = NBookLibraryPile.NodeAttachmentName,
+                    DuplicatePolicy = NodeAttachmentDuplicatePolicy.ThrowIfExistingByName,
+                    InsertBeforeName = "Hand",
+                });
 
         var registry = ModCardPileRegistry.For(ModId);
 		BookLibraryUtility.PileType = registry.RegisterOwned(

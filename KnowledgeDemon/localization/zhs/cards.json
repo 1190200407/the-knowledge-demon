@@ -118,7 +118,7 @@
     "KNOWLEDGE_DEMON_CARD_SPIDER_SENSE.title": "蜘蛛感应",
     "KNOWLEDGE_DEMON_CARD_SPIDER_SENSE.description": "你抽到[gold]状态牌[/gold]时，获得{Block:diff()}点[gold]格挡[/gold]。",
     "KNOWLEDGE_DEMON_CARD_LOCUST_INCURSION.title": "蝗虫入境",
-    "KNOWLEDGE_DEMON_CARD_LOCUST_INCURSION.description": "对所有敌人造成{Damage:diff()}点伤害。若你在这回合打出的牌少于3{IfUpgraded:show:（5）|}张，将此牌重新[gold]记录[/gold]1次。",
+    "KNOWLEDGE_DEMON_CARD_LOCUST_INCURSION.description": "对所有敌人造成{Damage:diff()}点伤害。若你在这回合打出的牌不少于{IfUpgraded:show:5|3}张，将此牌重新[gold]记录[/gold]1次。",
     "KNOWLEDGE_DEMON_CARD_FAREWELL.title": "永别",
     "KNOWLEDGE_DEMON_CARD_FAREWELL.description": "造成{Damage:diff()}点伤害。抽{Cards:diff()}张牌，[gold]记录[/gold]其中所有耗能不为0的牌后丢弃。[gold]抉择[/gold]1次。",
     "KNOWLEDGE_DEMON_CARD_SLAP.title": "抽打",
