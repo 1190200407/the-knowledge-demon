@@ -35,6 +35,7 @@ public sealed class ConsciousnessTransfer : KnowledgeDemonCardModel
     {
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
         await BookLibraryCmd.SwapHandAndLibrary(Owner);
+        await BookLibraryCmd.TryTriggerKnowledgeOverloadIfThresholdReached(choiceContext, Owner, this);
     }
 
     protected override void OnUpgrade()

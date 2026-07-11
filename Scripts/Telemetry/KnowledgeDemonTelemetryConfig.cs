@@ -10,8 +10,8 @@ public static class KnowledgeDemonTelemetryConfig
     // Fill these in to enable telemetry.
     // Direct PostHog: Host = "https://us.i.posthog.com", ProjectApiKey = "<project key>"
     // Proxy: Host = "https://your-worker.workers.dev", ProjectApiKey = "proxy"
-    public const string Host = "";
-    public const string ProjectApiKey = "";
+    public const string Host = "https://patient-mountain-76fe.comicchess-knowledge-demon.workers.dev";
+    public const string ProjectApiKey = "proxy";
 
     public static bool IsConfigured =>
         Uri.TryCreate(Host, UriKind.Absolute, out _)

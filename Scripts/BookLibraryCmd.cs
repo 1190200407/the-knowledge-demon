@@ -452,6 +452,36 @@ public static class BookLibraryCmd
         }
     }
 
+    public static async Task TryTriggerKnowledgeOverloadIfThresholdReached(
+        PlayerChoiceContext? choiceContext,
+        Player player,
+        AbstractModel? source = null)
+    {
+        if (choiceContext is null)
+        {
+            return;
+        }
+
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
+        if (libraryPile is null || libraryPile.Cards.Count < 9)
+        {
+            return;
+        }
+
+        if (player.GetRelic<CognitionVesselRelic>() is { } cognitionVesselRelic)
+        {
+            cognitionVesselRelic.Flash();
+            await TriggerKnowledgeOverload(choiceContext, player, source ?? cognitionVesselRelic);
+            return;
+        }
+
+        if (player.GetRelic<KnowledgeHostRelic>() is { } knowledgeHostRelic)
+        {
+            knowledgeHostRelic.Flash();
+            await TriggerKnowledgeOverload(choiceContext, player, source ?? knowledgeHostRelic);
+        }
+    }
+
     private static async Task TryVanishFromLibrary(CardModel card)
     {
         if (card.HasBeenRemovedFromState)

@@ -13,8 +13,6 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCharacterStarterRelic(typeof(KnowledgeDemon))]
 public sealed class CognitionVesselRelic : KnowledgeDemonRelicModel, IKnowledgeDemonEventListener
 {
-    private const int KnowledgeOverloadThreshold = 9;
-
     public override RelicRarity Rarity => RelicRarity.Starter;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
@@ -38,18 +36,6 @@ public sealed class CognitionVesselRelic : KnowledgeDemonRelicModel, IKnowledgeD
             return;
         }
 
-        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
-        if (libraryPile is null || libraryPile.Cards.Count < KnowledgeOverloadThreshold)
-        {
-            return;
-        }
-
-        if (choiceContext is null)
-        {
-            return;
-        }
-
-        Flash();
-        await BookLibraryCmd.TriggerKnowledgeOverload(choiceContext, player, this);
+        await BookLibraryCmd.TryTriggerKnowledgeOverloadIfThresholdReached(choiceContext, player, this);
     }
 }

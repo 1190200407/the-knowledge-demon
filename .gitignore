@@ -2,6 +2,9 @@
 .godot/
 .nomedia
 
+# Telemetry
+telemetry/
+
 # Godot-specific ignores
 .import/
 export.cfg

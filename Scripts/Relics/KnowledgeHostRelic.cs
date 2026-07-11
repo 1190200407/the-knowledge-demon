@@ -13,8 +13,6 @@ namespace ComicChess.KnowledgeDemon;
 /// <summary>知识寄主：与认知容器共用藏书库记录机制（非初始遗物）。</summary>
 public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDemonEventListener
 {
-    private const int KnowledgeOverloadThreshold = 9;
-
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
@@ -38,18 +36,6 @@ public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDem
             return;
         }
 
-        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
-        if (libraryPile is null || libraryPile.Cards.Count < KnowledgeOverloadThreshold)
-        {
-            return;
-        }
-
-        if (choiceContext is null)
-        {
-            return;
-        }
-
-        Flash();
-        await BookLibraryCmd.TriggerKnowledgeOverload(choiceContext, player, this);
+        await BookLibraryCmd.TryTriggerKnowledgeOverloadIfThresholdReached(choiceContext, player, this);
     }
 }
