@@ -16,7 +16,7 @@ public partial class NLibraryPileButton : NButton
     public const string NodeAttachmentLocalId = "library_pile_button";
     public const string NodeAttachmentName = "LibraryPileButton";
     public const string ScenePath = "res://KnowledgeDemon/scenes/library_pile_button.tscn";
-    public static readonly Vector2 DefaultPosition = new(100f, 985f);
+    public static readonly Vector2 DefaultPosition = new(110f, 985f);
 
     private static readonly Vector2 HoverScale = Vector2.One * 1.25f;
     private static readonly Color PressedColor = Colors.DarkGray;

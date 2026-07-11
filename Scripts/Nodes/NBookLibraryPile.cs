@@ -136,6 +136,7 @@ public partial class NBookLibraryPile : Control
     {
         base._Process(delta);
         _ = delta;
+        UpdateHoverTriggerZoneSize();
         UpdateBottomHoverLift();
     }
 
@@ -804,23 +805,24 @@ public partial class NBookLibraryPile : Control
             return;
         }
 
-        var cardCount = _pile?.Cards.Count ?? 0;
-        var focusedPileIndex = _pile == null ? -1 : GetFocusedPileIndex(_pile.Cards);
         var halfWidth = HoverTriggerMinWidth * 0.5f;
+        var validHolders = _holders.Values
+            .Where(holder => GodotObject.IsInstanceValid(holder) && holder.GetParent() == _dialCenter)
+            .ToList();
 
-        if (cardCount > 0)
+        if (validHolders.Count > 0)
         {
-            var scale = BookLibraryPosHelper.GetScale(cardCount);
-            var cardHalfWidth = NCard.defaultSize.X * scale.X * 0.5f;
             var minX = float.PositiveInfinity;
             var maxX = float.NegativeInfinity;
 
-            for (var pileIndex = 0; pileIndex < cardCount; pileIndex++)
+            foreach (var holder in validHolders)
             {
-                var position = BookLibraryPosHelper.GetPosition(cardCount, pileIndex);
-                position += BookLibraryPosHelper.GetHoverSpreadOffset(focusedPileIndex, pileIndex);
-                minX = MathF.Min(minX, position.X - cardHalfWidth);
-                maxX = MathF.Max(maxX, position.X + cardHalfWidth);
+                var cardWidth = holder.IsNodeReady() && holder.Hitbox.Size.X > 0f
+                    ? holder.Hitbox.Size.X
+                    : NCard.defaultSize.X;
+                var cardHalfWidth = cardWidth * holder.Scale.X * 0.5f;
+                minX = MathF.Min(minX, holder.Position.X - cardHalfWidth);
+                maxX = MathF.Max(maxX, holder.Position.X + cardHalfWidth);
             }
 
             if (!float.IsInfinity(minX) && !float.IsInfinity(maxX))
