@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://kdv18ooeasnjk"]
+[gd_scene load_steps=6 format=3 uid="uid://cm3b2ktu5ev01"]
 
-[ext_resource type="Script" uid="uid://cs34g6xboregl" path="res://Scripts/Nodes/NBookLibraryCardHolder.cs" id="1_holder"]
-[ext_resource type="Script" uid="uid://ojww7gbjjx7h" path="res://Scripts/Nodes/NBookLibraryCardHolderHitbox.cs" id="2_55nxo"]
-[ext_resource type="Texture2D" uid="uid://kdjwhokohx9dv" path="res://KnowledgeDemon/images/ui/card_flash.png" id="3_53sj8"]
-[ext_resource type="FontVariation" uid="uid://kdr34jgrn81mg" path="res://KnowledgeDemon/themes/kreon_bold_glyph_space_one.tres" id="4_s01oo"]
+[ext_resource type="Script" uid="uid://cr678lkagjfcw" path="res://Scripts/Nodes/NBookLibraryCardHolder.cs" id="1_holder"]
+[ext_resource type="Script" uid="uid://6st7xy5dluu1" path="res://Scripts/Nodes/NBookLibraryCardHolderHitbox.cs" id="2_55nxo"]
+[ext_resource type="Texture2D" uid="uid://cmp6bkp6dkiud" path="res://KnowledgeDemon/images/ui/card_flash.png" id="3_53sj8"]
+[ext_resource type="FontVariation" uid="uid://ux4d708e7mk6" path="res://KnowledgeDemon/themes/kreon_bold_glyph_space_one.tres" id="4_s01oo"]
 [ext_resource type="Script" uid="uid://btt7vu62kioe2" path="res://Scripts/Nodes/NNewMegaLabel.cs" id="5_55nxo"]
 
 [node name="BookLibraryCardHolder" type="Control"]
@@ -21,7 +21,7 @@ anchors_preset = 0
 offset_left = -150.0
 offset_top = -211.0
 offset_right = 150.0
-offset_bottom = 211.0
+offset_bottom = 449.0
 pivot_offset = Vector2(150, 211)
 script = ExtResource("2_55nxo")
 

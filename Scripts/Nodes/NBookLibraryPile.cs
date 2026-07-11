@@ -42,7 +42,10 @@ public partial class NBookLibraryPile : Control
     public float DialCenterExpandedY { get; set; } = 950f;
 
     [Export]
-    public float HoverLiftTweenDuration { get; set; } = 0.12f;
+    public float HoverLiftTweenDuration { get; set; } = 0.3f;
+
+    [Export]
+    public float FocusedCardLiftOffsetY { get; set; } = 2f;
 
     [Export]
     public bool AutoSizeHoverTriggerZone { get; set; } = true;
@@ -725,10 +728,13 @@ public partial class NBookLibraryPile : Control
 
         if (focusedPileIndex == pileIndex)
         {
-            var cardHeight = holder.IsNodeReady() && holder.Hitbox.Size.Y > 0f
-                ? holder.Hitbox.Size.Y
+            var cardHeight = holder.CardNode is { } cardNode
+                             && GodotObject.IsInstanceValid(cardNode)
+                             && cardNode.IsNodeReady()
+                             && cardNode.Size.Y > 0f
+                ? cardNode.Size.Y
                 : NCard.defaultSize.Y;
-            position.Y = (0f - cardHeight) * 0.5f + 2f;
+            position.Y = (0f - cardHeight) * 0.5f + FocusedCardLiftOffsetY;
         }
 
         var rotationDeg = BookLibraryPosHelper.GetAngle(cardCount, pileIndex);
