@@ -20,7 +20,8 @@ public sealed class Infinite : KnowledgeDemonCardModel
     private const CardType TypeValue = CardType.Status;
     private const CardRarity RarityValue = CardRarity.Ancient;
     private const TargetType TargetTypeValue = TargetType.Self;
-    private const bool ShouldShowInCardLibraryValue = true;
+    private const bool ShouldShowInCardLibraryValue = false;
+    public override bool CanBeGeneratedInCombat => false;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.Static(StaticHoverTip.Transform), HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique))];

@@ -26,6 +26,9 @@ public static class BookLibraryUtility
         player?.GetRelic<CognitionVesselRelic>() is not null
         || player?.GetRelic<KnowledgeHostRelic>() is not null;
 
+    public static bool PlayerHasKnowledgeHostRelic(Player? player) =>
+        player?.GetRelic<KnowledgeHostRelic>() is not null;
+
     public static CardPile? TryGetLibraryPile(Player? player) =>
         player is null ? null : PileType.GetPile(player);
 

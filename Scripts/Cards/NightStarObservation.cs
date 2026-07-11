@@ -66,8 +66,9 @@ public sealed class NightStarObservation : KnowledgeDemonCardModel
             return;
         }
 
-        foreach (var offered in offeredCards)
+        for (var i = 0; i < offeredCards.Count; i++)
         {
+            var offered = offeredCards[i];
             var upgradedRecord = offered.CreateClone();
             if (IsUpgraded)
             {
@@ -75,8 +76,13 @@ public sealed class NightStarObservation : KnowledgeDemonCardModel
             }
 
             await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, upgradedRecord, 1);
+            if (i < offeredCards.Count - 1)
+            {
+                await Cmd.CustomScaledWait(0.1f, 0.25f);
+            }
         }
 
+        await Cmd.CustomScaledWait(0.5f, 1f);
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,
             Owner,

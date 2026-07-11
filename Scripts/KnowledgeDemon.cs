@@ -53,11 +53,11 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
                 // 游戏左上角头像、角色统计页头像、每日挑战角色头像。这个是场景而不是图片。参考下方附赠资源搭建。
                 IconPath: "res://KnowledgeDemon/scenes/knowledge_demon_icon.tscn",
                 // 人物选择背景。
-                CharacterSelectBgPath: "res://KnowledgeDemon/scenes/char_select_bg_knowledge_demon.tscn"
+                CharacterSelectBgPath: "res://KnowledgeDemon/scenes/char_select_bg_knowledge_demon.tscn",
                 // 人物选择图标。
-                //CharacterSelectIconPath: "res://Test/images/char_select_test.png",
+                CharacterSelectIconPath: "res://KnowledgeDemon/images/charui/char_select_knowledge_demon.png",
                 // 人物选择图标-锁定状态。
-                //CharacterSelectLockedIconPath: "res://Test/images/char_select_test_locked.png",
+                CharacterSelectLockedIconPath: "res://KnowledgeDemon/images/charui/char_select_knowledge_demon_locked.png"
                 // 人物选择过渡动画。
                 // CharacterSelectTransitionPath: "res://materials/transitions/ironclad_transition_mat.tres",
                 // 地图上的角色标记图标、表情轮盘上的角色头像。

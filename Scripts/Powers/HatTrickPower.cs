@@ -39,6 +39,7 @@ public sealed class HatTrickPower : KnowledgeDemonPowerModel, IKnowledgeDemonEve
         }
 
         Flash();
+        await Cmd.CustomScaledWait(0.5f, 1f);
         await BookLibraryCmd.MaterializeFromLibraryToHand(
             choiceContext,
             player,

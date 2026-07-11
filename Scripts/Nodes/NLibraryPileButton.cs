@@ -116,7 +116,7 @@ public partial class NLibraryPileButton : NButton
         var tipSet = NHoverTipSet.CreateAndShow(this, hoverTip);
         if (tipSet != null)
         {
-            tipSet.GlobalPosition = GlobalPosition + new Vector2(-120f, -250f);
+            tipSet.GlobalPosition = GlobalPosition + new Vector2(-56f, -375f);
         }
 
         PlayHoverAnim();

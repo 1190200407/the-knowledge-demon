@@ -149,6 +149,8 @@
     "KNOWLEDGE_DEMON_CARD_SHIFT_PERSPECTIVE.title": "转换思路",
     "KNOWLEDGE_DEMON_CARD_SHIFT_PERSPECTIVE.description": "造成{Damage:diff()}点伤害。抽{Cards:diff()}张牌，从[gold]手牌[/gold]或[gold]藏书库[/gold]中丢弃{Cards:diff()}张牌。",
     "KNOWLEDGE_DEMON_CARD_SHIFT_PERSPECTIVE.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张[gold]手牌[/gold]或[gold]藏书库[/gold]中的牌[gold]丢弃[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_ADAPTABILITY.title": "随机应变",
+    "KNOWLEDGE_DEMON_CARD_ADAPTABILITY.description": "获得{Block}点[gold]格挡[/gold]。此牌被[gold]记录[/gold]时，获得{RecordedBlock:diff()}点[gold]格挡[/gold]。",
     "KNOWLEDGE_DEMON_CARD_DEDUCTION.title": "推演",
     "KNOWLEDGE_DEMON_CARD_DEDUCTION.description": "抽{Cards:diff()}张牌，选择1张牌，将其[gold]记录[/gold]后丢弃。",
     "KNOWLEDGE_DEMON_CARD_DEDUCTION.selectionScreenPrompt": "选择[blue]1[/blue]张牌[gold]记录[/gold]后[gold]丢弃[/gold]。",

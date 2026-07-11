@@ -13,7 +13,7 @@ namespace ComicChess.KnowledgeDemon;
 /// <summary>知识寄主：与认知容器共用藏书库记录机制（非初始遗物）。</summary>
 public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDemonEventListener
 {
-    private const int KnowledgeOverloadThreshold = 6;
+    private const int KnowledgeOverloadThreshold = 9;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 

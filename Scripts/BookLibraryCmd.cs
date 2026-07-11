@@ -96,6 +96,22 @@ public static class BookLibraryCmd
         await RecordToLibrary(choiceContext, player, card, 1);
     }
 
+    public static async Task RecordOnManualPlayResolved(
+        PlayerChoiceContext? choiceContext,
+        CardModel card,
+        PileType oldPileType)
+    {
+        if (oldPileType != PileType.Play
+            || card.Owner is not Player player
+            || !BookLibraryUtility.PlayerHasKnowledgeHostRelic(player)
+            || !WasManuallyPlayed(card))
+        {
+            return;
+        }
+
+        await RecordToLibrary(choiceContext, player, card, 1);
+    }
+
     private static bool WasManuallyPlayedToDiscard(CardModel card)
     {
         var entry = CombatManager.Instance.History.CardPlaysFinished
@@ -104,6 +120,15 @@ public static class BookLibraryCmd
         return entry is CardPlayFinishedEntry finished
             && !finished.CardPlay.IsAutoPlay
             && finished.CardPlay.ResultPile == PileType.Discard;
+    }
+
+    private static bool WasManuallyPlayed(CardModel card)
+    {
+        var entry = CombatManager.Instance.History.CardPlaysFinished
+            .LastOrDefault(e => e.CardPlay.Card == card);
+
+        return entry is CardPlayFinishedEntry finished
+            && !finished.CardPlay.IsAutoPlay;
     }
     #endregion
 
