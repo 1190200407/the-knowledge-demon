@@ -19,8 +19,14 @@ public static class KnowledgeDemonKeywordHoverTips
     public static IHoverTip FromChoose() =>
         CreateStatic(KnowledgeDemonKeyword.Choose);
 
+    public static IHoverTip FromChooseOmega() =>
+        CreateStatic(KnowledgeDemonKeyword.ChooseOmega);
+
     public static IHoverTip FromKnowledgeOverload() =>
         CreateStatic(KnowledgeDemonKeyword.KnowledgeOverload);
+
+    public static IHoverTip FromKnowledgeOverloadOmega() =>
+        CreateStatic(KnowledgeDemonKeyword.KnowledgeOverloadOmega);
 
     private static IHoverTip Create(string keywordId, DynamicVar amountVar)
     {

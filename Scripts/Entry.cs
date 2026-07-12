@@ -30,6 +30,7 @@ public class Entry
 		RitsuLibFramework.EnsureGodotScriptsRegistered(assembly, Logger);
 		ModTypeDiscoveryHub.RegisterModAssembly(ModId, assembly);
 		KnowledgeDemonTelemetry.Register();
+		KnowledgeDemonModSettingsPage.Register();
 		KnowledgeDemonRuntimeHotkeys.Register();
 
         ModNodeAttachmentRegistry.For(ModId)
@@ -96,7 +97,13 @@ public class Entry
 			iconPath: null,
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.None,
 			includeInCardHoverTip: true);
+		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace(
+			"choose_omega",
+			iconPath: null,
+			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.None,
+			includeInCardHoverTip: true);
 		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace("knowledge_overload");
+		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace("knowledge_overload_omega");
 		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace(
 			"unique",
 			iconPath: null,

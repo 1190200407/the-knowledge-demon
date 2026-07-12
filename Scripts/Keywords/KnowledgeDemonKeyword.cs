@@ -17,9 +17,13 @@ public static class KnowledgeDemonKeyword
 
     public static readonly string Choose =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "choose");
+    public static readonly string ChooseOmega =
+        ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "choose_omega");
 
     public static readonly string KnowledgeOverload =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "knowledge_overload");
+    public static readonly string KnowledgeOverloadOmega =
+        ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "knowledge_overload_omega");
 
     public static readonly string Unique =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "unique");

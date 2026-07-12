@@ -19,8 +19,6 @@ namespace ComicChess.KnowledgeDemon;
 
 public static class BookLibraryCmd
 {
-    public const int ChooseOfferCount = 3;
-
     private static readonly LocString ChooseStartLine =
         MonsterModel.L10NMonsterLookup("KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.startLine");
 
@@ -89,22 +87,6 @@ public static class BookLibraryCmd
             || card.Owner is not Player player
             || !BookLibraryUtility.PlayerHasBookLibraryRelic(player)
             || !WasManuallyPlayedToDiscard(card))
-        {
-            return;
-        }
-
-        await RecordToLibrary(choiceContext, player, card, 1);
-    }
-
-    public static async Task RecordOnManualPlayResolved(
-        PlayerChoiceContext? choiceContext,
-        CardModel card,
-        PileType oldPileType)
-    {
-        if (oldPileType != PileType.Play
-            || card.Owner is not Player player
-            || !BookLibraryUtility.PlayerHasKnowledgeHostRelic(player)
-            || !WasManuallyPlayed(card))
         {
             return;
         }
@@ -280,7 +262,8 @@ public static class BookLibraryCmd
     public static async Task<BookLibraryChooseResult> ChooseFromLibrary(
         PlayerChoiceContext choiceContext,
         Player player,
-        CardModel? chooseSource = null)
+        CardModel? chooseSource = null,
+        int chooseOfferCount = 3)
     {
         var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
         if (libraryPile is null || libraryPile.Cards.Count == 0)
@@ -294,7 +277,7 @@ public static class BookLibraryCmd
             return BookLibraryChooseResult.Empty;
         }
 
-        var offerCount = Math.Min(ChooseOfferCount, choosableCards.Count);
+        var offerCount = Math.Min(chooseOfferCount, choosableCards.Count);
         var candidates = choosableCards
             .StableShuffle(player.RunState.Rng.Shuffle)
             .Take(offerCount)
@@ -349,9 +332,10 @@ public static class BookLibraryCmd
     public static async Task ChooseFromLibraryAndAutoPlay(
         PlayerChoiceContext choiceContext,
         Player player,
-        CardModel? chooseSource = null)
+        CardModel? chooseSource = null,
+        int chooseOfferCount = 3)
     {
-        var result = await ChooseFromLibrary(choiceContext, player, chooseSource);
+        var result = await ChooseFromLibrary(choiceContext, player, chooseSource, chooseOfferCount);
         await ApplyChooseResult(choiceContext, player, result);
     }
 
@@ -478,7 +462,7 @@ public static class BookLibraryCmd
         if (player.GetRelic<KnowledgeHostRelic>() is { } knowledgeHostRelic)
         {
             knowledgeHostRelic.Flash();
-            await TriggerKnowledgeOverload(choiceContext, player, source ?? knowledgeHostRelic);
+            await TriggerKnowledgeOverload(choiceContext, player, source ?? knowledgeHostRelic, true);
         }
     }
 
@@ -528,7 +512,8 @@ public static class BookLibraryCmd
     public static async Task TriggerKnowledgeOverload(
         PlayerChoiceContext choiceContext,
         Player player,
-        AbstractModel? source = null)
+        AbstractModel? source = null,
+        bool IsUpgraded = false)
     {
         var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
         if (libraryPile is null || libraryPile.Cards.Count == 0)
@@ -550,9 +535,10 @@ public static class BookLibraryCmd
             }
             TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
             await Cmd.CustomScaledWait(0.5f, 1f);
-            while (libraryPile.Cards.Count >= ChooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
+            int chooseOfferCount = IsUpgraded ? 2 : 3;
+            while (libraryPile.Cards.Count >= chooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
             {
-                await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel);
+                await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel, chooseOfferCount: chooseOfferCount);
                 chooseCount++;
             }
 
@@ -562,7 +548,8 @@ public static class BookLibraryCmd
                 source as CardModel,
                 libraryCountBefore,
                 libraryPile.Cards.Count,
-                chooseCount);
+                chooseCount,
+                chooseOfferCount);
         }
         finally
         {

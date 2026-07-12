@@ -7,6 +7,8 @@ namespace ComicChess.KnowledgeDemon;
 
 public static class KnowledgeDemonRuntimeHotkeys
 {
+    public const string DefaultToggleLibraryBinding = "C";
+
     private static readonly LocString LibraryTitle =
         new("static_hover_tips", "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.title");
 
@@ -23,7 +25,7 @@ public static class KnowledgeDemonRuntimeHotkeys
         }
 
         _toggleLibraryHandle = RuntimeHotkeyService.Register(
-            "C",
+            KnowledgeDemonModSettingsPage.GetToggleLibraryHotkey(),
             ToggleLibraryVisibility,
             new RuntimeHotkeyOptions
             {
@@ -35,6 +37,17 @@ public static class KnowledgeDemonRuntimeHotkeys
                 MarkInputHandled = true,
                 DebugName = "Knowledge Demon library visibility",
             });
+    }
+
+    public static bool TryRebindToggleLibraryHotkey(string binding)
+    {
+        var handle = _toggleLibraryHandle;
+        if (handle is not { IsRegistered: true })
+        {
+            return false;
+        }
+
+        return handle.TryRebind(binding, out _);
     }
 
     private static void ToggleLibraryVisibility()

@@ -18,8 +18,8 @@ public sealed class KnowledgeHostRelic : KnowledgeDemonRelicModel, IKnowledgeDem
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         KnowledgeDemonKeywordHoverTips.FromRecord(),
-        KnowledgeDemonKeywordHoverTips.FromKnowledgeOverload(),
-        KnowledgeDemonKeywordHoverTips.FromChoose(),
+        KnowledgeDemonKeywordHoverTips.FromKnowledgeOverloadOmega(),
+        KnowledgeDemonKeywordHoverTips.FromChooseOmega(),
     ];
 
     public async Task AfterRecordedToLibrary(

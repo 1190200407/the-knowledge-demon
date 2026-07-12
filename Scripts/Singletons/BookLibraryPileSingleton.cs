@@ -59,12 +59,6 @@ public sealed class BookLibraryPileSingleton : HookedSingletonModel
             _pendingRecordContexts.Remove(card);
         }
 
-        if (BookLibraryUtility.PlayerHasKnowledgeHostRelic(card.Owner as Player))
-        {
-            await BookLibraryCmd.RecordOnManualPlayResolved(choiceContext, card, oldPileType);
-            return;
-        }
-
         await BookLibraryCmd.RecordOnEnteredDiscardPile(choiceContext, card, oldPileType);
     }
 }

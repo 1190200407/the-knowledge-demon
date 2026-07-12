@@ -87,7 +87,8 @@ public static class KnowledgeDemonTelemetryEvents
         CardModel? sourceCard,
         int libraryCountBefore,
         int libraryCountAfter,
-        int chooseCount)
+        int chooseCount,
+        int chooseOfferCount)
     {
         var properties = new Dictionary<string, object?>
         {
@@ -96,7 +97,7 @@ public static class KnowledgeDemonTelemetryEvents
             ["library_count_before"] = libraryCountBefore,
             ["library_count_after"] = libraryCountAfter,
             ["choose_count"] = chooseCount,
-            ["threshold"] = BookLibraryCmd.ChooseOfferCount,
+            ["threshold"] = chooseOfferCount,
         };
 
         var payload = new JsonObject

@@ -124,7 +124,7 @@
     "KNOWLEDGE_DEMON_CARD_SLAP.title": "抽打",
     "KNOWLEDGE_DEMON_CARD_SLAP.description": "造成{Damage:diff()}点伤害{Repeat:choose(1):|{Repeat:diff()}次}。本场战斗中你每[gold]记录[/gold]1张[gold]抽打[/gold]，这张牌的攻击次数+1。",
     "KNOWLEDGE_DEMON_CARD_RUNE_PILLAR.title": "符文柱",
-    "KNOWLEDGE_DEMON_CARD_RUNE_PILLAR.description": "奇巧。获得{Block:diff()}点[gold]格挡[/gold]X次。",
+    "KNOWLEDGE_DEMON_CARD_RUNE_PILLAR.description": "获得{Block:diff()}点[gold]格挡[/gold]X次。",
     "KNOWLEDGE_DEMON_CARD_CAUSALITY_INVERSION.title": "因果倒置",
     "KNOWLEDGE_DEMON_CARD_CAUSALITY_INVERSION.description": "[gold]具象[/gold]X{IfUpgraded:show:+1|}。被此牌具象的牌本场战斗耗能减少X{IfUpgraded:show:+1|}。",
     "KNOWLEDGE_DEMON_CARD_OBSESSION.title": "执念",

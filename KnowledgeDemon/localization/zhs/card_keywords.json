@@ -6,10 +6,14 @@
     "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.title": "具象",
     "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.description": "从[gold]藏书库[/gold]中随机展示[blue]3[/blue]张牌，选择[blue]1[/blue]张打出，[gold]丢弃[/gold]另外2张。",
     "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.title": "抉择",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.description": "从[gold]藏书库[/gold]中随机展示[red]2[/red]张牌，选择[blue]1[/blue]张打出，[gold]丢弃[/gold]另外2张。",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.title": "抉择Ω",
     "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.description": "同名的[gold]独一[/gold]牌只能存在1张，重复的牌出现时将会被[gold]变化[/gold]。",
     "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.title": "独一",
     "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.description": "不断[gold]抉择[/gold]，直到[gold]藏书库[/gold]中少于[blue]3[/blue]张牌。",
     "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.title": "知识过载",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.description": "不断[red]抉择Ω[/red]，直到[gold]藏书库[/gold]中少于[red]2[/red]张牌。",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.title": "知识过载Ω",
     "SLY.description": "如果这张牌在你的回合结束前从你的[gold]手牌[/gold]或[gold]藏书库[/gold]中被丢弃，则免费将其打出。",
     "SLY.title": "奇巧"
 }
