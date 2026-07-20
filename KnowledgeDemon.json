@@ -3,7 +3,7 @@
 	"name": "KnowledgeDemon",
 	"author": "ComicChess",
 	"description": "添加可操控角色-知识恶魔",
-	"version": "0.6.3",
+	"version": "0.6.2",
 	"has_pck": true,
 	"has_dll": true,
 	"dependencies": [
