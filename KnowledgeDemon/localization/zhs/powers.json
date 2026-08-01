@@ -84,4 +84,10 @@
     "KNOWLEDGE_DEMON_POWER_RELATIVITY_UPGRADED_POWER.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
     "DISINTEGRATION_POWER.description": "在敌人的回合结束时，受到伤害。",
     "DISINTEGRATION_POWER.smartDescription": "在{OnPlayer:玩家|敌人}的回合结束时，受到[blue]{Amount}[/blue]点伤害。"
+    ,"KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_POWER.title": "三头六臂",
+    "KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_POWER.description": "你具象技能牌时，将其附魔：灵巧。你具象攻击牌时，将其附魔：锋利。",
+    "KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_POWER.smartDescription": "你[gold]具象[/gold]技能牌时，将其[gold]附魔[/gold]：[purple]灵巧[/purple][blue]{Amount}[/blue]。你[gold]具象[/gold]攻击牌时，将其[gold]附魔[/gold]：[purple]锋利[/purple][blue]{Amount}[/blue]。",
+    "KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_UPGRADED_POWER.title": "三头六臂+",
+    "KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_UPGRADED_POWER.description": "你具象技能牌时，将其附魔：伶俐。你具象攻击牌时，将其附魔：动量。",
+    "KNOWLEDGE_DEMON_POWER_THREE_HEADS_SIX_ARMS_UPGRADED_POWER.smartDescription": "你[gold]具象[/gold]技能牌时，将其[gold]附魔[/gold]：[purple]伶俐[/purple][blue]{Amount}[/blue]。你[gold]具象[/gold]攻击牌时，将其[gold]附魔[/gold]：[purple]动量[/purple][blue]{Amount}[/blue]。"
 }

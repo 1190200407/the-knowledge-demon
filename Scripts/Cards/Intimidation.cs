@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -14,7 +15,7 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class Intimidation : KnowledgeDemonCardModel
 {
     private const int energyCost = 0;
-    private const CardType type = CardType.Skill;
+    private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
@@ -28,6 +29,7 @@ public sealed class Intimidation : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
+        new DamageVar(4m, ValueProp.Move),
         new PowerVar<WeakPower>(2m),
     ];
 
@@ -43,6 +45,11 @@ public sealed class Intimidation : KnowledgeDemonCardModel
             return;
         }
 
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
+
         await PowerCmd.Apply<WeakPower>(
             choiceContext,
             cardPlay.Target,
@@ -53,6 +60,7 @@ public sealed class Intimidation : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(3m);
         DynamicVars.Weak.UpgradeValueBy(1m);
     }
 }
