@@ -88,7 +88,7 @@
     "KNOWLEDGE_DEMON_CARD_FORBIDDEN_LIBRARY.title": "禁书库",
     "KNOWLEDGE_DEMON_CARD_FORBIDDEN_LIBRARY.description": "丢弃[gold]藏书库[/gold]中的所有牌。\n每丢弃1张牌，就对敌人造成{Damage:diff()}点伤害。{InCombat:\n（攻击{CalculatedHits:diff()}次）|}",
     "KNOWLEDGE_DEMON_CARD_GENERATIONAL_REPAIR.title": "断代修复",
-    "KNOWLEDGE_DEMON_CARD_GENERATIONAL_REPAIR.description": "你下{Power:diff()}次[gold]消耗[/gold]技能牌或攻击牌时，将其[gold]记录[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_GENERATIONAL_REPAIR.description": "你下{Power:diff()}次[gold]消耗[/gold]牌时，将其[gold]记录[/gold]。",
     "KNOWLEDGE_DEMON_CARD_BUTTERFLY_EFFECT.title": "蝴蝶效应",
     "KNOWLEDGE_DEMON_CARD_BUTTERFLY_EFFECT.description": "造成{Damage:diff()}点伤害。目标本回合被攻击时不再受到伤害，而是被储存。下回合开始时，将1张[gold]{IfUpgraded:show:龙卷风+|龙卷风}[/gold]加入[gold]手牌[/gold]。",
     "KNOWLEDGE_DEMON_CARD_TWISTER.title": "龙卷风",

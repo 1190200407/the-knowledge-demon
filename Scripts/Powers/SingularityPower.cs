@@ -19,6 +19,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterPower]
 public sealed class SingularityPower : KnowledgeDemonPowerModel
 {
+    internal const int InfiniteThreshold = 3;
     private const string TargetCardNameVarName = "TargetCard";
 
     [SavedProperty]
@@ -26,6 +27,9 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
 
     [SavedProperty]
     public bool TargetIsUpgraded { get; private set; }
+
+    [SavedProperty]
+    public int TransformCount { get; private set; }
 
     public override PowerType Type => PowerType.Buff;
 
@@ -44,27 +48,54 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
         AssertMutable();
         TargetCardId = target.Id;
         TargetIsUpgraded = target.IsUpgraded;
+        TransformCount = 0;
         SyncTargetCardName();
         InvokeDisplayAmountChanged();
     }
 
-    public CardModel? CreateReplacement(CardModel original)
+    internal TransformReplacement? CreateReplacement(CardModel original)
     {
+        if (TransformOptionUtility.IsInfinite(original))
+        {
+            return null;
+        }
+
         if (TargetCardId is not { } targetCardId
             || ModelDb.GetById<CardModel>(targetCardId) is not { } targetTemplate)
         {
             return null;
         }
 
-        var replacement = original.CardScope?.CreateCard(targetTemplate, original.Owner)
-            ?? original.Owner.RunState.CreateCard(targetTemplate, original.Owner);
+        TransformCount++;
+
+        var useInfinite = TransformCount >= InfiniteThreshold;
+        var template = targetTemplate;
+        if (useInfinite)
+        {
+            if (TransformOptionUtility.GetInfiniteCard() is { } infiniteTemplate)
+            {
+                template = infiniteTemplate;
+            }
+            else
+            {
+                useInfinite = false;
+            }
+        }
+
+        var replacement = original.CardScope?.CreateCard(template, original.Owner)
+            ?? original.Owner.RunState.CreateCard(template, original.Owner);
+
+        if (useInfinite)
+        {
+            return new TransformReplacement(replacement, TransformCount, true);
+        }
 
         if (TargetIsUpgraded)
         {
             CardCmd.Upgrade(replacement, CardPreviewStyle.None);
         }
 
-        return replacement;
+        return new TransformReplacement(replacement, TransformCount, false);
     }
 
     public override Task AfterApplied(Creature? applier, CardModel? cardSource)
@@ -107,4 +138,9 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
                 ? $"{target.Title}+"
                 : target.Title;
     }
+
+    internal readonly record struct TransformReplacement(
+        CardModel Replacement,
+        int TransformCount,
+        bool BecameInfinite);
 }

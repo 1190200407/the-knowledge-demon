@@ -34,9 +34,9 @@ internal sealed class SingularityTransformPatch : IPatchMethod
         {
             var original = transformation.Original;
             var power = original.Owner?.Creature.GetPower<SingularityPower>();
-            if (power?.CreateReplacement(original) is { } replacement)
+            if (power?.CreateReplacement(original) is { } result)
             {
-                yield return new CardTransformation(original, replacement);
+                yield return new CardTransformation(original, result.Replacement);
                 continue;
             }
 

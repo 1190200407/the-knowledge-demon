@@ -28,12 +28,7 @@ public sealed class GenerationalRepairPower : KnowledgeDemonPowerModel
         {
             return;
         }
-
-        if (card.Type is not CardType.Attack and not CardType.Skill)
-        {
-            return;
-        }
-
+        
         var player = Owner.Player;
         if (player is null || !BookLibraryUtility.PlayerHasBookLibraryRelic(player))
         {
