@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -53,7 +54,19 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
     private static decimal CalculateAttackCardCount(CardModel card, Creature? target)
     {
         _ = target;
-        return BookLibraryUtility.TryGetLibraryPile(card.Owner)?.Cards.Count(static libraryCard =>
-            libraryCard.Type == CardType.Attack) ?? 0;
+        if (card.Owner is null)
+        {
+            return 0;
+        }
+
+        var history = CombatManager.Instance?.History;
+        if (history is null)
+        {
+            return 0;
+        }
+
+        return history.CardPlaysFinished.Count(entry =>
+            entry.CardPlay.Card.Owner == card.Owner
+            && entry.CardPlay.Card.Type == CardType.Attack);
     }
 }

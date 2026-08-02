@@ -17,7 +17,7 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Rare;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
@@ -35,7 +35,7 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
         [HoverTipFactory.FromPower<DispersedMoralePower>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<StrengthPower>(9m)];
+        [new PowerVar<StrengthPower>(7m)];
 
     public DispersedMorale()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -65,6 +65,6 @@ public sealed class DispersedMorale : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars["StrengthPower"].UpgradeValueBy(2m);
+        DynamicVars["StrengthPower"].UpgradeValueBy(3m);
     }
 }

@@ -13,6 +13,33 @@ namespace ComicChess.KnowledgeDemon;
 /// <summary>知识恶魔 mod 事件 hook 分发。</summary>
 public static class KnowledgeDemonHook
 {
+    public static async Task<bool> CanRecordToLibrary(
+        PlayerChoiceContext? choiceContext,
+        Player player,
+        CardModel sourceCard)
+    {
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return true;
+        }
+
+        foreach (var model in combatState.IterateHookListeners())
+        {
+            if (model is not IKnowledgeDemonEventListener listener)
+            {
+                continue;
+            }
+
+            if (!await listener.CanRecordToLibrary(choiceContext, player, sourceCard))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static async Task BeforeRecordedToLibrary(
         PlayerChoiceContext? choiceContext,
         Player player,
@@ -227,11 +254,38 @@ public static class KnowledgeDemonHook
             await listener.AfterCardTransformed(player, context);
         }
     }
+
+    public static async Task AfterKnowledgeOverloadTriggered(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        AbstractModel? source)
+    {
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return;
+        }
+
+        foreach (var model in combatState.IterateHookListeners())
+        {
+            if (model is not IKnowledgeDemonEventListener listener)
+            {
+                continue;
+            }
+
+            await listener.AfterKnowledgeOverloadTriggered(choiceContext, player, source);
+        }
+    }
 }
 
 /// <summary>知识恶魔 mod 事件监听；未覆写的方法使用默认空实现。</summary>
 public interface IKnowledgeDemonEventListener
 {
+    Task<bool> CanRecordToLibrary(
+        PlayerChoiceContext? choiceContext,
+        Player player,
+        CardModel sourceCard) => Task.FromResult(true);
+
     Task BeforeRecordedToLibrary(
         PlayerChoiceContext? choiceContext,
         Player player,
@@ -275,4 +329,9 @@ public interface IKnowledgeDemonEventListener
     Task AfterCardTransformed(
         Player player,
         ModCardTransformContext context) => Task.CompletedTask;
+
+    Task AfterKnowledgeOverloadTriggered(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        AbstractModel? source) => Task.CompletedTask;
 }

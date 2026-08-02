@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -24,6 +25,9 @@ public sealed class HandEyeOmniscience : KnowledgeDemonCardModel
         CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Record),
     ];
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [KnowledgeDemonKeywordHoverTips.FromRecord()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(2)];
 
@@ -49,6 +53,13 @@ public sealed class HandEyeOmniscience : KnowledgeDemonCardModel
         {
             await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, card, 1);
         }
+
+        await PowerCmd.Apply<CannotRecordThisTurnPower>(
+            choiceContext,
+            Owner.Creature,
+            1,
+            Owner.Creature,
+            this);
     }
 
     protected override void OnUpgrade()

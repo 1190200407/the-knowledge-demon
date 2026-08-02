@@ -43,7 +43,7 @@ public sealed class Charge : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(25m, ValueProp.Unpowered),
+        new DamageVar(25m, ValueProp.Move),
         new PowerVar<StrengthPower>(1m),
         new DynamicVar(RemainingRetainsVarName, requiredRetains),
     ];

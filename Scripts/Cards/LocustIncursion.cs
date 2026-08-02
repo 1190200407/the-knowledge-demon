@@ -27,7 +27,7 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DamageVar(10m, ValueProp.Move)];
+        [new DamageVar(8m, ValueProp.Move)];
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         [CardKeyword.Sly];
@@ -57,7 +57,7 @@ public sealed class LocustIncursion : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 
     private bool ShouldRecordAgainThisPlay()

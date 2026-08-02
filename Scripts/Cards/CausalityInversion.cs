@@ -54,9 +54,4 @@ public sealed class CausalityInversion : KnowledgeDemonCardModel
             card.InvokeEnergyCostChanged();
         }
     }
-
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
 }

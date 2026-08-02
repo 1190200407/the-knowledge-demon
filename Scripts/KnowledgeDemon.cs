@@ -28,7 +28,7 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
     public override CharacterGender Gender => CharacterGender.Masculine;
 
     // 初始血量和金币
-    public override int StartingHp => 80;
+    public override int StartingHp => 70;
     public override int StartingGold => 99;
 
     public override string CustomVisualsPath => "res://KnowledgeDemon/scenes/knowledge_demon.tscn";

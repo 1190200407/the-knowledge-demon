@@ -23,7 +23,7 @@ public sealed class ThreeAspectsPower : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        CardKeyword.Exhaust,
+        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>

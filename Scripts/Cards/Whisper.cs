@@ -69,6 +69,6 @@ public sealed class Whisper : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Block.UpgradeValueBy(4m);
     }
 }

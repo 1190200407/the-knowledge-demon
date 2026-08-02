@@ -20,11 +20,13 @@ public sealed class KnowledgeFortress : KnowledgeDemonCardModel
     private const bool shouldShowInCardLibrary = true;
     private const string BlockPerLibraryCardVarName = "Block";
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [HoverTipFactory.FromKeyword(CardKeyword.Sly), HoverTipFactory.Static(StaticHoverTip.Block)];
+        [HoverTipFactory.Static(StaticHoverTip.Block)];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new PowerVar<KnowledgeFortressPower>(BlockPerLibraryCardVarName, 2m)];
+        [new PowerVar<KnowledgeFortressPower>(BlockPerLibraryCardVarName, 1m)];
 
     public KnowledgeFortress()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -44,6 +46,6 @@ public sealed class KnowledgeFortress : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Sly);
+        AddKeyword(CardKeyword.Retain);
     }
 }

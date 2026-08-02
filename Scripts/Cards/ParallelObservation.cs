@@ -21,7 +21,6 @@ public sealed class ParallelObservation : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        CardKeyword.Innate,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
     ];
 

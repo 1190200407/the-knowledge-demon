@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -19,6 +18,7 @@ public sealed class Zazen : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
+    private const string PowerVarName = "Power";
 
     public override bool GainsBlock => true;
 
@@ -30,7 +30,7 @@ public sealed class Zazen : KnowledgeDemonCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(12m, ValueProp.Move),
-        new EnergyVar(1),
+        new PowerVar<ZazenPower>(PowerVarName, 1m),
     ];
 
     public Zazen()
@@ -42,10 +42,10 @@ public sealed class Zazen : KnowledgeDemonCardModel
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-        await PowerCmd.Apply<EnergyNextTurnPower>(
+        await PowerCmd.Apply<ZazenPower>(
             choiceContext,
             Owner.Creature,
-            DynamicVars.Energy.IntValue,
+            DynamicVars[PowerVarName].BaseValue,
             Owner.Creature,
             this);
     }
@@ -53,5 +53,6 @@ public sealed class Zazen : KnowledgeDemonCardModel
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(4m);
+        DynamicVars[PowerVarName].UpgradeValueBy(1m);
     }
 }

@@ -74,11 +74,6 @@ public sealed class Mimicry : KnowledgeDemonCardModel
         await PowerCmd.Apply(choiceContext, power, Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
-    {
-        EnergyCost.UpgradeBy(-1);
-    }
-
     private CardModel? CreateCharacterOptionCard(CharacterModel character)
     {
         CardModel? previewSource = character.Id == ModelDb.Character<Ironclad>().Id

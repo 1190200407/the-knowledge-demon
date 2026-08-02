@@ -18,7 +18,6 @@ public sealed class LucyForm : KnowledgeDemonCardModel
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.Static(StaticHoverTip.Transform), HoverTipFactory.FromCard<LucyFormState>()];
 
@@ -48,6 +47,6 @@ public sealed class LucyForm : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Innate);
+        AddKeyword(CardKeyword.Sly);
     }
 }

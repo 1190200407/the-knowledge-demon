@@ -67,8 +67,6 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         {
             return;
         }
-
-        TryGrantStatusUniqueFromEnvironmentTolerance(card, player);
         await ResolveCombatViolationsAsync(player, card);
     }
 
@@ -174,16 +172,6 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
                 globalUi.CardPreviewContainer.AddChild(vfx);
             }
         }).CallDeferred();
-    }
-
-    private static bool TryGrantStatusUniqueFromEnvironmentTolerance(CardModel card, Player player)
-    {
-        if (card.Type != CardType.Status || player.Creature.GetPower<EnvironmentalTolerancePower>() is null)
-        {
-            return false;
-        }
-
-        return AddUniqueKeyword(card);
     }
 
     public static bool AddUniqueKeyword(CardModel card)

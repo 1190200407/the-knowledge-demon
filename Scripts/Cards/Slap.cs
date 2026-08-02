@@ -20,11 +20,9 @@ public sealed class Slap : KnowledgeDemonCardModel
 {
     private const int energyCost = 2;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromRecord()];
@@ -57,7 +55,7 @@ public sealed class Slap : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        AddKeyword(CardKeyword.Retain);
     }
 
     private static decimal GetHitCount(CardModel? source)

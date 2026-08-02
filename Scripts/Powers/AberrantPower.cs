@@ -1,14 +1,14 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.CardPools;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -20,45 +20,38 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
 
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        HoverTipFactory.ForEnergy(this),
-    ];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Retain)];
 
-    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task BeforeSideTurnEndEarly(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
     {
-        _ = participants;
-        if (side != CombatSide.Player || Owner.Player is not { } player)
+        if (side != CombatSide.Player
+            || !participants.Contains(Owner)
+            || Owner.Player is not { } player)
         {
             return;
         }
 
-        Flash();
-        await PlayerCmd.GainEnergy(Amount, player);
-
-        var statusCandidates = ModelDb.CardPool<StatusCardPool>()
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Concat(
-                ModelDb.CardPool<KnowledgeDemonCardPool>()
-                    .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-                    .Where(card => card.Type == CardType.Status))
-            .Where(card => card.Type == CardType.Status)
-            .Where(card => card is not Infinite)
-            .Where(card => card.CanBeGeneratedInCombat)
-            .DistinctBy(card => card.Id)
-            .ToList();
-        if (statusCandidates.Count == 0)
+        var candidates = GetStatusCandidates(player);
+        if (candidates.Count == 0)
         {
             return;
         }
 
-        var canonicalCard = player.RunState.Rng.CombatCardGeneration.NextItem(statusCandidates);
-        if (canonicalCard is null)
+        for (var i = 0; i < Amount; i++)
         {
-            return;
+            var chosenCard = player.RunState.Rng.CombatCardGeneration.NextItem(candidates)!;
+            Flash();
+            var card = await BookLibraryCmd.DuplicateCardToCurrentPile(player, chosenCard);
+            card?.AddKeyword(CardKeyword.Retain);
         }
-
-        var generated = combatState.CreateCard(canonicalCard, player);
-        await CardPileCmd.AddGeneratedCardToCombat(generated, PileType.Hand, player);
     }
+
+    private static List<CardModel> GetStatusCandidates(Player player) =>
+        PileType.Hand.GetPile(player).Cards
+            .Concat(BookLibraryUtility.TryGetLibraryPile(player)?.Cards ?? [])
+            .Where(static card => card.Type == CardType.Status)
+            .ToList();
 }

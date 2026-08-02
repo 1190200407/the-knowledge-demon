@@ -21,7 +21,7 @@ public sealed class AmbushStrike : KnowledgeDemonCardModel
 
     protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7m, ValueProp.Move)];
 
     public AmbushStrike()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -44,6 +44,6 @@ public sealed class AmbushStrike : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

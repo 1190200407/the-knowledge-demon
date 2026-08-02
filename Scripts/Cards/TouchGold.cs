@@ -26,7 +26,7 @@ public sealed class TouchGold : KnowledgeDemonCardModel
     private readonly HashSet<CardModel> _returnToHandThisPlay = new();
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose)];
+        [ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose), CardKeyword.Exhaust];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromChoose()];

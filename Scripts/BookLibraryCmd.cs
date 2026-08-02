@@ -37,6 +37,11 @@ public static class BookLibraryCmd
             return;
         }
 
+        if (!await KnowledgeDemonHook.CanRecordToLibrary(choiceContext, player, card))
+        {
+            return;
+        }
+
         var libraryPileType = BookLibraryUtility.PileType;
 
         await KnowledgeDemonHook.BeforeRecordedToLibrary(choiceContext, player, card);
@@ -61,7 +66,6 @@ public static class BookLibraryCmd
             recordedCopies.Add(recorded);
         }
 
-        await KnowledgeDemonHook.AfterRecordedToLibrary(choiceContext, player, card, recordedCopies);
         foreach (var recordedGroup in recordedCopies.GroupBy(recorded => recorded.Id))
         {
             KnowledgeDemonHistory.LogRecorded(
@@ -71,6 +75,7 @@ public static class BookLibraryCmd
                 recordedGroup.Count());
         }
 
+        await KnowledgeDemonHook.AfterRecordedToLibrary(choiceContext, player, card, recordedCopies);
         KnowledgeDemonTelemetryEvents.CaptureRecordedToLibrary(player, card, recordedCopies);
     }
 
@@ -411,6 +416,36 @@ public static class BookLibraryCmd
         card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type);
     #endregion
 
+    #region Duplicate
+    public static async Task<CardModel?> DuplicateCardToCurrentPile(
+        Player player,
+        CardModel source,
+        CardPilePosition position = CardPilePosition.Bottom)
+    {
+        if (source.Pile is not { } pile)
+        {
+            return null;
+        }
+
+        var duplicate = source.CreateClone();
+        if (pile.Type == PileType.Hand)
+        {
+            await CardPileCmd.AddGeneratedCardToCombat(duplicate, PileType.Hand, player, position);
+            BookLibraryUtility.RefreshHandCardVisual(duplicate);
+            return duplicate;
+        }
+
+        if (!BookLibraryUtility.IsBookLibraryPile(pile.Type))
+        {
+            return null;
+        }
+
+        await CardPileCmd.AddGeneratedCardToCombat(duplicate, BookLibraryUtility.PileType, player, position);
+        BookLibraryUtility.RefreshCardVisual(duplicate);
+        return duplicate;
+    }
+    #endregion
+
     #region Remove
     public static async Task SwapHandAndLibrary(Player player)
     {
@@ -526,6 +561,11 @@ public static class BookLibraryCmd
         {
             var libraryCountBefore = libraryPile.Cards.Count;
             var chooseCount = 0;
+            await KnowledgeDemonHook.AfterKnowledgeOverloadTriggered(
+                choiceContext,
+                player,
+                source);
+
             if (player.Character is KnowledgeDemon)
             {
                 await CreatureCmd.TriggerAnim(

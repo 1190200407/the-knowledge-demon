@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -17,29 +16,57 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterPower]
 public sealed class ObsessionPower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
 {
+    private sealed class Data
+    {
+        public int remainingTriggers;
+        public int syncedTurnNumber = -1;
+        public int syncedAmount;
+    }
+
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Single;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override int DisplayAmount => GetInternalData<Data>().remainingTriggers;
 
     protected override IEnumerable<string> RegisteredKeywordIds =>
         [KnowledgeDemonKeyword.Materialize];
 
-    [SavedProperty]
-    public int LastTriggeredTurnNumber { get; set; }
+    protected override object InitInternalData() => new Data();
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        _ = applier;
+        _ = cardSource;
+        ResetSyncState();
+        if (Owner.Player is { } player)
+        {
+            SyncRemainingTriggers(player);
+        }
+
+        return Task.CompletedTask;
+    }
 
     public Task<CardModel> ModifyMaterializeCard(Player player, CardModel sourceCard, CardModel materializedCard)
     {
-        if (Owner.Player != player || materializedCard.Owner != player || !CanTriggerForCurrentTurn(materializedCard))
+        _ = sourceCard;
+
+        if (Owner.Player != player || materializedCard.Owner != player)
         {
             return Task.FromResult(materializedCard);
         }
 
-        LastTriggeredTurnNumber = player.PlayerCombatState?.TurnNumber ?? 0;
+        SyncRemainingTriggers(player);
+        if (GetInternalData<Data>().remainingTriggers <= 0)
+        {
+            return Task.FromResult(materializedCard);
+        }
 
         var copy = materializedCard.CreateClone();
         copy.EnergyCost.SetThisCombat(0);
         copy.InvokeEnergyCostChanged();
 
+        ConsumeTrigger();
         Flash();
         return Task.FromResult((CardModel)copy);
     }
@@ -59,25 +86,51 @@ public sealed class ObsessionPower : KnowledgeDemonPowerModel, IKnowledgeDemonEv
             return Task.CompletedTask;
         }
 
-        LastTriggeredTurnNumber = 0;
+        ResetSyncState();
+        SyncRemainingTriggers(Owner.Player);
         return Task.CompletedTask;
     }
 
-    private bool CanTriggerForCurrentTurn(CardModel materializedCard)
+    private void ConsumeTrigger()
     {
-        var combatState = materializedCard.CombatState;
-        if (combatState is null || materializedCard.Owner?.PlayerCombatState is null)
+        var data = GetInternalData<Data>();
+        data.remainingTriggers = Math.Max(0, data.remainingTriggers - 1);
+        InvokeDisplayAmountChanged();
+    }
+
+    private void ResetSyncState()
+    {
+        var data = GetInternalData<Data>();
+        data.syncedTurnNumber = -1;
+        data.syncedAmount = 0;
+        data.remainingTriggers = 0;
+        InvokeDisplayAmountChanged();
+    }
+
+    private void SyncRemainingTriggers(Player player)
+    {
+        var data = GetInternalData<Data>();
+        var currentTurnNumber = player.PlayerCombatState?.TurnNumber ?? -1;
+        var changed = false;
+
+        if (data.syncedTurnNumber != currentTurnNumber)
         {
-            return true;
+            data.remainingTriggers = Math.Max(0, Amount);
+            data.syncedTurnNumber = currentTurnNumber;
+            data.syncedAmount = Amount;
+            changed = true;
+        }
+        else if (data.syncedAmount != Amount)
+        {
+            var delta = Amount - data.syncedAmount;
+            data.remainingTriggers = Math.Max(0, data.remainingTriggers + delta);
+            data.syncedAmount = Amount;
+            changed = true;
         }
 
-        var currentTurnNumber = materializedCard.Owner.PlayerCombatState.TurnNumber;
-        if (LastTriggeredTurnNumber == currentTurnNumber)
+        if (changed)
         {
-            return false;
+            InvokeDisplayAmountChanged();
         }
-
-        return !CombatManager.Instance.History.Entries.OfType<CardGeneratedEntry>()
-            .Any(entry => entry.Creator == materializedCard.Owner && entry.HappenedThisTurn(combatState));
     }
 }
