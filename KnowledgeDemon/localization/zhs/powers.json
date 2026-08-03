@@ -101,6 +101,8 @@
     "KNOWLEDGE_DEMON_POWER_ZAZEN_POWER.smartDescription": "接下来[blue]{Amount}[/blue]回合开始时，获得1点能量。",
     "KNOWLEDGE_DEMON_POWER_SINGULARITY_POWER.title": "奇点",
     "KNOWLEDGE_DEMON_POWER_SINGULARITY_POWER.description": "本回合你变化的牌必定变化为所选牌。",
-    "KNOWLEDGE_DEMON_POWER_SINGULARITY_POWER.smartDescription": "本回合你[gold]变化[/gold]的牌必定变化为[gold]{TargetCard}[/gold]。"
-
+    "KNOWLEDGE_DEMON_POWER_SINGULARITY_POWER.smartDescription": "本回合你[gold]变化[/gold]的牌必定变化为[gold]{TargetCard}[/gold]。",
+    "KNOWLEDGE_DEMON_POWER_INFINITE_POWER.title": "无限",
+    "KNOWLEDGE_DEMON_POWER_INFINITE_POWER.description": "下回合重新记录{Amount}张无限。",
+    "KNOWLEDGE_DEMON_POWER_INFINITE_POWER.smartDescription": "下回合重新记录[blue]{Amount}[/blue]张无限。"
 }

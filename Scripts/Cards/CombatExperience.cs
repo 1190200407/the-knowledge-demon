@@ -17,7 +17,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class CombatExperience : KnowledgeDemonCardModel
 {
-    private const int energyCost = 1;
+    private const int energyCost = 3;
     private const CardType type = CardType.Attack;
     private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.AnyEnemy;
@@ -25,8 +25,8 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CalculationBaseVar(3m),
-        new ExtraDamageVar(3m),
+        new CalculationBaseVar(7m),
+        new ExtraDamageVar(4m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateAttackCardCount),
     ];
 

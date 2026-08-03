@@ -170,7 +170,7 @@
     "KNOWLEDGE_DEMON_CARD_TRACTION.title": "牵引",
     "KNOWLEDGE_DEMON_CARD_TRACTION.description": "获得{Block:diff()}点[gold]格挡[/gold]。此牌被[gold]具象[/gold]时，抽{Cards:diff()}张牌。",
     "KNOWLEDGE_DEMON_CARD_INFINITE.title": "无限",
-    "KNOWLEDGE_DEMON_CARD_INFINITE.description": "将这张牌变化为任意一张状态牌后返回[gold]手牌[/gold]。此牌不会因[gold]独一[/gold]而变化。",
+    "KNOWLEDGE_DEMON_CARD_INFINITE.description": "下回合重新[gold]记录[/gold]1张无限。",
     "KNOWLEDGE_DEMON_CARD_ANCIENT_PULSE.title": "远古搏动",
     "KNOWLEDGE_DEMON_CARD_ANCIENT_PULSE.description": "造成{Damage:diff()}点伤害。本回合当你[gold]记录[/gold]时，将其[gold]变化[/gold]为知识恶魔的1张随机状态牌。",
     "KNOWLEDGE_DEMON_CARD_ABERRANT.title": "异变体",

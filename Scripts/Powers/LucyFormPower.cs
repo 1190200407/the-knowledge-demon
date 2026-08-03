@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -30,26 +28,15 @@ public sealed class LucyFormPower : KnowledgeDemonPowerModel
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips => [HoverTipFactory.FromCard<LucyFormState>()];
 
-    public override async Task AfterCardChangedPilesLate(
+    public override async Task AfterCardGeneratedForCombat(
         CardModel card,
-        PileType oldPileType,
-        AbstractModel? clonedBy)
+        Player? creator)
     {
-        _ = clonedBy;
-
         if (_isTransforming
-            || oldPileType != PileType.None
+            || creator != Owner.Player
             || card.Owner != Owner.Player
             || card is LucyFormState
             || card.Pile is not { IsCombatPile: true })
-        {
-            return;
-        }
-
-        var generatedEntry = CombatManager.Instance.History.Entries
-            .OfType<CardGeneratedEntry>()
-            .LastOrDefault(entry => ReferenceEquals(entry.Card, card));
-        if (generatedEntry?.Creator != Owner.Player)
         {
             return;
         }
