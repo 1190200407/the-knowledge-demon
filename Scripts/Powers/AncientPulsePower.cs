@@ -26,6 +26,11 @@ public sealed class AncientPulsePower : KnowledgeDemonPowerModel, IKnowledgeDemo
             return Task.FromResult(recordTemplate);
         }
 
+        if (recordTemplate.Type == CardType.Status && recordTemplate.Pool is KnowledgeDemonCardPool)
+        {
+            return Task.FromResult(recordTemplate);
+        }
+
         var randomStatusTemplate = KnowledgeDemonCardCmd.GetRandomKnowledgeDemonStatusCardTemplate(player);
         if (randomStatusTemplate is null)
         {

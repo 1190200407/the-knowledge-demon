@@ -90,6 +90,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     public override void _ExitTree()
     {
+        DetachCardNodeEvents();
         base._ExitTree();
         UnsubscribeFromEvents(CardNode?.Model);
         StopAnimations();
@@ -97,6 +98,7 @@ public partial class NBookLibraryCardHolder : NCardHolder
 
     public override void Clear()
     {
+        DetachCardNodeEvents();
         UnsubscribeFromEvents(CardNode?.Model);
         base.Clear();
         StopAnimations();
@@ -488,5 +490,13 @@ public partial class NBookLibraryCardHolder : NCardHolder
         UnsubscribeFromEvents(oldModel);
         SubscribeToEvents(CardNode?.Model);
         UpdateCard();
+    }
+
+    private void DetachCardNodeEvents()
+    {
+        if (CardNode != null)
+        {
+            CardNode.ModelChanged -= OnModelChanged;
+        }
     }
 }

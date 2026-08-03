@@ -166,7 +166,7 @@
     "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.title": "解算",
     "KNOWLEDGE_DEMON_CARD_FINAL_SOLUTION.description": "本回合每生成1张卡，此牌造成{Damage:diff()}点伤害。{InCombat:\n（攻击{CalculatedHits:diff()}次）|}",
     "KNOWLEDGE_DEMON_CARD_ENVIRONMENTAL_TOLERANCE.title": "环境耐受",
-    "KNOWLEDGE_DEMON_CARD_ENVIRONMENTAL_TOLERANCE.description": "场上每有5张状态牌被生成，将1张知识恶魔的随机状态牌置入[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_ENVIRONMENTAL_TOLERANCE.description": "你现在可以打出[gold]不能被打出[/gold]的状态牌，打出后进入[gold]弃牌堆[/gold]。",
     "KNOWLEDGE_DEMON_CARD_TRACTION.title": "牵引",
     "KNOWLEDGE_DEMON_CARD_TRACTION.description": "获得{Block:diff()}点[gold]格挡[/gold]。此牌被[gold]具象[/gold]时，抽{Cards:diff()}张牌。",
     "KNOWLEDGE_DEMON_CARD_INFINITE.title": "无限",

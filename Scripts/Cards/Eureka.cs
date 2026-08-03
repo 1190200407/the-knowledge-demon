@@ -44,9 +44,10 @@ public sealed class Eureka : KnowledgeDemonCardModel
         PileType oldPileType,
         AbstractModel? clonedBy)
     {
+        _ = oldPileType;
         _ = clonedBy;
 
-        if (card != this || oldPileType == PileType.Hand || Pile?.Type != PileType.Hand || Owner is null)
+        if (card != this || Pile?.Type != PileType.Hand || Owner is null)
         {
             return;
         }
