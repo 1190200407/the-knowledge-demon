@@ -23,11 +23,6 @@ public sealed class GoodGrace : KnowledgeDemonCardModel
 
     public override bool CanBeGeneratedInCombat => false;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-    [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
-    ];
-
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         EnergyHoverTip,
@@ -35,7 +30,7 @@ public sealed class GoodGrace : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new EnergyVar(2),
+        new EnergyVar(1),
     ];
 
     public GoodGrace()

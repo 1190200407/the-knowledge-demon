@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Factories;
+using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Patching.Models;
 
@@ -25,23 +26,26 @@ internal sealed class ParallelObservationTransformOptionsPatch : IPatchMethod
     public static void Postfix(CardModel original, bool isInCombat, ref CardModel[] __result)
     {
         if (__result is not { Length: > 0 }
-            || original.Owner?.Creature is not { } owner
-            || (owner.GetPower<ParallelObservationPower>() is null
-                && owner.GetPower<ParallelObservationUpgradedPower>() is null))
+            || original.Owner?.Creature is not { } owner)
         {
             return;
         }
 
-        var includeColorless = owner.GetPower<ParallelObservationUpgradedPower>() is not null;
+        ParallelObservationPowerBase? power = owner.GetPower<ParallelObservationPower>();
+        power ??= owner.GetPower<ParallelObservationUpgradedPower>();
+        if (power?.ChosenCharacterId is not { } chosenCharacterId
+            || ModelDb.GetByIdOrNull<CharacterModel>(chosenCharacterId) is not { } chosenCharacter)
+        {
+            return;
+        }
 
         var existingIds = __result.Select(card => card.Id).ToHashSet();
         var additional = TransformOptionUtility
             .FilterTransformCandidates(
                 original,
-                TransformOptionUtility.GetOtherCharacterAndMaybeColorlessPoolCards(
-                    original.Owner,
-                    original.Pool,
-                    includeColorless),
+                chosenCharacter.CardPool.GetUnlockedCards(
+                    original.Owner.UnlockState,
+                    original.Owner.RunState.CardMultiplayerConstraint),
                 isInCombat)
             .Where(card => !existingIds.Contains(card.Id))
             .ToArray();

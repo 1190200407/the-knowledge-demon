@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -18,6 +19,11 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
     private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.AllEnemies;
     private const bool shouldShowInCardLibrary = true;
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        HoverTipFactory.FromCard<Collapse>(),
+    ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(10m, ValueProp.Move)];
 
@@ -35,6 +41,9 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
             Owner.Character)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+
+        var collapse = CombatState!.CreateCard<Collapse>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(collapse, PileType.Hand, Owner);
     }
 
     protected override void OnUpgrade()

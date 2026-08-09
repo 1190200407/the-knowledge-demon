@@ -23,10 +23,6 @@ public sealed class Collapse : KnowledgeDemonCardModel
     private const bool ShouldShowInCardLibraryValue = false;
 
     public override bool CanBeGeneratedInCombat => false;
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-    [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
-    ];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -35,7 +31,7 @@ public sealed class Collapse : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DisintegrationPower>(12m),
+        new PowerVar<DisintegrationPower>(6m),
     ];
 
     public Collapse()

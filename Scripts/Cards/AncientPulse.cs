@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -20,16 +19,12 @@ public sealed class AncientPulse : KnowledgeDemonCardModel
     private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.AnyEnemy;
     private const bool ShouldShowInCardLibraryValue = true;
-
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-    [
-        KnowledgeDemonKeywordHoverTips.FromRecord(),
-        HoverTipFactory.Static(StaticHoverTip.Transform),
-    ];
+    private const string PulseDamageKey = "PulseDamage";
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(8m, ValueProp.Move),
+        new PowerVar<AncientPulsePower>(PulseDamageKey, 2m),
     ];
 
     public AncientPulse()
@@ -50,7 +45,7 @@ public sealed class AncientPulse : KnowledgeDemonCardModel
         await PowerCmd.Apply<AncientPulsePower>(
             choiceContext,
             Owner.Creature,
-            1,
+            DynamicVars[PulseDamageKey].BaseValue,
             Owner.Creature,
             this);
     }

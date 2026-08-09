@@ -31,7 +31,7 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [
             new RecordVar(1),
-            new MaterializeVar(0),
+            new MaterializeVar(1),
         ];
 
     public KnowledgeCurse()
@@ -73,6 +73,6 @@ public sealed class KnowledgeCurse : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars[MaterializeVar.DefaultName].BaseValue = 1m;
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

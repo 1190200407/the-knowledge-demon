@@ -23,14 +23,9 @@ public sealed class MindAscension : KnowledgeDemonCardModel
 
     public override bool CanBeGeneratedInCombat => false;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-    [
-        ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique),
-    ];
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(2),
+        new CardsVar(1),
     ];
 
     public MindAscension()
