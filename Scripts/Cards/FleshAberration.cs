@@ -1,13 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -16,21 +16,19 @@ namespace ComicChess.KnowledgeDemon;
 public sealed class FleshAberration : KnowledgeDemonCardModel
 {
     private const int EnergyCostValue = 1;
-    private const CardType TypeValue = CardType.Skill;
+    private const CardType TypeValue = CardType.Attack;
     private const CardRarity RarityValue = CardRarity.Uncommon;
-    private const TargetType TargetTypeValue = TargetType.Self;
+    private const TargetType TargetTypeValue = TargetType.AnyEnemy;
     private const bool ShouldShowInCardLibraryValue = true;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        HoverTipFactory.Static(StaticHoverTip.Transform),
+        HoverTipFactory.FromPower<FleshAberrationStrengthDownPower>(),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(2),
+        new DamageVar(8m, ValueProp.Move),
     ];
 
     public FleshAberration()
@@ -40,39 +38,37 @@ public sealed class FleshAberration : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        _ = cardPlay;
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
-        var selected = (await KnowledgeDemonCardSelectCmd.FromBookLibraryAndHand(
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_blunt")
+            .Execute(choiceContext);
+
+        var statusCount = CountStatusCardsInHandAndLibrary();
+        if (statusCount <= 0)
+        {
+            return;
+        }
+
+        await PowerCmd.Apply<FleshAberrationStrengthDownPower>(
             choiceContext,
-            Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 0, DynamicVars.Cards.IntValue),
-            source: this)).ToList();
-
-        foreach (var card in selected)
-        {
-            var template = KnowledgeDemonCardCmd.GetRandomKnowledgeDemonStatusCardTemplate(Owner);
-            if (template is null)
-            {
-                continue;
-            }
-
-            var replacement = CreateReplacement(card, template);
-            await BookLibraryUtility.TransformCard(card, replacement);
-        }
+            cardPlay.Target,
+            statusCount,
+            Owner.Creature,
+            this);
     }
 
-    protected override void OnUpgrade()
+    private int CountStatusCardsInHandAndLibrary()
     {
-        DynamicVars.Cards.UpgradeValueBy(2m);
-    }
-
-    private CardModel CreateReplacement(CardModel original, CardModel template)
-    {
-        if (original.CardScope is not null)
+        var handCount = PileType.Hand.GetPile(Owner).Cards.Count(card => card.Type == CardType.Status);
+        if (!IsUpgraded)
         {
-            return original.CardScope.CreateCard(template, Owner);
+            return handCount;
         }
 
-        return Owner.RunState.CreateCard(template, Owner);
+        var libraryCount = BookLibraryUtility.TryGetLibraryPile(Owner)?.Cards.Count(card => card.Type == CardType.Status) ?? 0;
+        return handCount + libraryCount;
     }
 }

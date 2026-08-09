@@ -14,7 +14,7 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Attack;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.RandomEnemy;
     private const bool shouldShowInCardLibrary = true;
 
@@ -22,7 +22,7 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new CardsVar(3),
+        new CardsVar(2),
         new DamageVar(4m, ValueProp.Move),
     ];
 

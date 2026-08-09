@@ -2,13 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -16,24 +13,22 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class Petrify : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = -1;
-    private const CardType TypeValue = CardType.Status;
+    private const int EnergyCostValue = 2;
+    private const CardType TypeValue = CardType.Skill;
     private const CardRarity RarityValue = CardRarity.Common;
-    private const TargetType TargetTypeValue = TargetType.None;
+    private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    public override int MaxUpgradeLevel => 0;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Unplayable];
+    public override bool GainsBlock => true;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        HoverTipFactory.FromPower<DisintegrationPower>(),
+        HoverTipFactory.FromCard<Collapse>(),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<DisintegrationPower>(4m),
+        new BlockVar(10m, ValueProp.Move),
     ];
 
     public Petrify()
@@ -41,45 +36,20 @@ public sealed class Petrify : KnowledgeDemonCardModel
     {
     }
 
-    public override async Task AfterFlush(
-        PlayerChoiceContext choiceContext,
-        Player player,
-        IReadOnlyCollection<CardModel> flushedCards,
-        IReadOnlyCollection<CardModel> retainedCards)
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        _ = flushedCards;
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-        if (player != Owner || CombatState is null)
-        {
-            return;
-        }
-
-        var shouldTrigger = retainedCards.Contains(this)
-            || Pile is { } pile
-               && BookLibraryUtility.IsBookLibraryPile(pile.Type)
-               && !HasBeenRemovedFromState;
-        if (!shouldTrigger)
-        {
-            return;
-        }
-
-        IReadOnlyList<Creature> targets = CombatState.HittableEnemies;
-        if (targets.Count == 0)
-        {
-            return;
-        }
-
-        Creature? target = Owner.RunState.Rng.CombatTargets.NextItem(targets);
-        if (target is null)
-        {
-            return;
-        }
-
-        await PowerCmd.Apply<DisintegrationPower>(
+        await PowerCmd.Apply<PetrifyPower>(
             choiceContext,
-            target,
-            DynamicVars["DisintegrationPower"].BaseValue,
+            Owner.Creature,
+            1m,
             Owner.Creature,
             this);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(4m);
     }
 }

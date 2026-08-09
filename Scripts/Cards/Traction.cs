@@ -23,12 +23,11 @@ public sealed class Traction : KnowledgeDemonCardModel, IKnowledgeDemonEventList
     public override bool GainsBlock => true;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromMaterializeKeyword()];
+        [KnowledgeDemonKeywordHoverTips.FromMaterializeKeyword(), HoverTipFactory.FromCard<MindAscension>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         [
             new BlockVar(6m, ValueProp.Move),
-            new CardsVar(2),
         ];
 
     public Traction()
@@ -46,7 +45,8 @@ public sealed class Traction : KnowledgeDemonCardModel, IKnowledgeDemonEventList
             return;
         }
 
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, player);
+        var mindAscension = player.RunState.CreateCard<MindAscension>(player);
+        await CardPileCmd.AddGeneratedCardToCombat(mindAscension, PileType.Hand, player);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

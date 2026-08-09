@@ -23,13 +23,7 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        EnergyHoverTip,
-    ];
-
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new BlockVar(3m, ValueProp.Move),
-        new EnergyVar(2),
+        HoverTipFactory.FromCard<GoodGrace>(),
     ];
 
     public ContinuationFlameCharm()
@@ -39,12 +33,12 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
+        var goodGrace = Owner.RunState.CreateCard<GoodGrace>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(goodGrace, PileType.Hand, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        AddKeyword(CardKeyword.Innate);
     }
 }

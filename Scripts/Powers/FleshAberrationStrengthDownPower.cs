@@ -5,9 +5,9 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class AlertnessStrengthDownPower : TemporaryStrengthPower
+public sealed class FleshAberrationStrengthDownPower : TemporaryStrengthPower
 {
-    public override AbstractModel OriginModel => ModelDb.Card<Alertness>();
+    public override AbstractModel OriginModel => ModelDb.Card<FleshAberration>();
 
     protected override bool IsPositive => false;
 }

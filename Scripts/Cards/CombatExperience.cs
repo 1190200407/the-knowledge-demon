@@ -26,7 +26,7 @@ public sealed class CombatExperience : KnowledgeDemonCardModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new CalculationBaseVar(7m),
-        new ExtraDamageVar(4m),
+        new ExtraDamageVar(2m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(CalculateAttackCardCount),
     ];
 

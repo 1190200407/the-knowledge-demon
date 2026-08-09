@@ -22,9 +22,14 @@ public sealed class Zazen : KnowledgeDemonCardModel
 
     public override bool GainsBlock => true;
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+    [
+        CardKeyword.Exhaust,
+    ];
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
-        EnergyHoverTip,
+        HoverTipFactory.FromCard<GoodGrace>(),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -52,7 +57,7 @@ public sealed class Zazen : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(4m);
+        DynamicVars.Block.UpgradeValueBy(3m);
         DynamicVars[PowerVarName].UpgradeValueBy(1m);
     }
 }
