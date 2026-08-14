@@ -31,7 +31,9 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
         }
 
         var candidates = (__result ?? []).AsEnumerable();
-        if (original.Type == CardType.Status)
+        var environmentalToleranceActive =
+            original.Owner.Creature.GetPower<EnvironmentalTolerancePower>() is not null;
+        if (original.Type == CardType.Status && environmentalToleranceActive)
         {
             var existingIds = (__result ?? []).Select(card => card.Id).ToHashSet();
             var additionalStatusCards = TransformOptionUtility
@@ -40,7 +42,10 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
                     TransformOptionUtility.GetKnowledgeDemonStatusPoolCards(player),
                     original.IsInCombat)
                 .Where(card => !existingIds.Contains(card.Id));
-            candidates = candidates.Concat(additionalStatusCards);
+
+            candidates = TransformOptionUtility.IsKnowledgeDemonStatusCard(original)
+                ? additionalStatusCards
+                : candidates.Concat(additionalStatusCards);
         }
 
         var filtered = candidates

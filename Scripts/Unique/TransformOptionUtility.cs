@@ -24,10 +24,25 @@ internal static class TransformOptionUtility
 
     internal static IEnumerable<CardModel> GetKnowledgeDemonStatusPoolCards(Player player)
     {
-        return ModelDb.CardPool<KnowledgeDemonCardPool>()
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+        var tokenStatusCards = new CardModel[]
+        {
+            ModelDb.Card<MindAscension>(),
+            ModelDb.Card<GoodGrace>(),
+            ModelDb.Card<Collapse>(),
+        };
+
+        return FilterForPlayerCount(
+                player.RunState,
+                ModelDb.CardPool<KnowledgeDemonCardPool>()
+                    .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
+                    .Concat(tokenStatusCards))
             .Where(card => card.Type == CardType.Status && !IsInfinite(card));
     }
+
+    internal static bool IsKnowledgeDemonStatusCard(CardModel card) =>
+        card is KnowledgeDemonCardModel
+        && card.Type == CardType.Status
+        && !IsInfinite(card);
 
     internal static IEnumerable<CardModel> GetOtherCharacterPoolCards(Player player, CardPoolModel excludePool)
     {
@@ -72,7 +87,9 @@ internal static class TransformOptionUtility
 
         if (isInCombat)
         {
-            source = source.Where(candidate => candidate.CanBeGeneratedInCombat);
+            source = source.Where(candidate =>
+                candidate.CanBeGeneratedInCombat
+                || IsKnowledgeDemonStatusCard(candidate));
         }
 
         source = source.Where(candidate => candidate.Id != original.Id);

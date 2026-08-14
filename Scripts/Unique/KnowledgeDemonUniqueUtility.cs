@@ -45,6 +45,13 @@ public static class KnowledgeDemonUniqueUtility
 
         foreach (var card in combatState.AllCards)
         {
+            if (card.Owner != player
+                || card.HasBeenRemovedFromState
+                || card.Pile is not { IsCombatPile: true })
+            {
+                continue;
+            }
+
             if (CombatScopeScratch.Add(card))
             {
                 cards.Add(card);
@@ -108,7 +115,12 @@ public static class KnowledgeDemonUniqueUtility
         && PileType.Deck.GetPile(player).Cards.Any(c => c != replaced && SharesUniqueName(c, candidate));
 
     public static bool WouldViolateCombatUniqueRule(Player player, CardModel candidate, CardModel? replaced = null) =>
-        CombatContainsSameUnique(player, candidate, replaced);
+        IsUniqueForCombat(player, candidate)
+        && IterateCombatUniqueScope(player).Any(
+            combatCard =>
+                combatCard != replaced
+                && IsUniqueForCombat(player, combatCard)
+                && SharesUniqueName(combatCard, candidate));
 
     public static CardModel ResolveDeckAddition(Player player, CardModel card)
     {
@@ -191,6 +203,12 @@ public static class KnowledgeDemonUniqueUtility
 
         return order;
     }
+
+    private static bool IsUniqueForCombat(Player player, CardModel card) =>
+        !IsImmuneToUnique(card)
+        && (IsUnique(card)
+            || (player.Creature.GetPower<EnvironmentalTolerancePower>() is not null
+                && card.Type == CardType.Status));
 
     private static void PreserveUpgradeLevel(CardModel source, CardModel replacement)
     {

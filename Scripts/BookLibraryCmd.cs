@@ -236,6 +236,11 @@ public static class BookLibraryCmd
                 continue;
             }
 
+            if (await AberrantDiscardUtility.TryRedirectLibraryDiscard(card))
+            {
+                continue;
+            }
+
             var oldPileType = pile.Type;
             card.RemoveFromCurrentPile(silent: false);
             BookLibraryUtility.ResetCardTint(card);

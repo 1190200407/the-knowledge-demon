@@ -25,7 +25,7 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
         HoverTipFactory.FromCard<Collapse>(),
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(10m, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7m, ValueProp.Move)];
 
     public BrainwavePulse()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -43,7 +43,7 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
             .Execute(choiceContext);
 
         var collapse = CombatState!.CreateCard<Collapse>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(collapse, PileType.Hand, Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(collapse, PileType.Draw, Owner);
     }
 
     protected override void OnUpgrade()

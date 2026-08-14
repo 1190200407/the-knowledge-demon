@@ -39,6 +39,6 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Innate);
+        EnergyCost.UpgradeBy(-1);
     }
 }

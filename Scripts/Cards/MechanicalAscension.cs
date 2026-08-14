@@ -9,18 +9,20 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
-public sealed class EnvironmentalTolerance : KnowledgeDemonCardModel
+public sealed class MechanicalAscension : KnowledgeDemonCardModel
 {
     private const int EnergyCostValue = 1;
-    private const CardType TypeValue = CardType.Power;
+    private const CardType TypeValue = CardType.Skill;
     private const CardRarity RarityValue = CardRarity.Uncommon;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromUnique()];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Ethereal];
 
-    public EnvironmentalTolerance()
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [HoverTipFactory.FromKeyword(CardKeyword.Unplayable)];
+
+    public MechanicalAscension()
         : base(EnergyCostValue, TypeValue, RarityValue, TargetTypeValue, ShouldShowInCardLibraryValue)
     {
     }
@@ -28,7 +30,7 @@ public sealed class EnvironmentalTolerance : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<EnvironmentalTolerancePower>(
+        await PowerCmd.Apply<MechanicalAscensionPower>(
             choiceContext,
             Owner.Creature,
             1,
@@ -38,6 +40,6 @@ public sealed class EnvironmentalTolerance : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        RemoveKeyword(CardKeyword.Ethereal);
     }
 }
