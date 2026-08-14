@@ -57,7 +57,7 @@ public static class KnowledgeDemonCardSelectCmd
         filter ??= _ => true;
 
         List<CardModel> libraryCards = [];
-        if (BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        if (BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
             if (libraryPile is not null)

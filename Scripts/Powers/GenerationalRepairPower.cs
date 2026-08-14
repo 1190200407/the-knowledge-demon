@@ -30,7 +30,7 @@ public sealed class GenerationalRepairPower : KnowledgeDemonPowerModel
         }
         
         var player = Owner.Player;
-        if (player is null || !BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        if (player is null || !BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             return;
         }

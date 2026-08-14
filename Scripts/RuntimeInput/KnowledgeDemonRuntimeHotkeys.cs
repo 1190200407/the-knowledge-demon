@@ -59,7 +59,7 @@ public static class KnowledgeDemonRuntimeHotkeys
             return;
         }
 
-        if (!BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        if (!BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             return;
         }

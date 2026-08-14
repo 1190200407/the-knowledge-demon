@@ -27,7 +27,7 @@ public sealed class BookLibraryPileSingleton : HookedSingletonModel
     {
         if (!cardPlay.IsAutoPlay
             && cardPlay.Card.Owner is Player player
-            && BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+            && BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             _pendingRecordContexts[cardPlay.Card] = choiceContext;
         }

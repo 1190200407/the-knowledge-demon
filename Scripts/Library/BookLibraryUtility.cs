@@ -26,6 +26,13 @@ public static class BookLibraryUtility
         player?.GetRelic<CognitionVesselRelic>() is not null
         || player?.GetRelic<KnowledgeHostRelic>() is not null;
 
+    public static bool PlayerHasSharedStarterRelicEffect(Player? player) =>
+        player?.Creature.GetPower<TelepathyPower>() is not null;
+
+    public static bool PlayerHasBookLibraryAccess(Player? player) =>
+        PlayerHasBookLibraryRelic(player)
+        || PlayerHasSharedStarterRelicEffect(player);
+
     public static bool PlayerHasKnowledgeHostRelic(Player? player) =>
         player?.GetRelic<KnowledgeHostRelic>() is not null;
 
@@ -37,6 +44,24 @@ public static class BookLibraryUtility
 
     public static bool IsBookLibraryPile(PileType pileType) =>
         pileType == PileType;
+
+    public static void RefreshLocalBookLibraryUi(Player? player)
+    {
+        if (player is null)
+        {
+            return;
+        }
+
+        if (NBookLibraryPile.Instance?.Player == player)
+        {
+            NBookLibraryPile.Instance.RefreshAvailability();
+        }
+
+        if (NLibraryPileButton.Instance?.Player == player)
+        {
+            NLibraryPileButton.Instance.RefreshAvailability();
+        }
+    }
 
     public static void RefreshCardVisual(CardModel card)
     {

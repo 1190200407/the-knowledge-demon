@@ -70,7 +70,7 @@ public class Entry
 				Scope = ModCardPileScope.CombatOnly,
 				Style = ModCardPileUiStyle.Headless,
 				CardShouldBeVisible = true,
-				VisibleWhen = static ctx => BookLibraryUtility.PlayerHasBookLibraryRelic(ctx.Player),
+                VisibleWhen = static ctx => BookLibraryUtility.PlayerHasBookLibraryAccess(ctx.Player),
 				FlightTargetPositionResolver = static _ =>
 					NBookLibraryPile.Instance?.GetSlotGlobalPosition(0),
 				FlightStartPositionResolver = static ctx =>

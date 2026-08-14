@@ -29,6 +29,8 @@ public partial class NLibraryPileButton : NButton
 
     public static NLibraryPileButton? Instance { get; private set; }
 
+    public Player? Player => _player;
+
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -68,7 +70,13 @@ public partial class NLibraryPileButton : NButton
         _player = player;
         AttachPile(BookLibraryUtility.TryGetLibraryPile(player));
         RefreshCount();
+        RefreshAvailability();
         RefreshToggleVisual();
+    }
+
+    public void RefreshAvailability()
+    {
+        Visible = _player != null && BookLibraryUtility.PlayerHasBookLibraryAccess(_player);
     }
 
     public void RefreshToggleVisual()

@@ -86,6 +86,8 @@ public partial class NBookLibraryPile : Control
 
     public bool AreCardsEffectivelyVisible => _forcedCardsVisibleCount > 0 || _cardsShownByToggle;
 
+    public void RefreshAvailability() => UpdateVisibility();
+
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -328,7 +330,7 @@ public partial class NBookLibraryPile : Control
         ApplyCardsVisibilityState();
         var pile = BookLibraryUtility.TryGetLibraryPile(player);
         Entry.Logger.Info(
-            $"[BookLibrary][Initialize] visible={Visible} relic={BookLibraryUtility.PlayerHasBookLibraryRelic(player)} " +
+            $"[BookLibrary][Initialize] visible={Visible} access={BookLibraryUtility.PlayerHasBookLibraryAccess(player)} " +
             $"cards={pile?.Cards.Count ?? 0} index={GetIndex()}");
         KnowledgeDemonCardSelectSession.LogState("Initialize", this);
         UpdateHoverTriggerZoneSize();
@@ -763,7 +765,7 @@ public partial class NBookLibraryPile : Control
 
     private void UpdateVisibility()
     {
-        Visible = _player != null && BookLibraryUtility.PlayerHasBookLibraryRelic(_player);
+        Visible = _player != null && BookLibraryUtility.PlayerHasBookLibraryAccess(_player);
         ApplyCardsVisibilityState();
     }
 

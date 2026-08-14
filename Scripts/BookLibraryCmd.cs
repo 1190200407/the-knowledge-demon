@@ -32,7 +32,7 @@ public static class BookLibraryCmd
         CardModel card,
         int count)
     {
-        if (count <= 0 || !BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        if (count <= 0 || !BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             return;
         }
@@ -90,7 +90,7 @@ public static class BookLibraryCmd
         if (oldPileType != PileType.Play
             || card.Pile is not { Type: PileType.Discard }
             || card.Owner is not Player player
-            || !BookLibraryUtility.PlayerHasBookLibraryRelic(player)
+            || !BookLibraryUtility.PlayerHasBookLibraryAccess(player)
             || !WasManuallyPlayedToDiscard(card))
         {
             return;
@@ -503,6 +503,12 @@ public static class BookLibraryCmd
         {
             knowledgeHostRelic.Flash();
             await TriggerKnowledgeOverload(choiceContext, player, source ?? knowledgeHostRelic, true);
+            return;
+        }
+
+        if (player.Creature.GetPower<TelepathyPower>() is { } telepathyPower)
+        {
+            await TriggerKnowledgeOverload(choiceContext, player, source ?? telepathyPower);
         }
     }
 
@@ -535,7 +541,7 @@ public static class BookLibraryCmd
 
     public static async Task DismissLibraryAtTurnEnd(PlayerChoiceContext choiceContext, Player player)
     {
-        if (!BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+        if (!BookLibraryUtility.PlayerHasBookLibraryAccess(player))
         {
             return;
         }
