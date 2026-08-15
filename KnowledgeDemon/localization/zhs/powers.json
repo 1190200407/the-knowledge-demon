@@ -111,7 +111,7 @@
     "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.title": "机械飞升",
     "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.description": "本回合你可以打出[gold]不能被打出[/gold]的状态牌，当你打出状态牌时，抽1张牌。",
     "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.smartDescription": "接下来[blue]{Amount}[/blue]回合，你可以打出[gold]不能被打出[/gold]的状态牌，当你打出状态牌时，抽1张牌。"
-    ,"KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.title": "心灵交流",
+    ,"KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.title": "心灵感应",
     "KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.description": "本场战斗中，所有盟友获得你的初始遗物效果。",
     "KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.smartDescription": "本场战斗中，所有盟友获得你的初始遗物效果。"
 }

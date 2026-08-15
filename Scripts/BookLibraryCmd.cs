@@ -383,16 +383,29 @@ public static class BookLibraryCmd
         PlayerChoiceContext choiceContext,
         IReadOnlyList<CardModel> unchosen)
     {
+        if (unchosen.Count == 0)
+        {
+            return;
+        }
+
+        var player = unchosen.FirstOrDefault(static card => card.Owner != null)?.Owner;
+        if (player == null)
+        {
+            foreach (var card in unchosen)
+            {
+                KnowledgeDemonChooseContext.ClearChoosePreviewFlag(card);
+                await TryVanishFromLibrary(card);
+            }
+
+            return;
+        }
+
         foreach (var card in unchosen)
         {
             KnowledgeDemonChooseContext.ClearChoosePreviewFlag(card);
-            if (card.IsSlyThisTurn)
-            {
-                await CardCmd.AutoPlay(choiceContext, card, null, AutoPlayType.SlyDiscard);
-            }
-
-            await TryVanishFromLibrary(card);
         }
+
+        await DiscardExtractedLibraryCards(choiceContext, player, unchosen);
     }
 
     private static async Task ExtractCandidatesFromLibrary(Player player, IReadOnlyList<CardModel> candidates)
@@ -419,6 +432,41 @@ public static class BookLibraryCmd
 
     private static bool IsInBookLibrary(CardModel card) =>
         card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type);
+
+    private static async Task DiscardExtractedLibraryCards(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> cards)
+    {
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return;
+        }
+
+        foreach (var card in cards)
+        {
+            if (card.HasBeenRemovedFromState)
+            {
+                continue;
+            }
+
+            if (await AberrantDiscardUtility.TryRedirectLibraryDiscard(card))
+            {
+                continue;
+            }
+
+            CombatManager.Instance.History.CardDiscarded(combatState, card);
+            await Hook.AfterCardDiscarded(combatState, choiceContext, card);
+
+            if (card.IsSlyThisTurn)
+            {
+                await CardCmd.AutoPlay(choiceContext, card, null, AutoPlayType.SlyDiscard);
+            }
+
+            await TryVanishFromLibrary(card);
+        }
+    }
     #endregion
 
     #region Duplicate

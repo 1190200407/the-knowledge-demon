@@ -11,7 +11,7 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterCard(typeof(KnowledgeDemonCardPool))]
 public sealed class CrystalProjection : KnowledgeDemonCardModel
 {
-    private const int EnergyCostValue = 0;
+    private const int EnergyCostValue = 1;
     private const CardType TypeValue = CardType.Skill;
     private const CardRarity RarityValue = CardRarity.Common;
     private const TargetType TargetTypeValue = TargetType.Self;
@@ -42,6 +42,6 @@ public sealed class CrystalProjection : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Exhaust);
+        EnergyCost.UpgradeBy(-1);
     }
 }

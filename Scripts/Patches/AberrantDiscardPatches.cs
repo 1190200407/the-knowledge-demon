@@ -145,10 +145,6 @@ internal sealed class AberrantCombatManagerFlushPlayerHandPatch : IPatchMethod
             {
                 cardsToRetain.Add(card);
             }
-            else if (AberrantDiscardUtility.TryRedirectHandDiscard(card))
-            {
-                cardsToRetain.Add(card);
-            }
             else
             {
                 cardsToFlush.Add(card);
