@@ -18,20 +18,36 @@ public sealed class DejaVuPower : KnowledgeDemonPowerModel, IKnowledgeDemonEvent
     protected override IEnumerable<string> RegisteredKeywordIds =>
         [KnowledgeDemonKeyword.Materialize];
 
-    public Task<CardModel> ModifyMaterializeCard(Player player, CardModel sourceCard, CardModel materializedCard)
+    public Task AfterMaterializedFromLibrary(
+        MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> materialized)
     {
-        _ = sourceCard;
+        _ = choiceContext;
 
         if (Owner.Player != player)
         {
-            return Task.FromResult(materializedCard);
+            return Task.CompletedTask;
         }
 
-        if (!materializedCard.Keywords.Contains(CardKeyword.Sly))
+        foreach (var card in materialized)
         {
-            materializedCard.AddKeyword(CardKeyword.Sly);
+            if (card.Owner != player)
+            {
+                continue;
+            }
+
+            GrantSly(card);
         }
 
-        return Task.FromResult(materializedCard);
+        return Task.CompletedTask;
+    }
+
+    private static void GrantSly(CardModel card)
+    {
+        if (!card.Keywords.Contains(CardKeyword.Sly))
+        {
+            card.AddKeyword(CardKeyword.Sly);
+        }
     }
 }

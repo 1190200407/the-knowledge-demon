@@ -33,7 +33,15 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var goodGrace = Owner.RunState.CreateCard<GoodGrace>(Owner);
+        _ = choiceContext;
+        _ = cardPlay;
+
+        if (CombatState is null)
+        {
+            return;
+        }
+
+        var goodGrace = CombatState.CreateCard<GoodGrace>(Owner);
         await CardPileCmd.AddGeneratedCardToCombat(goodGrace, PileType.Hand, Owner);
     }
 

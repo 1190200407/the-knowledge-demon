@@ -40,12 +40,20 @@ public sealed class Traction : KnowledgeDemonCardModel, IKnowledgeDemonEventList
         Player player,
         IReadOnlyList<CardModel> materialized)
     {
+        _ = choiceContext;
+
         if (!materialized.Contains(this))
         {
             return;
         }
 
-        var mindAscension = player.RunState.CreateCard<MindAscension>(player);
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return;
+        }
+
+        var mindAscension = combatState.CreateCard<MindAscension>(player);
         await CardPileCmd.AddGeneratedCardToCombat(mindAscension, PileType.Hand, player);
     }
 

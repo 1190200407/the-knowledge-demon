@@ -28,7 +28,7 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5m, ValueProp.Move),
+        new BlockVar(4m, ValueProp.Move),
         new IntVar("RecordedBlock", 4),
     ];
 
@@ -62,6 +62,7 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Block.UpgradeValueBy(2m);
         DynamicVars["RecordedBlock"].UpgradeValueBy(2m);
     }
 }

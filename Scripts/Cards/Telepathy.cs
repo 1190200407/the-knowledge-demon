@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
 
@@ -54,11 +55,25 @@ public sealed class Telepathy : KnowledgeDemonCardModel
             .Distinct()
             .ToList();
 
+        var sharedAnyPlayer = false;
         foreach (var player in alliedPlayers)
+        {
+            if (BookLibraryUtility.PlayerHasBookLibraryRelic(player))
+            {
+                continue;
+            }
+
+            var temporaryRelic = ModelDb.Relic<CognitionVesselRelic>().ToMutable();
+            temporaryRelic.IsWax = true;
+            await RelicCmd.Obtain(temporaryRelic, player);
+            sharedAnyPlayer = true;
+        }
+
+        if (sharedAnyPlayer)
         {
             await PowerCmd.Apply<TelepathyPower>(
                 choiceContext,
-                player.Creature,
+                Owner.Creature,
                 1m,
                 Owner.Creature,
                 this);
