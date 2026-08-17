@@ -19,7 +19,6 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<AberrantCardCmdDiscardAndDrawPatch>();
 		patcher.RegisterPatch<AberrantCombatManagerFlushPlayerHandPatch>();
 		patcher.RegisterPatch<ThoughtInterferenceChoosePatch>();
-		patcher.RegisterPatch<ParallelObservationTransformOptionsPatch>();
 		patcher.RegisterPatch<KnowledgeDemonUniqueTransformOptionsPatch>();
 		patcher.RegisterPatch<SingularityTransformPatch>();
 		patcher.RegisterPatch<DustyTomeInfiniteAncientCardSetterPatch>();

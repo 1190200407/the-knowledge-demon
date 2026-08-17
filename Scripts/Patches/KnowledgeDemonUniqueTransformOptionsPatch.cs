@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Patching.Models;
@@ -30,36 +28,10 @@ internal sealed class KnowledgeDemonUniqueTransformOptionsPatch : IPatchMethod
             return;
         }
 
-        var candidates = (__result ?? []).AsEnumerable();
-        var environmentalToleranceActive =
-            original.Owner.Creature.GetPower<EnvironmentalTolerancePower>() is not null;
-        if (original.Type == CardType.Status && environmentalToleranceActive)
-        {
-            candidates = TransformOptionUtility.GetEnvironmentalToleranceTransformCandidates(
-                player,
-                original,
-                original.IsInCombat);
-        }
-
-        var filtered = candidates
-            .Where(candidate => original.IsInCombat
-                ? !KnowledgeDemonUniqueUtility.WouldViolateCombatUniqueRule(player, candidate, original)
-                : !KnowledgeDemonUniqueUtility.WouldViolateDeckUniqueRule(player, candidate, original))
-            .GroupBy(card => card.Id)
-            .Select(group => group.First())
-            .ToArray();
-
-        if (filtered.Length > 0)
-        {
-            __result = filtered;
-            return;
-        }
-
-        if (TransformOptionUtility.GetInfiniteCard() is not { } infinite)
-        {
-            return;
-        }
-
-        __result = [infinite];
+        __result = TransformOptionResolver.ResolveCandidates(
+            player,
+            original,
+            original.IsInCombat,
+            __result ?? []);
     }
 }

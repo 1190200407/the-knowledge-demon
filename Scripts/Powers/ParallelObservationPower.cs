@@ -5,12 +5,13 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
 
-public abstract class ParallelObservationPowerBase : KnowledgeDemonPowerModel
+public abstract class ParallelObservationPowerBase : KnowledgeDemonPowerModel, ITransformOptionCandidateProvider
 {
     private const string ChosenCharacterVarName = "ChosenCharacter";
 
@@ -39,6 +40,25 @@ public abstract class ParallelObservationPowerBase : KnowledgeDemonPowerModel
         _ = cardSource;
         SyncChosenCharacterVar();
         return Task.CompletedTask;
+    }
+
+    public IEnumerable<CardModel> GetAdditionalTransformCandidates(
+        MegaCrit.Sts2.Core.Entities.Players.Player player,
+        CardModel original,
+        bool isInCombat)
+    {
+        _ = original;
+        _ = isInCombat;
+
+        if (ChosenCharacterId is not { } chosenCharacterId
+            || ModelDb.GetByIdOrNull<CharacterModel>(chosenCharacterId) is not { } chosenCharacter)
+        {
+            return [];
+        }
+
+        return chosenCharacter.CardPool.GetUnlockedCards(
+            player.UnlockState,
+            player.RunState.CardMultiplayerConstraint);
     }
 
     private void SyncChosenCharacterVar()
