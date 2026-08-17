@@ -9,6 +9,50 @@ namespace ComicChess.KnowledgeDemon;
 
 internal static class TransformOptionUtility
 {
+    internal static IEnumerable<CardModel> GetDefaultTransformCandidates(
+        Player player,
+        CardModel original,
+        bool isInCombat)
+    {
+        var sourcePool =
+            original.Type != CardType.Quest
+            && original.Rarity != CardRarity.Event
+            && original.Rarity != CardRarity.Ancient
+            && original.Rarity != CardRarity.Token
+                ? original.Pool
+                : ModelDb.CardPool<ColorlessCardPool>();
+
+        var unlockedCards = sourcePool.GetUnlockedCards(
+            player.UnlockState,
+            player.RunState.CardMultiplayerConstraint);
+
+        return FilterTransformCandidates(original, unlockedCards, isInCombat);
+    }
+
+    internal static IEnumerable<CardModel> GetEnvironmentalToleranceTransformCandidates(
+        Player player,
+        CardModel original,
+        bool isInCombat)
+    {
+        var knowledgeDemonStatusCards = FilterTransformCandidates(
+                original,
+                GetKnowledgeDemonStatusPoolCards(player),
+                isInCombat)
+            .GroupBy(card => card.Id)
+            .Select(group => group.First());
+
+        if (IsKnowledgeDemonStatusCard(original))
+        {
+            return knowledgeDemonStatusCards;
+        }
+
+        var baseCandidates = GetDefaultTransformCandidates(player, original, isInCombat).ToList();
+        var existingIds = baseCandidates.Select(card => card.Id).ToHashSet();
+
+        return baseCandidates.Concat(
+            knowledgeDemonStatusCards.Where(card => !existingIds.Contains(card.Id)));
+    }
+
     internal static IEnumerable<CardModel> GetInfiniteTransformationStatusCandidates(Player player)
     {
         return FilterForPlayerCount(

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -103,15 +104,22 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         _resolvingCombatViolations = true;
         try
         {
+            var iterationsLeft = System.Math.Max(32, KnowledgeDemonUniqueUtility.IterateCombatUniqueScope(player).Count() * 8);
             while (TryFindDuplicateUnique(player, preferredDuplicate) is { } duplicate)
             {
+                if (--iterationsLeft < 0)
+                {
+                    Entry.Logger.Warn("[Unique] Aborted duplicate-resolution loop after too many transforms.");
+                    return;
+                }
+
                 preferredDuplicate = null;
                 if (!duplicate.IsTransformable)
                 {
                     return;
                 }
 
-                var replacement = new CardTransformation(duplicate).GetReplacement(player.RunState.Rng.Niche);
+                var replacement = TryCreateCombatUniqueReplacement(player, duplicate);
                 if (replacement is null)
                 {
                     return;
@@ -125,6 +133,58 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         {
             _resolvingCombatViolations = false;
         }
+    }
+
+    private static CardModel? TryCreateCombatUniqueReplacement(Player player, CardModel duplicate)
+    {
+        var cardScope = duplicate.CardScope;
+        if (cardScope is null)
+        {
+            return null;
+        }
+
+        if (duplicate.Type == CardType.Status
+            && player.Creature.GetPower<EnvironmentalTolerancePower>() is not null)
+        {
+            var candidates = TransformOptionUtility
+                .GetEnvironmentalToleranceTransformCandidates(player, duplicate, duplicate.IsInCombat)
+                .Where(candidate =>
+                    !KnowledgeDemonUniqueUtility.WouldViolateCombatUniqueRule(player, candidate, duplicate))
+                .GroupBy(card => card.Id)
+                .Select(group => group.First())
+                .ToArray();
+
+            if (candidates.Length > 0)
+            {
+                var selected = player.RunState.Rng.Niche.NextItem(candidates);
+                return selected is null ? null : cardScope.CreateCard(selected, player);
+            }
+
+            if (TransformOptionUtility.GetInfiniteCard() is { } infinite)
+            {
+                return cardScope.CreateCard(infinite, player);
+            }
+
+            return null;
+        }
+
+        var replacement = new CardTransformation(duplicate).GetReplacement(player.RunState.Rng.Niche);
+        if (replacement is null)
+        {
+            return null;
+        }
+
+        if (!KnowledgeDemonUniqueUtility.WouldViolateCombatUniqueRule(player, replacement, duplicate))
+        {
+            return replacement;
+        }
+
+        if (TransformOptionUtility.GetInfiniteCard() is { } fallbackInfinite)
+        {
+            return cardScope.CreateCard(fallbackInfinite, player);
+        }
+
+        return replacement;
     }
 
     private static CardModel? TryFindDuplicateUnique(Player player, CardModel? preferredDuplicate = null)

@@ -51,4 +51,9 @@ public sealed class PheromoneSynchronization : KnowledgeDemonCardModel
             Owner.Creature,
             this);
     }
+
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+    }
 }
