@@ -1,3 +1,4 @@
+using Godot;
 using STS2RitsuLib.Scaffolding.Content;
 
 namespace ComicChess.KnowledgeDemon;
@@ -10,4 +11,6 @@ public class KnowledgeDemonPotionPool : TypeListPotionPoolModel
     public override string? BigEnergyIconPath => "res://KnowledgeDemon/images/charui/energy_icon_big.png";
 
     public override string EnergyColorName => "knowledge_demon";
+
+    public override Color LabOutlineColor => new(135f / 255f, 97f / 255f, 49f / 255f);
 }

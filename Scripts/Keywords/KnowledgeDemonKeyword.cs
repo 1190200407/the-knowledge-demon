@@ -27,4 +27,7 @@ public static class KnowledgeDemonKeyword
 
     public static readonly string Unique =
         ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "unique");
+
+    public static readonly string Infinite =
+        ModContentRegistry.GetQualifiedKeywordId(Entry.ModId, "infinite");
 }

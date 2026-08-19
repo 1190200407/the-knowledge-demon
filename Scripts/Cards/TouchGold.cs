@@ -88,7 +88,7 @@ public sealed class TouchGold : KnowledgeDemonCardModel
         if (result.Chosen != null)
         {
             _returnToHandThisPlay.Add(result.Chosen);
-            await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
+            await BookLibraryCmd.PlayChosenCard(choiceContext, Owner, result.Chosen, this);
         }
 
         await BookLibraryCmd.ResolveUnchosenLibraryCandidates(choiceContext, result.Unchosen);

@@ -1,13 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
 
 namespace ComicChess.KnowledgeDemon;
@@ -21,15 +23,18 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
-    public override bool GainsBlock => true;
+    private static readonly LocString DiscardSelectionPrompt =
+        new("cards", "KNOWLEDGE_DEMON_CARD_ADAPTABILITY.discardSelectionScreenPrompt");
+
+    private static readonly LocString RecordSelectionPrompt =
+        new("cards", "KNOWLEDGE_DEMON_CARD_ADAPTABILITY.recordSelectionScreenPrompt");
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromRecord()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4m, ValueProp.Move),
-        new IntVar("RecordedBlock", 4),
+        new CardsVar(1),
     ];
 
     public Adaptability()
@@ -43,26 +48,51 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
         CardModel sourceCard,
         IReadOnlyList<CardModel> recordedCopies)
     {
-        if (!ReferenceEquals(sourceCard, this) || recordedCopies.Count == 0)
+        if (!ReferenceEquals(sourceCard, this) || recordedCopies.Count == 0 || choiceContext is null)
         {
             return;
         }
 
-        await CreatureCmd.GainBlock(
-            player.Creature,
-            DynamicVars["RecordedBlock"].IntValue * recordedCopies.Count,
-            ValueProp.Move,
-            null);
+        await Cmd.CustomScaledWait(0.5f, 1f);
+        await BookLibraryCmd.DiscardFromLibraryAndHand(
+            choiceContext,
+            player,
+            1,
+            DiscardSelectionPrompt,
+            this);
+    }
+
+    public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, CardModel card)
+    {
+        if (!ReferenceEquals(card, this))
+        {
+            return;
+        }
+
+        await Cmd.CustomScaledWait(0.5f, 1f);
+        var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibraryAndHand(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(RecordSelectionPrompt, 1),
+            null,
+            this)).FirstOrDefault();
+
+        if (selection is null)
+        {
+            return;
+        }
+
+        await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, selection, 1);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        _ = cardPlay;
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
-        DynamicVars["RecordedBlock"].UpgradeValueBy(2m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

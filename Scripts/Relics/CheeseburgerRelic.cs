@@ -19,7 +19,7 @@ public sealed class CheeseburgerRelic : KnowledgeDemonRelicModel, IKnowledgeDemo
     public override RelicRarity Rarity => RelicRarity.Common;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
-        [KnowledgeDemonKeywordHoverTips.FromKnowledgeOverload()];
+        [KnowledgeDemonKeywordHoverTips.FromKnowledgeOverload(), KnowledgeDemonKeywordHoverTips.FromChoose()];
 
     public async Task AfterKnowledgeOverloadTriggered(
         PlayerChoiceContext choiceContext,

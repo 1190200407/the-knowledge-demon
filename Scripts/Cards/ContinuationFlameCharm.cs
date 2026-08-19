@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -19,11 +18,10 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
-
-    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        HoverTipFactory.FromCard<GoodGrace>(),
+        new BlockVar(3m, ValueProp.Move),
+        new EnergyVar(2),
     ];
 
     public ContinuationFlameCharm()
@@ -34,19 +32,12 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         _ = choiceContext;
-        _ = cardPlay;
-
-        if (CombatState is null)
-        {
-            return;
-        }
-
-        var goodGrace = CombatState.CreateCard<GoodGrace>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(goodGrace, PileType.Hand, Owner);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

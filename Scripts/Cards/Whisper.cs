@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -23,6 +24,9 @@ public sealed class Whisper : KnowledgeDemonCardModel
     public override bool GainsBlock => true;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [KnowledgeDemonKeywordHoverTips.FromMaterializeKeyword()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -60,11 +64,8 @@ public sealed class Whisper : KnowledgeDemonCardModel
             .Where(card => card.Id == selected.Id)
             .ToList();
 
-        foreach (var card in sameNameCards)
-        {
-            await CardPileCmd.Add(card, PileType.Hand);
-            BookLibraryUtility.RefreshHandCardVisual(card);
-        }
+        sameNameCards.Insert(0, selected);
+        await BookLibraryCmd.MaterializeSelectedCardsToHand(choiceContext, Owner, sameNameCards, this);
     }
 
     protected override void OnUpgrade()

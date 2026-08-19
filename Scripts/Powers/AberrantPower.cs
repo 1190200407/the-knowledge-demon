@@ -90,6 +90,21 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         return true;
     }
 
+    public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, CardModel card)
+    {
+        _ = choiceContext;
+
+        if (!CanRedirectDiscard(card))
+        {
+            return;
+        }
+
+        ConsumeTrigger();
+        Flash();
+        await CardPileCmd.Add(card, PileType.Hand);
+        BookLibraryUtility.RefreshHandCardVisual(card);
+    }
+
     private bool CanRedirectDiscard(CardModel card)
     {
         if (Owner.Player is not { } player

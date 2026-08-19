@@ -276,6 +276,37 @@ public static class KnowledgeDemonHook
             await listener.AfterKnowledgeOverloadTriggered(choiceContext, player, source);
         }
     }
+
+    public static async Task<int> ModifyChosenCardPlayCount(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel? chooseSource,
+        CardModel chosenCard,
+        int playCount)
+    {
+        var combatState = player.Creature.CombatState;
+        if (combatState is null)
+        {
+            return playCount;
+        }
+
+        foreach (var model in combatState.IterateHookListeners())
+        {
+            if (model is not IKnowledgeDemonEventListener listener)
+            {
+                continue;
+            }
+
+            playCount = await listener.ModifyChosenCardPlayCount(
+                choiceContext,
+                player,
+                chooseSource,
+                chosenCard,
+                playCount);
+        }
+
+        return playCount;
+    }
 }
 
 /// <summary>知识恶魔 mod 事件监听；未覆写的方法使用默认空实现。</summary>
@@ -334,4 +365,11 @@ public interface IKnowledgeDemonEventListener
         PlayerChoiceContext choiceContext,
         Player player,
         AbstractModel? source) => Task.CompletedTask;
+
+    Task<int> ModifyChosenCardPlayCount(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel? chooseSource,
+        CardModel chosenCard,
+        int playCount) => Task.FromResult(playCount);
 }

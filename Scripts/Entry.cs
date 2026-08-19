@@ -109,6 +109,11 @@ public class Entry
 			iconPath: null,
 			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.AfterCardDescription,
 			includeInCardHoverTip: true);
+		keywordRegistry.RegisterCardKeywordOwnedByLocNamespace(
+			"infinite",
+			iconPath: null,
+			cardDescriptionPlacement: ModKeywordCardDescriptionPlacement.AfterCardDescription,
+			includeInCardHoverTip: true);
 
 		EnlightenmentAttainedRewardRegistration.Register();
 		RitsuLibFramework.RegisterArchaicToothTranscendenceMapping<MakeAChoice, ItIsDone>(ModId);

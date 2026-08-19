@@ -19,6 +19,9 @@ public static class KnowledgeDemonKeywordHoverTips
     public static IHoverTip FromUnique() =>
         HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Unique));
 
+    public static IHoverTip FromInfinite() =>
+        HoverTipFactory.FromKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Infinite));
+
     public static IHoverTip FromChoose() =>
         CreateStatic(KnowledgeDemonKeyword.Choose);
 

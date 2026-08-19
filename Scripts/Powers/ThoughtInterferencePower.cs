@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -15,7 +15,7 @@ using STS2RitsuLib.Interop.AutoRegistration;
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class ThoughtInterferencePower : KnowledgeDemonPowerModel
+public sealed class ThoughtInterferencePower : KnowledgeDemonPowerModel, IKnowledgeDemonEventListener
 {
     private sealed class Data
     {
@@ -55,19 +55,25 @@ public sealed class ThoughtInterferencePower : KnowledgeDemonPowerModel
         return Task.CompletedTask;
     }
 
-    public async Task TryGrantReplayForChooseACard(PlayerChoiceContext choiceContext, CardModel chosen)
+    public Task<int> ModifyChosenCardPlayCount(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel? chooseSource,
+        CardModel chosenCard,
+        int playCount)
     {
-        if (chosen.Owner != Owner.Player || GetInternalData<Data>().choicesLeft <= 0)
+        _ = choiceContext;
+        _ = chooseSource;
+
+        if (player != Owner.Player || chosenCard.Owner != Owner.Player || GetInternalData<Data>().choicesLeft <= 0)
         {
-            return;
+            return Task.FromResult(playCount);
         }
 
         Flash();
-        chosen.BaseReplayCount += 1;
-        CardCmd.Preview(chosen);
         GetInternalData<Data>().choicesLeft--;
         InvokeDisplayAmountChanged();
-        await Task.CompletedTask;
+        return Task.FromResult(playCount + 1);
     }
 
     private void ResetChoicesLeft()

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using STS2RitsuLib.Keywords;
@@ -56,7 +57,7 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
                 break;
             }
 
-            await ApplyItIsDoneChooseResult(choiceContext, result);
+            await ApplyItIsDoneChooseResult(choiceContext, Owner, result);
         }
 
         BookLibraryCmd.PlayChooseDonePresentation(Owner);
@@ -64,12 +65,13 @@ public sealed class ItIsDone : KnowledgeDemonCardModel
 
     private static async Task ApplyItIsDoneChooseResult(
         PlayerChoiceContext choiceContext,
+        Player player,
         BookLibraryChooseResult result)
     {
         if (result.Chosen != null)
         {
             KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
-            await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
+            await BookLibraryCmd.PlayChosenCard(choiceContext, player, result.Chosen, null);
         }
 
         foreach (var card in result.Unchosen)

@@ -1,0 +1,20 @@
+{
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.title": "浓缩咖啡",
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.description": "立刻触发[blue]1[/blue]次[gold]知识过载[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.title": "冥想药水",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.description": "选择[blue]1[/blue]张[gold]手牌[/gold]，[gold]记录[/gold]后将其[gold]丢弃[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.selectionScreenPrompt": "选择[blue]1[/blue]张[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.title": "显影剂",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.description": "[gold]具象1[/gold]。那张牌在本场战斗可以免费打出。",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.selectionScreenPrompt": "选择[blue]1[/blue]张牌[gold]具象[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.title": "分裂药水",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.description": "从[gold]手牌[/gold]或[gold]藏书库[/gold]中选择[blue]1[/blue]张牌，复制[blue]1[/blue]次。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt": "选择1张[gold]手牌[/gold]或[gold]藏书库[/gold]中的牌。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt2": "选择1张[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.title": "双生药水",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.description": "下一次[gold]抉择[/gold]选择的牌多打出[blue]1[/blue]次。",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.selectionScreenPrompt": "选择[blue]1[/blue]张牌。",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.title": "状态药水",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.description": "从[blue]3[/blue]张知识恶魔专属的随机状态牌中选择[blue]1[/blue]张加入你的[gold]手牌[/gold]。这张牌在本场战斗中可以打出。",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.selectionScreenPrompt": "选择[blue]1[/blue]张知识恶魔状态牌。"
+}

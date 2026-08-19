@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -141,8 +142,22 @@ public static class BookLibraryCmd
             filter: null,
             source)).ToList();
 
-        var materialized = new List<CardModel>(selected.Count);
-        foreach (var card in selected)
+        return await MaterializeSelectedCardsToHand(choiceContext, player, selected, source);
+    }
+
+    public static async Task<IReadOnlyList<CardModel>> MaterializeSelectedCardsToHand(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        IReadOnlyList<CardModel> selectedCards,
+        AbstractModel? source = null)
+    {
+        if (selectedCards.Count == 0)
+        {
+            return [];
+        }
+
+        var materialized = new List<CardModel>(selectedCards.Count);
+        foreach (var card in selectedCards)
         {
             var resultCard = source is CardModel sourceCard
                 ? await KnowledgeDemonHook.ModifyMaterializeCard(player, sourceCard, card)
@@ -166,7 +181,7 @@ public static class BookLibraryCmd
         KnowledgeDemonTelemetryEvents.CaptureMaterializedFromLibrary(
             player,
             source as CardModel,
-            selected,
+            selectedCards,
             materialized);
 
         return materialized;
@@ -346,7 +361,7 @@ public static class BookLibraryCmd
         int chooseOfferCount = 3)
     {
         var result = await ChooseFromLibrary(choiceContext, player, chooseSource, chooseOfferCount);
-        await ApplyChooseResult(choiceContext, player, result);
+        await ApplyChooseResult(choiceContext, player, result, chooseSource);
     }
 
     public static async Task ChooseFromCandidatesAndAutoPlay(
@@ -356,13 +371,14 @@ public static class BookLibraryCmd
         CardModel? chooseSource = null)
     {
         var result = await ChooseFromCandidates(choiceContext, player, candidates, chooseSource);
-        await ApplyChooseResult(choiceContext, player, result);
+        await ApplyChooseResult(choiceContext, player, result, chooseSource);
     }
 
     public static async Task ApplyChooseResult(
         PlayerChoiceContext choiceContext,
         Player player,
-        BookLibraryChooseResult result)
+        BookLibraryChooseResult result,
+        CardModel? chooseSource = null)
     {
         if (!result.HasCandidates)
         {
@@ -372,7 +388,7 @@ public static class BookLibraryCmd
         if (result.Chosen != null)
         {
             KnowledgeDemonChooseContext.ClearChoosePreviewFlag(result.Chosen);
-            await CardCmd.AutoPlay(choiceContext, result.Chosen, null);
+            await PlayChosenCard(choiceContext, player, result.Chosen, chooseSource);
             await TryVanishFromLibrary(result.Chosen);
         }
 
@@ -428,6 +444,30 @@ public static class BookLibraryCmd
             BookLibraryUtility.ResetCardTint(card);
             await Hook.AfterCardChangedPiles(player.RunState, combatState, card, oldPileType, null);
         }
+    }
+
+    public static async Task PlayChosenCard(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel chosen,
+        CardModel? chooseSource = null)
+    {
+        var basePlayCount = chosen.GetEnchantedReplayCount() + 1;
+        var finalPlayCount = await KnowledgeDemonHook.ModifyChosenCardPlayCount(
+            choiceContext,
+            player,
+            chooseSource,
+            chosen,
+            basePlayCount);
+
+        finalPlayCount = Math.Max(1, finalPlayCount);
+        var extraPlayCount = Math.Max(0, finalPlayCount - basePlayCount);
+        if (extraPlayCount > 0)
+        {
+            chosen.BaseReplayCount += extraPlayCount;
+        }
+
+        await CardCmd.AutoPlay(choiceContext, chosen, null);
     }
 
     private static bool IsInBookLibrary(CardModel card) =>
@@ -635,6 +675,8 @@ public static class BookLibraryCmd
             TalkCmd.Play(ChooseStartLine, player.Creature, VfxColor.Gold, VfxDuration.Standard);
             await Cmd.CustomScaledWait(0.5f, 1f);
             int chooseOfferCount = IsUpgraded ? 2 : 3;
+            // 强制执行一次
+            await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel, chooseOfferCount: chooseOfferCount);
             while (libraryPile.Cards.Count >= chooseOfferCount && !CombatManager.Instance.IsOverOrEnding)
             {
                 await ChooseFromLibraryAndAutoPlay(choiceContext, player, source as CardModel, chooseOfferCount: chooseOfferCount);

@@ -21,8 +21,6 @@ public sealed class HiveConsciousness : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
-
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 
@@ -42,6 +40,11 @@ public sealed class HiveConsciousness : KnowledgeDemonCardModel
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);
+
+        if (cardPlay.IsAutoPlay)
+        {
+            return;
+        }
 
         var libraryPile = BookLibraryUtility.TryGetLibraryPile(Owner);
         if (libraryPile is null || libraryPile.Cards.Count == 0 || CardScope is null)
