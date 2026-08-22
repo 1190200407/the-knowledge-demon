@@ -18,7 +18,12 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
     public override PowerStackType StackType => PowerStackType.Single;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter"), new StringVar("UpgradeText")];
+    protected override string SmartDescriptionLocKey =>
+        GrantsUpgradedReward
+            ? "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.upgradedSmartDescription"
+            : base.SmartDescriptionLocKey;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new StringVar("ChosenCharacter")];
 
     public ModelId ChosenCharacterId
     {
@@ -77,6 +82,5 @@ public sealed class MimicryPower : KnowledgeDemonPowerModel
 
         var chosenCharacter = ModelDb.GetById<CharacterModel>(ChosenCharacterId);
         ((StringVar)DynamicVars["ChosenCharacter"]).StringValue = chosenCharacter.Title.GetFormattedText();
-        ((StringVar)DynamicVars["UpgradeText"]).StringValue = GrantsUpgradedReward ? "升级过的" : string.Empty;
     }
 }
