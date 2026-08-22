@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -28,6 +27,9 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override int DisplayAmount => GetInternalData<Data>().remainingTriggers;
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+        [HoverTipFactory.FromKeyword(CardKeyword.Sly)];
 
     protected override object InitInternalData() => new Data();
 
@@ -64,58 +66,32 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         return Task.CompletedTask;
     }
 
-    public bool TryRedirectDiscardedStatusFromHand(CardModel card)
+    public override Task AfterCardGeneratedForCombat(
+        CardModel card,
+        Player? creator)
     {
-        if (!CanRedirectDiscard(card))
-        {
-            return false;
-        }
-
-        ConsumeTrigger();
-        Flash();
-        return true;
-    }
-
-    public async Task<bool> TryRedirectDiscardedStatusFromLibrary(CardModel card)
-    {
-        if (!CanRedirectDiscard(card))
-        {
-            return false;
-        }
-
-        ConsumeTrigger();
-        Flash();
-        await CardPileCmd.Add(card, PileType.Hand);
-        BookLibraryUtility.RefreshHandCardVisual(card);
-        return true;
-    }
-
-    public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, CardModel card)
-    {
-        _ = choiceContext;
-
-        if (!CanRedirectDiscard(card))
-        {
-            return;
-        }
-
-        ConsumeTrigger();
-        Flash();
-        await CardPileCmd.Add(card, PileType.Hand);
-        BookLibraryUtility.RefreshHandCardVisual(card);
-    }
-
-    private bool CanRedirectDiscard(CardModel card)
-    {
-        if (Owner.Player is not { } player
-            || card.Owner != player
+        if (creator != Owner.Player
+            || card.Owner != Owner.Player
             || card.Type != CardType.Status)
         {
-            return false;
+            return Task.CompletedTask;
         }
 
-        SyncRemainingTriggers(player);
-        return GetInternalData<Data>().remainingTriggers > 0;
+        SyncRemainingTriggers(Owner.Player);
+        var data = GetInternalData<Data>();
+        if (data.remainingTriggers <= 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        ConsumeTrigger();
+        Flash();
+        if (!card.Keywords.Contains(CardKeyword.Sly))
+        {
+            card.AddKeyword(CardKeyword.Sly);
+        }
+
+        return Task.CompletedTask;
     }
 
     private void ConsumeTrigger()
@@ -159,28 +135,5 @@ public sealed class AberrantPower : KnowledgeDemonPowerModel
         {
             InvokeDisplayAmountChanged();
         }
-    }
-}
-
-internal static class AberrantDiscardUtility
-{
-    public static bool TryRedirectHandDiscard(CardModel card)
-    {
-        if (card.Owner?.Creature?.GetPower<AberrantPower>() is not { } power)
-        {
-            return false;
-        }
-
-        return power.TryRedirectDiscardedStatusFromHand(card);
-    }
-
-    public static async Task<bool> TryRedirectLibraryDiscard(CardModel card)
-    {
-        if (card.Owner?.Creature?.GetPower<AberrantPower>() is not { } power)
-        {
-            return false;
-        }
-
-        return await power.TryRedirectDiscardedStatusFromLibrary(card);
     }
 }

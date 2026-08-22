@@ -23,6 +23,9 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 
+    public override CardMultiplayerConstraint MultiplayerConstraint =>
+        CardMultiplayerConstraint.SingleplayerOnly;
+
     private static readonly LocString DiscardSelectionPrompt =
         new("cards", "KNOWLEDGE_DEMON_CARD_ADAPTABILITY.discardSelectionScreenPrompt");
 

@@ -23,6 +23,7 @@ public sealed class Infinite : KnowledgeDemonCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
+        CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Infinite),
     ];
 
@@ -44,7 +45,7 @@ public sealed class Infinite : KnowledgeDemonCardModel
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);
         await PlayerCmd.GainEnergy(DynamicVars.Energy.IntValue, Owner);
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.IntValue, Owner);
     }
 }

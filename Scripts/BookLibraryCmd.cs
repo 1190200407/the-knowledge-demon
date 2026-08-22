@@ -251,11 +251,6 @@ public static class BookLibraryCmd
                 continue;
             }
 
-            if (await AberrantDiscardUtility.TryRedirectLibraryDiscard(card))
-            {
-                continue;
-            }
-
             var oldPileType = pile.Type;
             card.RemoveFromCurrentPile(silent: false);
             BookLibraryUtility.ResetCardTint(card);
@@ -263,6 +258,12 @@ public static class BookLibraryCmd
 
             CombatManager.Instance.History.CardDiscarded(combatState, card);
             await Hook.AfterCardDiscarded(combatState, choiceContext, card);
+
+            // The choose candidates were removed from the library before the selection screen.
+            // Therefore the discarded card itself is no longer returned by the combat hook listener
+            // enumeration. Dispatch its own discard hook explicitly.
+            await card.AfterCardDiscarded(choiceContext, card);
+            card.InvokeExecutionFinished();
 
             if (card.IsSlyThisTurn)
             {
@@ -487,11 +488,6 @@ public static class BookLibraryCmd
         foreach (var card in cards)
         {
             if (card.HasBeenRemovedFromState)
-            {
-                continue;
-            }
-
-            if (await AberrantDiscardUtility.TryRedirectLibraryDiscard(card))
             {
                 continue;
             }
