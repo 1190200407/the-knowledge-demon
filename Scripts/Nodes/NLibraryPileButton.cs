@@ -31,6 +31,11 @@ public partial class NLibraryPileButton : NButton
 
     public Player? Player => _player;
 
+    public void ApplyConfiguredPosition()
+    {
+        Position = KnowledgeDemonModSettingsPage.GetLibraryUiPosition();
+    }
+
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -125,6 +130,8 @@ public partial class NLibraryPileButton : NButton
         if (tipSet != null)
         {
             tipSet.GlobalPosition = GlobalPosition + new Vector2(-56f, -375f);
+            tipSet.SetAlignment(this, HoverTipAlignment.None);
+            KeepHoverTipWithinViewport(tipSet);
         }
 
         PlayHoverAnim();
@@ -247,5 +254,22 @@ public partial class NLibraryPileButton : NButton
         _bumpTween.TweenProperty(_countLabel, "scale", Vector2.One, 0.5)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Expo);
+    }
+
+    private void KeepHoverTipWithinViewport(NHoverTipSet tipSet)
+    {
+        var textContainer = tipSet.GetNodeOrNull<Control>("textHoverTipContainer");
+        if (textContainer == null)
+        {
+            return;
+        }
+
+        var viewportSize = GetViewport().GetVisibleRect().Size;
+        var maxPosition = new Vector2(
+            Mathf.Max(0f, viewportSize.X - textContainer.Size.X),
+            Mathf.Max(0f, viewportSize.Y - textContainer.Size.Y));
+        textContainer.GlobalPosition = new Vector2(
+            Mathf.Clamp(textContainer.GlobalPosition.X, 0f, maxPosition.X),
+            Mathf.Clamp(textContainer.GlobalPosition.Y, 0f, maxPosition.Y));
     }
 }

@@ -39,7 +39,7 @@ public class Entry
                 NLibraryPileButton.ScenePath,
                 static (_, pileButton) =>
                 {
-                    pileButton.Position = NLibraryPileButton.DefaultPosition;
+                    pileButton.ApplyConfiguredPosition();
                 },
                 new NodeAttachmentOptions
                 {
