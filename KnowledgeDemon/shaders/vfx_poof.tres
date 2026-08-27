@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://ddbvxm3hp78f1"]
 
-[ext_resource type="Shader" uid="uid://c7ly5p8ivjgxh" path="res://KnowledgeDemon/shaders/vfx_poof_shader.gdshader" id="1_7dqwa"]
+[ext_resource type="Shader" path="res://KnowledgeDemon/shaders/vfx_poof_shader.gdshader" id="1_7dqwa"]
 
 [sub_resource type="Curve" id="Curve_7dqwa"]
 _data = [Vector2(0, 0), 0.0, 1.48052, 0, 0, Vector2(1, 1), 0.343691, 0.0, 0, 0]

@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://csm8cbyl8iccn"]
 
-[ext_resource type="Shader" uid="uid://cartvtevldc0c" path="res://KnowledgeDemon/shaders/vfx_ring_polar_shader.gdshader" id="1_gq4bx"]
+[ext_resource type="Shader" path="res://KnowledgeDemon/shaders/vfx_ring_polar_shader.gdshader" id="1_gq4bx"]
 
 [resource]
 shader = ExtResource("1_gq4bx")

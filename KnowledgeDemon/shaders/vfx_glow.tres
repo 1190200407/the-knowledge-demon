@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://crsceknvhw81n"]
 
-[ext_resource type="Shader" uid="uid://b0ip1wiwlff4i" path="res://KnowledgeDemon/shaders/vfx_grayscale_particle_shader.gdshader" id="1_rvmb5"]
+[ext_resource type="Shader" path="res://KnowledgeDemon/shaders/vfx_grayscale_particle_shader.gdshader" id="1_rvmb5"]
 
 [sub_resource type="Gradient" id="Gradient_rvmb5"]
 offsets = PackedFloat32Array(1)
