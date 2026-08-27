@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
+using STS2RitsuLib.Keywords;
 
 namespace ComicChess.KnowledgeDemon;
 
@@ -162,7 +163,10 @@ internal static class TransformOptionUtility
     internal static CardModel? GetInfiniteCard() =>
         ModelDb.AllCards.FirstOrDefault(IsInfinite);
 
-    internal static bool IsInfinite(CardModel card) => card is Infinite;
+    internal static bool IsInfinite(CardModel card) =>
+        card is Infinite
+        || card.HasModKeyword(ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Infinite));
+
 
     private static IEnumerable<CardModel> FilterForPlayerCount(
         MegaCrit.Sts2.Core.Runs.IRunState runState,

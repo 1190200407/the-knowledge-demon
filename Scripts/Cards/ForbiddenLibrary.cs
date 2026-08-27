@@ -49,13 +49,7 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         var toExhaust = libraryPile.Cards.ToList();
-        foreach (var card in toExhaust)
-        {
-            if (card.Pile is { } pile && BookLibraryUtility.IsBookLibraryPile(pile.Type))
-            {
-                await CardPileCmd.Add(card, PileType.Discard);
-            }
-        }
+        await BookLibraryCmd.DiscardFromLibrary(choiceContext, Owner, toExhaust, triggerSlyDiscard: false);
 
         var hitCount = toExhaust.Count;
         if (hitCount == 0)

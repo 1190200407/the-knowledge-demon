@@ -233,10 +233,11 @@ public static class BookLibraryCmd
         return selected;
     }
 
-    private static async Task DiscardFromLibrary(
+    public static async Task DiscardFromLibrary(
         PlayerChoiceContext choiceContext,
         Player player,
-        IReadOnlyList<CardModel> cards)
+        IReadOnlyList<CardModel> cards,
+        bool triggerSlyDiscard = true)
     {
         var combatState = player.Creature.CombatState;
         if (combatState is null)
@@ -265,7 +266,7 @@ public static class BookLibraryCmd
             await card.AfterCardDiscarded(choiceContext, card);
             card.InvokeExecutionFinished();
 
-            if (card.IsSlyThisTurn)
+            if (triggerSlyDiscard && card.IsSlyThisTurn)
             {
                 await CardCmd.AutoPlay(choiceContext, card, null, AutoPlayType.SlyDiscard);
             }

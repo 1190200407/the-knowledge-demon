@@ -19,8 +19,8 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
 {
     // 角色名称颜色 rgb(135, 97, 49)  
     public override Color NameColor => new(135f / 255f, 97f / 255f, 49f / 255f);
-    // 能量图标轮廓颜色 rgb(166, 115, 56)
-    public override Color EnergyLabelOutlineColor => new(135f / 255f, 97f / 255f, 49f / 255f);
+    // 能量图标轮廓颜色 rgb(10, 61, 21)
+    public override Color EnergyLabelOutlineColor => new(10f / 255f, 61f / 255f, 21f / 255f);
     // 地图绘制颜色 rgb(135, 97, 49)
     public override Color MapDrawingColor => new(135f / 255f, 97f / 255f, 49f / 255f);
 
@@ -37,9 +37,9 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
         CharacterAssetProfiles.Regent(),
         new(
             Scenes: new(
-                VisualsPath: CustomVisualsPath
+                VisualsPath: CustomVisualsPath,
                 // 能量表盘tscn路径。
-                //EnergyCounterPath: "res://Test/scenes/test_energy_counter.tscn",
+                EnergyCounterPath: "res://KnowledgeDemon/scenes/energycost/knowledge_demon_energy_counter.tscn"
                 // 商店人物场景。
                 //MerchantAnimPath: "res://Test/scenes/test_character_merchant.tscn",
                 // 篝火休息场景。
