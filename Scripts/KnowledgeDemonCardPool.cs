@@ -21,7 +21,7 @@ public class KnowledgeDemonCardPool : TypeListCardPoolModel
     public override Color EnergyOutlineColor => new(10f / 255f, 61f / 255f, 21f / 255f);
 
     // 根据你使用的卡框决定使用哪个Material rgb(112, 150, 51)
-    private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateReplaceHueShaderMaterial(112f / 255f, 150f / 255f, 51f / 255f); // 如果你使用原版卡框，使用这个直接替换色调。
+    private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateReplaceHueShaderMaterial(44f / 255f, 134f / 255f, 44f / 255f); // 如果你使用原版卡框，使用这个直接替换色调。
     // private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateRgbShaderMaterial(0.5f, 0.5f, 1f); // 使用原版卡框替换色调。除非你的版本没有CreateReplaceHueShaderMaterial函数，否则应使用上面那种
     // private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateUnmodulatedHsvShaderMaterial(); // 如果你是自定义卡框，使用这个
     public override Material? PoolFrameMaterial => _poolFrameMaterial;
