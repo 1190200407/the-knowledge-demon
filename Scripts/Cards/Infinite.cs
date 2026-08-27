@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Keywords;
@@ -27,6 +28,12 @@ public sealed class Infinite : KnowledgeDemonCardModel
     [
         CardKeyword.Exhaust,
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Infinite),
+    ];
+
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
+    [
+        KnowledgeDemonKeywordHoverTips.FromInfinite(),
+        KnowledgeDemonKeywordHoverTips.FromUnique(),
     ];
 
     public Infinite()
@@ -60,9 +67,8 @@ public sealed class Infinite : KnowledgeDemonCardModel
         if (power is null)
         {
             power = (InfinitePower)ModelDb.Power<InfinitePower>().ToMutable();
-            power.AddInfiniteTarget(selected);
             await PowerCmd.Apply(choiceContext, power, Owner.Creature, 1m, Owner.Creature, this);
-            return;
+            power = Owner.Creature.GetPower<InfinitePower>() ?? power;
         }
 
         power.AddInfiniteTarget(selected);
