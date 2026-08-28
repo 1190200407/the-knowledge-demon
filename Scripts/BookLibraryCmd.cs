@@ -495,6 +495,8 @@ public static class BookLibraryCmd
 
             CombatManager.Instance.History.CardDiscarded(combatState, card);
             await Hook.AfterCardDiscarded(combatState, choiceContext, card);
+            await card.AfterCardDiscarded(choiceContext, card);
+            card.InvokeExecutionFinished();
 
             if (card.IsSlyThisTurn)
             {

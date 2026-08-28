@@ -49,7 +49,7 @@ public sealed class ForbiddenLibrary : KnowledgeDemonCardModel
 
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         var toExhaust = libraryPile.Cards.ToList();
-        await BookLibraryCmd.DiscardFromLibrary(choiceContext, Owner, toExhaust, triggerSlyDiscard: false);
+        await BookLibraryCmd.DiscardFromLibrary(choiceContext, Owner, toExhaust);
 
         var hitCount = toExhaust.Count;
         if (hitCount == 0)

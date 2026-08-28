@@ -73,7 +73,7 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
         }
 
         await Cmd.CustomScaledWait(0.5f, 1f);
-        var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibraryAndHand(
+        var selection = (await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
             new CardSelectorPrefs(RecordSelectionPrompt, 1),

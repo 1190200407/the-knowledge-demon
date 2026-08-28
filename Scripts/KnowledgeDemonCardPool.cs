@@ -20,8 +20,8 @@ public class KnowledgeDemonCardPool : TypeListCardPoolModel
     // 能量表盘文字轮廓颜色rgb(10, 61, 21)
     public override Color EnergyOutlineColor => new(10f / 255f, 61f / 255f, 21f / 255f);
 
-    // 根据你使用的卡框决定使用哪个Material rgb(112, 150, 51)
-    private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateReplaceHueShaderMaterial(44f / 255f, 134f / 255f, 44f / 255f); // 如果你使用原版卡框，使用这个直接替换色调。
+    // 根据你使用的卡框决定使用哪个Material rgb(135, 97, 49)
+    private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateReplaceHueShaderMaterial(135f / 255f, 97f / 255f, 49f / 255f); // 如果你使用原版卡框，使用这个直接替换色调。
     // private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateRgbShaderMaterial(0.5f, 0.5f, 1f); // 使用原版卡框替换色调。除非你的版本没有CreateReplaceHueShaderMaterial函数，否则应使用上面那种
     // private static readonly Material? _poolFrameMaterial = MaterialUtils.CreateUnmodulatedHsvShaderMaterial(); // 如果你是自定义卡框，使用这个
     public override Material? PoolFrameMaterial => _poolFrameMaterial;

@@ -57,11 +57,11 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
                 // 人物选择图标。
                 CharacterSelectIconPath: "res://KnowledgeDemon/images/charui/char_select_knowledge_demon.png",
                 // 人物选择图标-锁定状态。
-                CharacterSelectLockedIconPath: "res://KnowledgeDemon/images/charui/char_select_knowledge_demon_locked.png"
+                CharacterSelectLockedIconPath: "res://KnowledgeDemon/images/charui/char_select_knowledge_demon_locked.png",
                 // 人物选择过渡动画。
                 // CharacterSelectTransitionPath: "res://materials/transitions/ironclad_transition_mat.tres",
                 // 地图上的角色标记图标、表情轮盘上的角色头像。
-                //MapMarkerPath: "res://KnowledgeDemon/images/charui/knowledge_demon_boss.png"
+                MapMarkerPath: "res://KnowledgeDemon/images/charui/knowledge_demon_map_marker.png"
             ),
             Vfx: new(
                 // 卡牌拖尾场景。

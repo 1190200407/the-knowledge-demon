@@ -10,7 +10,7 @@
     "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.title": "抉择Ω",
     "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.description": "同名的[gold]独一[/gold]牌只能存在1张，重复的牌出现时将会被[gold]变化[/gold]。",
     "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.title": "独一",
-    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.description": "不会获得[gold]独一[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.description": "不再受[gold]独一[/gold]影响，可以存在多张。",
     "KNOWLEDGE_DEMON_KEYWORD_INFINITE.title": "无限",
     "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.description": "不断[gold]抉择[/gold]，直到[gold]藏书库[/gold]中少于[blue]3[/blue]张牌。",
     "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.title": "知识过载",

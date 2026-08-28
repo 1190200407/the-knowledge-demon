@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://ctaqb7ffeiuyc"]
 
-[ext_resource type="Shader" path="res://KnowledgeDemon/shaders/vfx_grayscale_particle_shader.gdshader" id="1_fq5sh"]
+[ext_resource type="Shader" uid="uid://b0ip1wiwlff4i" path="res://KnowledgeDemon/shaders/vfx_grayscale_particle_shader.gdshader" id="1_fq5sh"]
 
 [sub_resource type="Gradient" id="Gradient_fq5sh"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)

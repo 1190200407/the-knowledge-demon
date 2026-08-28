@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bsyhtpngg364l"]
+[gd_scene load_steps=10 format=3 uid="uid://bsyhtpngg364l"]
 
 [ext_resource type="PackedScene" uid="uid://bmqyupu3scxx5" path="res://KnowledgeDemon/scenes/energycost/silent_energy_vfx_back.tscn" id="2_81len"]
 [ext_resource type="Texture2D" uid="uid://c6mg4s5050a8o" path="res://KnowledgeDemon/images/ui/knowledge_demon_orb.png" id="3_qrlte"]
 [ext_resource type="Texture2D" uid="uid://b60q27moq236i" path="res://KnowledgeDemon/images/ui/silent_orb_layer_2.png" id="4_li7cb"]
+[ext_resource type="Texture2D" uid="uid://cj2j54l5d4d7" path="res://KnowledgeDemon/images/ui/knowledge_demon_orb_frame.png" id="5_12pap"]
 [ext_resource type="Texture2D" uid="uid://ds1ymgxbp0rok" path="res://KnowledgeDemon/images/ui/silent_orb_layer_3.png" id="5_yahgc"]
 [ext_resource type="PackedScene" uid="uid://begu2n2ulqy56" path="res://KnowledgeDemon/scenes/energycost/silent_energy_vfx_front.tscn" id="8_otkns"]
 [ext_resource type="FontVariation" uid="uid://cm4vnruiegg5i" path="res://KnowledgeDemon/themes/kreon_bold_shared.tres" id="9_ok0rc"]
@@ -40,6 +41,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -7.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -62,9 +67,13 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 6.0
+offset_right = -3.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(64, 64)
+pivot_offset = Vector2(59, 57)
 mouse_filter = 2
 texture = ExtResource("4_li7cb")
 expand_mode = 1
@@ -75,11 +84,31 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 6.0
+offset_right = -7.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(64, 64)
+pivot_offset = Vector2(57, 57)
 mouse_filter = 2
 texture = ExtResource("5_yahgc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Layer2" type="TextureRect" parent="Layers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_12pap")
 expand_mode = 1
 stretch_mode = 5
 
@@ -92,9 +121,9 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
+offset_left = 17.0
 offset_top = -29.0
-offset_right = -16.0
+offset_right = -15.0
 offset_bottom = 29.0
 grow_horizontal = 2
 grow_vertical = 2
