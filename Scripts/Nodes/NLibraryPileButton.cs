@@ -1,5 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.ControllerInput;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -20,12 +21,17 @@ public partial class NLibraryPileButton : NButton
 
     private static readonly Vector2 HoverScale = Vector2.One * 1.25f;
     private static readonly Color PressedColor = Colors.DarkGray;
+    private static readonly Vector2 VisibilityHideOffset = new(-150f, 100f);
 
     private Control? _icon;
     private MegaLabel? _countLabel;
     private Tween? _bumpTween;
+    private Tween? _visibilityTween;
     private CardPile? _pile;
     private Player? _player;
+    private Vector2 _showPosition = DefaultPosition;
+    private Vector2 _hidePosition = DefaultPosition + VisibilityHideOffset;
+    private bool _isAvailabilityVisible;
 
     public static NLibraryPileButton? Instance { get; private set; }
 
@@ -33,7 +39,9 @@ public partial class NLibraryPileButton : NButton
 
     public void ApplyConfiguredPosition()
     {
-        Position = KnowledgeDemonModSettingsPage.GetLibraryUiPosition();
+        _showPosition = KnowledgeDemonModSettingsPage.GetLibraryUiPosition();
+        _hidePosition = _showPosition + VisibilityHideOffset;
+        Position = _isAvailabilityVisible ? _showPosition : _hidePosition;
     }
 
     public override void _EnterTree()
@@ -44,7 +52,9 @@ public partial class NLibraryPileButton : NButton
 
     public override void _Ready()
     {
+        FocusMode = FocusModeEnum.All;
         ConnectSignals();
+        Visible = false;
     }
 
     protected override void ConnectSignals()
@@ -54,10 +64,7 @@ public partial class NLibraryPileButton : NButton
         _countLabel = GetNode<MegaLabel>("CountContainer/Count");
     }
 
-    protected override void GetControllerIconNode()
-    {
-        _controllerHotkeyIcon = null;
-    }
+    protected override string[] Hotkeys => new string[1] { MegaInput.select };
 
     public override void _ExitTree()
     {
@@ -75,13 +82,57 @@ public partial class NLibraryPileButton : NButton
         _player = player;
         AttachPile(BookLibraryUtility.TryGetLibraryPile(player));
         RefreshCount();
-        RefreshAvailability();
+        RefreshAvailability(immediate: true);
         RefreshToggleVisual();
     }
 
-    public void RefreshAvailability()
+    public void RefreshAvailability(bool immediate = false)
     {
-        Visible = _player != null && BookLibraryUtility.PlayerHasBookLibraryAccess(_player);
+        var shouldBeVisible = _player != null && BookLibraryUtility.PlayerHasBookLibraryAccess(_player);
+        if (shouldBeVisible == _isAvailabilityVisible && !immediate)
+        {
+            return;
+        }
+
+        _isAvailabilityVisible = shouldBeVisible;
+        if (shouldBeVisible)
+        {
+            ShowButton(immediate);
+        }
+        else
+        {
+            HideButton(immediate);
+        }
+    }
+
+    public void AnimIn()
+    {
+        if (!_isAvailabilityVisible)
+        {
+            return;
+        }
+
+        _visibilityTween?.Kill();
+        Position = _hidePosition;
+        _visibilityTween = CreateTween();
+        _visibilityTween.TweenProperty(this, "position", _showPosition, 0.5f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Expo);
+    }
+
+    public void AnimOut()
+    {
+        if (!_isAvailabilityVisible)
+        {
+            return;
+        }
+
+        _visibilityTween?.Kill();
+        Position = _showPosition;
+        _visibilityTween = CreateTween();
+        _visibilityTween.TweenProperty(this, "position", _hidePosition, 0.5f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Back);
     }
 
     public void RefreshToggleVisual()
@@ -254,6 +305,44 @@ public partial class NLibraryPileButton : NButton
         _bumpTween.TweenProperty(_countLabel, "scale", Vector2.One, 0.5)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Expo);
+    }
+
+    private void ShowButton(bool immediate)
+    {
+        _visibilityTween?.Kill();
+        Visible = true;
+
+        if (immediate)
+        {
+            Position = _showPosition;
+            return;
+        }
+
+        Position = _hidePosition;
+        _visibilityTween = CreateTween();
+        _visibilityTween.TweenProperty(this, "position", _showPosition, 0.5f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Expo);
+    }
+
+    private void HideButton(bool immediate)
+    {
+        _visibilityTween?.Kill();
+        if (immediate)
+        {
+            Visible = false;
+            Position = _hidePosition;
+            return;
+        }
+
+        _visibilityTween = CreateTween();
+        _visibilityTween.TweenProperty(this, "position", _hidePosition, 0.5f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Back);
+        _visibilityTween.Chain().TweenCallback(Callable.From(() =>
+        {
+            Visible = false;
+        }));
     }
 
     private void KeepHoverTipWithinViewport(NHoverTipSet tipSet)

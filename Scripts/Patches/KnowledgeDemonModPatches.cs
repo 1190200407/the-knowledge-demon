@@ -9,6 +9,10 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 	public static void AddTo(ModPatcher patcher)
 	{
 		patcher.RegisterPatch<LibraryPileButtonInitializePatch>();
+		patcher.RegisterPatch<LibraryPileButtonAnimInPatch>();
+		patcher.RegisterPatch<LibraryPileButtonAnimOutPatch>();
+		patcher.RegisterPatch<LibraryPileButtonEnablePatch>();
+		patcher.RegisterPatch<LibraryPileButtonDisablePatch>();
 		patcher.RegisterPatch<BookLibraryPileInitializePatch>();
 		patcher.RegisterPatch<BookLibraryFindOnTablePatch>();
 		patcher.RegisterPatch<BookLibraryDynamicVarPreviewPatch>();

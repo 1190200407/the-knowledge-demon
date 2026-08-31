@@ -21,6 +21,7 @@ anchors_preset = 0
 offset_right = 80.0
 offset_bottom = 80.0
 pivot_offset = Vector2(40, 40)
+focus_mode = 2
 script = ExtResource("1_frlyi")
 metadata/_edit_lock_ = true
 metadata/_edit_group_ = true

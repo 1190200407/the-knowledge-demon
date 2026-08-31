@@ -43,6 +43,106 @@ internal sealed class LibraryPileButtonInitializePatch : IPatchMethod
     }
 }
 
+internal sealed class LibraryPileButtonAnimInPatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_library_pile_button_anim_in";
+    public static string Description => "Animate attached NLibraryPileButton into combat UI";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NCombatPilesContainer), nameof(NCombatPilesContainer.AnimIn)),
+    ];
+
+    public static void Postfix(NCombatPilesContainer __instance)
+    {
+        if (ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatPilesContainer, NLibraryPileButton>(
+                    __instance,
+                    NLibraryPileButton.NodeAttachmentLocalId,
+                    out var pileButton)
+            && pileButton != null)
+        {
+            pileButton.AnimIn();
+        }
+    }
+}
+
+internal sealed class LibraryPileButtonAnimOutPatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_library_pile_button_anim_out";
+    public static string Description => "Animate attached NLibraryPileButton out of combat UI";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NCombatPilesContainer), nameof(NCombatPilesContainer.AnimOut)),
+    ];
+
+    public static void Postfix(NCombatPilesContainer __instance)
+    {
+        if (ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatPilesContainer, NLibraryPileButton>(
+                    __instance,
+                    NLibraryPileButton.NodeAttachmentLocalId,
+                    out var pileButton)
+            && pileButton != null)
+        {
+            pileButton.AnimOut();
+        }
+    }
+}
+
+internal sealed class LibraryPileButtonEnablePatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_library_pile_button_enable";
+    public static string Description => "Enable attached NLibraryPileButton with combat pile UI";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NCombatPilesContainer), nameof(NCombatPilesContainer.Enable)),
+    ];
+
+    public static void Postfix(NCombatPilesContainer __instance)
+    {
+        if (ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatPilesContainer, NLibraryPileButton>(
+                    __instance,
+                    NLibraryPileButton.NodeAttachmentLocalId,
+                    out var pileButton)
+            && pileButton != null)
+        {
+            pileButton.Enable();
+        }
+    }
+}
+
+internal sealed class LibraryPileButtonDisablePatch : IPatchMethod
+{
+    public static string PatchId => "knowledgedemon_library_pile_button_disable";
+    public static string Description => "Disable attached NLibraryPileButton with combat pile UI";
+    public static bool IsCritical => true;
+
+    public static ModPatchTarget[] GetTargets() =>
+    [
+        new(typeof(NCombatPilesContainer), nameof(NCombatPilesContainer.Disable)),
+    ];
+
+    public static void Postfix(NCombatPilesContainer __instance)
+    {
+        if (ModNodeAttachmentRegistry.For(Entry.ModId)
+                .TryGetAttached<NCombatPilesContainer, NLibraryPileButton>(
+                    __instance,
+                    NLibraryPileButton.NodeAttachmentLocalId,
+                    out var pileButton)
+            && pileButton != null)
+        {
+            pileButton.Disable();
+        }
+    }
+}
+
 internal sealed class BookLibraryPileInitializePatch : IPatchMethod
 {
     public static string PatchId => "knowledgedemon_book_library_pile_initialize";
