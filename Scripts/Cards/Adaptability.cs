@@ -57,12 +57,19 @@ public sealed class Adaptability : KnowledgeDemonCardModel, IKnowledgeDemonEvent
         }
 
         await Cmd.CustomScaledWait(0.5f, 1f);
-        await BookLibraryCmd.DiscardFromLibraryAndHand(
+        var selected = (await CardSelectCmd.FromHand(
             choiceContext,
             player,
-            1,
-            DiscardSelectionPrompt,
-            this);
+            new CardSelectorPrefs(DiscardSelectionPrompt, 0, 1),
+            static card => card is not Adaptability,
+            this)).ToList();
+
+        if (selected.Count == 0)
+        {
+            return;
+        }
+
+        await CardCmd.Discard(choiceContext, selected);
     }
 
     public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, CardModel card)

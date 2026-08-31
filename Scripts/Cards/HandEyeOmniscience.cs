@@ -16,7 +16,7 @@ public sealed class HandEyeOmniscience : KnowledgeDemonCardModel
 {
     private const int energyCost = 1;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Common;
+    private const CardRarity rarity = CardRarity.Rare;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
@@ -54,12 +54,6 @@ public sealed class HandEyeOmniscience : KnowledgeDemonCardModel
             await BookLibraryCmd.RecordToLibrary(choiceContext, Owner, card, 1);
         }
 
-        await PowerCmd.Apply<CannotRecordThisTurnPower>(
-            choiceContext,
-            Owner.Creature,
-            1,
-            Owner.Creature,
-            this);
     }
 
     protected override void OnUpgrade()

@@ -43,6 +43,6 @@ public sealed class Aberrant : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        DynamicVars[PowerVarName].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

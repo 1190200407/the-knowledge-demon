@@ -17,7 +17,7 @@ public sealed class Depiction : KnowledgeDemonCardModel
 {
     private const int energyCost = 0;
     private const CardType type = CardType.Skill;
-    private const CardRarity rarity = CardRarity.Uncommon;
+    private const CardRarity rarity = CardRarity.Common;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
 
@@ -29,7 +29,7 @@ public sealed class Depiction : KnowledgeDemonCardModel
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [KnowledgeDemonKeywordHoverTips.FromRecord(),];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1), new IntVar("Record", 1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new CardsVar(1)];
 
     public Depiction()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
@@ -43,7 +43,7 @@ public sealed class Depiction : KnowledgeDemonCardModel
         var selection = (await KnowledgeDemonCardSelectCmd.FromBookLibrary(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, DynamicVars.Cards.IntValue),
+            new CardSelectorPrefs(SelectionScreenPrompt, 1),
             null,
             this));
 
@@ -61,6 +61,5 @@ public sealed class Depiction : KnowledgeDemonCardModel
     protected override void OnUpgrade()
     {
         DynamicVars.Cards.UpgradeValueBy(1m);
-        DynamicVars["Record"].UpgradeValueBy(1m);
     }
 }

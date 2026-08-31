@@ -194,7 +194,8 @@ public static class BookLibraryCmd
         Player player,
         int count,
         LocString selectionPrompt,
-        AbstractModel? source = null)
+        AbstractModel? source = null,
+        Func<CardModel, bool>? filter = null)
     {
         if (count <= 0)
         {
@@ -205,7 +206,7 @@ public static class BookLibraryCmd
             choiceContext,
             player,
             new CardSelectorPrefs(selectionPrompt, 0, count),
-            filter: null,
+            filter,
             source)).ToList();
 
         if (selected.Count == 0)

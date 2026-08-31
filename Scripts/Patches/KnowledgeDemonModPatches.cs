@@ -23,5 +23,6 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<BigMushroomGrowScalePatch>();
 		patcher.RegisterPatch<SurroundedPowerKnowledgeDemonFacingPatch>();
 		patcher.RegisterPatch<KnowledgeDemonFastModeAttackCastSpeedPatch>();
+		patcher.RegisterPatch<KnowledgeDemonRestSiteHideFlameGlowPatch>();
 	}
 }

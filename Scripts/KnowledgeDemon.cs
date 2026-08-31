@@ -39,11 +39,11 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
             Scenes: new(
                 VisualsPath: CustomVisualsPath,
                 // 能量表盘tscn路径。
-                EnergyCounterPath: "res://KnowledgeDemon/scenes/energycost/knowledge_demon_energy_counter.tscn"
+                EnergyCounterPath: "res://KnowledgeDemon/scenes/energycost/knowledge_demon_energy_counter.tscn",
                 // 商店人物场景。
                 //MerchantAnimPath: "res://Test/scenes/test_character_merchant.tscn",
                 // 篝火休息场景。
-                //RestSiteAnimPath: "res://Test/scenes/test_character_rest_site.tscn"
+                RestSiteAnimPath: "res://KnowledgeDemon/scenes/knowledge_demon_rest_site.tscn"
             ),
             Ui: new(
                 // 对于图片，只要是godot支持的格式都可以，例如png,jpg,svg等等，之后不再说明

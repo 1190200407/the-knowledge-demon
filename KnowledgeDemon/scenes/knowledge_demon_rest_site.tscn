@@ -1,0 +1,83 @@
+[gd_scene load_steps=9 format=3 uid="uid://c04dhw3njcr0b"]
+
+[ext_resource type="Script" uid="uid://d0hpd11itbyqx" path="res://Scripts/Nodes/NKnowledgeDemonRestSiteCharacter.cs" id="1_0rudk"]
+[ext_resource type="PackedScene" uid="uid://cxkcu7x1fkokn" path="res://KnowledgeDemon/scenes/selection_reticle.tscn" id="3_6yex7"]
+[ext_resource type="Texture2D" uid="uid://ospx43xsg7l6" path="res://KnowledgeDemon/images/charui/knowledge_demon_restsite_base.png" id="4_base"]
+[ext_resource type="Shader" uid="uid://mb0yeuk7kxjn" path="res://KnowledgeDemon/shaders/rest_site_light_shader.gdshader" id="4_light_shader"]
+[ext_resource type="Texture2D" uid="uid://oblx0hm111qy" path="res://KnowledgeDemon/images/charui/knowledge_demon_restsite_lightmask.png" id="4_mask"]
+[ext_resource type="Texture2D" uid="uid://cfmfliex4qik2" path="res://KnowledgeDemon/shaders/light_noise_curve.tres" id="4_noise"]
+[ext_resource type="Texture2D" uid="uid://bwceygbmx1w2m" path="res://KnowledgeDemon/shaders/light_ramp_gradient.tres" id="4_ramp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_body_light"]
+resource_local_to_scene = true
+shader = ExtResource("4_light_shader")
+shader_parameter/pixel_offset = Vector2(1, 2)
+shader_parameter/noise_texture = ExtResource("4_noise")
+shader_parameter/ramp_texture = ExtResource("4_ramp")
+
+[node name="KnowledgeDemonRestSite" type="Node2D"]
+position = Vector2(26, 150)
+scale = Vector2(1.200006, 1.200006)
+script = ExtResource("1_0rudk")
+
+[node name="ControlRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -4.999977
+offset_top = -164.99918
+offset_right = -4.999977
+offset_bottom = -164.99918
+scale = Vector2(0.5322133, 0.5322133)
+metadata/_edit_use_anchors_ = true
+
+[node name="SelectionReticle" parent="ControlRoot" instance=ExtResource("3_6yex7")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -344.65717
+offset_top = -408.37314
+offset_right = 340.99994
+offset_bottom = 408.99997
+metadata/_edit_use_anchors_ = true
+
+[node name="Hitbox" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = -332.8152
+offset_top = -388.63644
+offset_right = 333.0
+offset_bottom = 382.00003
+pivot_offset = Vector2(296, 415.948)
+metadata/_edit_use_anchors_ = true
+
+[node name="ThoughtBubbleRight" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 143.497
+offset_top = -278.111
+offset_right = 143.497
+offset_bottom = -278.111
+metadata/_edit_use_anchors_ = true
+
+[node name="ThoughtBubbleLeft" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = -194.658
+offset_top = -259.69
+offset_right = -194.658
+offset_bottom = -259.69
+metadata/_edit_use_anchors_ = true
+
+[node name="CharacterVisual" type="Node2D" parent="ControlRoot"]
+unique_name_in_owner = true
+position = Vector2(53.236526, 125.26246)
+rotation = 0.0061375685
+scale = Vector2(2.2522073, 2.2522073)
+
+[node name="Base" type="Sprite2D" parent="ControlRoot/CharacterVisual"]
+texture = ExtResource("4_base")
+
+[node name="BodyFireLight" type="Sprite2D" parent="ControlRoot/CharacterVisual"]
+unique_name_in_owner = true
+self_modulate = Color(0.192157, 1, 0.243137, 0.5)
+material = SubResource("ShaderMaterial_body_light")
+texture = ExtResource("4_mask")

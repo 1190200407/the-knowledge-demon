@@ -1,4 +1,4 @@
-[gd_resource type="CurveXYZTexture" load_steps=3 format=3]
+[gd_resource type="CurveXYZTexture" load_steps=3 format=3 uid="uid://cfmfliex4qik2"]
 
 [sub_resource type="Curve" id="Curve_goc48"]
 _limits = [0.99, 1.02, 0.0, 1.0]

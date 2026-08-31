@@ -18,7 +18,7 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 timeUv = vec2(TIME * 0.5, 0.0);
+	vec2 timeUv = vec2(TIME * 0.18, 0.0);
 	vec2 distort = texture(noise_texture, timeUv).xy;
 	vec2 uv = (UV - 0.5) / distort + 0.5 - uvOffset;
 
