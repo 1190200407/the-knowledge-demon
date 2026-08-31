@@ -77,6 +77,7 @@ public partial class NBookLibraryPile : Control
     private int _forcedCardsVisibleCount;
     private Tween? _hoverLiftTween;
     private bool _isBottomHoverExpanded;
+    private bool _controllerNavigationEnabled;
 
     public static NBookLibraryPile? Instance { get; private set; }
 
@@ -192,6 +193,30 @@ public partial class NBookLibraryPile : Control
     internal IReadOnlyList<NSelectedHandCardHolder> GetSelectedCardHolders() =>
         _selectedCardContainerRoot?.GetChildren().OfType<NSelectedHandCardHolder>().ToList() ?? [];
 
+    internal IReadOnlyList<NBookLibraryCardHolder> GetControllerHolders() =>
+        _holders.Values
+            .Where(holder =>
+                _controllerNavigationEnabled
+                && AreCardsEffectivelyVisible
+                && GodotObject.IsInstanceValid(holder)
+                && holder.IsInsideTree()
+                && holder.GetParent() == _dialCenter
+                && holder.Visible)
+            .OrderBy(holder => GetCardPileIndex(holder))
+            .ToList();
+
+    internal void SetControllerNavigationEnabled(bool enabled)
+    {
+        _controllerNavigationEnabled = enabled;
+        RefreshControllerNavigation();
+    }
+
+    internal void FocusFirstControllerHolder()
+    {
+        RefreshControllerNavigation();
+        GetControllerHolders().FirstOrDefault()?.TryGrabFocus();
+    }
+
     internal void AddSelectedLibraryCard(NHandCardHolder originalHolder)
     {
         ArgumentNullException.ThrowIfNull(originalHolder);
@@ -216,6 +241,7 @@ public partial class NBookLibraryPile : Control
             (uint)ConnectFlags.Deferred);
         container.AddChildSafely(selectedHolder);
         RefreshSelectedCardPositions();
+        RefreshControllerNavigation();
         cardNode.GlobalPosition = globalPosition;
     }
 
@@ -261,6 +287,7 @@ public partial class NBookLibraryPile : Control
 
         selectedHolder.QueueFreeSafely();
         RefreshSelectedCardPositions();
+        RefreshControllerNavigation();
     }
 
     private void RefreshSelectedCardPositions()
@@ -287,11 +314,52 @@ public partial class NBookLibraryPile : Control
             holders[i].FocusNeighborLeft = i > 0 ? holders[i - 1].GetPath() : holders[^1].GetPath();
             holders[i].FocusNeighborRight = i < count - 1 ? holders[i + 1].GetPath() : holders[0].GetPath();
         }
+
+        RefreshControllerNavigation();
     }
 
     private void OnSelectedContainerFocus()
     {
         GetSelectedCardHolders().FirstOrDefault()?.TryGrabFocus();
+    }
+
+    private void RefreshControllerNavigation()
+    {
+        var holders = GetControllerHolders();
+        foreach (var holder in _holders.Values)
+        {
+            if (!GodotObject.IsInstanceValid(holder))
+            {
+                continue;
+            }
+
+            holder.FocusMode = holders.Contains(holder) ? FocusModeEnum.All : FocusModeEnum.None;
+        }
+
+        if (holders.Count == 0)
+        {
+            return;
+        }
+
+        for (var i = 0; i < holders.Count; i++)
+        {
+            var left = holders[i > 0 ? i - 1 : holders.Count - 1];
+            var right = holders[i < holders.Count - 1 ? i + 1 : 0];
+            holders[i].FocusNeighborLeft = left.GetPath();
+            holders[i].FocusNeighborRight = right.GetPath();
+            holders[i].FocusNeighborTop = holders[i].GetPath();
+            holders[i].FocusNeighborBottom = holders[i].GetPath();
+        }
+    }
+
+    private int GetCardPileIndex(NBookLibraryCardHolder holder)
+    {
+        if (_pile == null || holder.CardNode?.Model is not { } card)
+        {
+            return int.MaxValue;
+        }
+
+        return IndexOfCard(_pile, card);
     }
 
     internal void ShowSelectionUi()
@@ -665,6 +733,7 @@ public partial class NBookLibraryPile : Control
             _focusedHolder = null;
         }
 
+        KnowledgeDemonCardSelectSession.ActiveSession?.UnregisterLibraryHolder(holder);
         holder.ResetCardTransform();
         holder.QueueFreeSafely();
         ArrangeCards(animate: true);
@@ -688,6 +757,7 @@ public partial class NBookLibraryPile : Control
         _dialCenter.AddChildSafely(holder);
         holder.BindCard(ncard);
         BookLibraryUtility.ApplyHandTableVisuals(ncard);
+        KnowledgeDemonCardSelectSession.ActiveSession?.RegisterLibraryHolder(holder);
     }
 
     private Vector2? GetLayoutGlobalPosition(int cardCount, int pileIndex)

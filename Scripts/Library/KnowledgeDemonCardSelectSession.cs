@@ -246,6 +246,7 @@ internal sealed class KnowledgeDemonCardSelectSession
         }
 
         holder.UpdateCard();
+        _libraryPile.SetControllerNavigationEnabled(true);
     }
 
     internal void UnregisterLibraryHolder(NBookLibraryCardHolder holder)
@@ -263,6 +264,7 @@ internal sealed class KnowledgeDemonCardSelectSession
         holder.Disconnect(NCardHolder.SignalName.Pressed, _libraryHolderPressedCallable);
         holder.InSelectMode = false;
         holder.IsSelected = false;
+        _libraryPile.SetControllerNavigationEnabled(true);
     }
 
     internal void RefreshLibraryHolderVisibility()
@@ -277,6 +279,8 @@ internal sealed class KnowledgeDemonCardSelectSession
             holder.Visible = _filter(card);
             holder.UpdateCard();
         }
+
+        _libraryPile.SetControllerNavigationEnabled(true);
     }
 
     private void OnLibraryHolderPressed(NCardHolder holder)
@@ -444,6 +448,8 @@ internal sealed class KnowledgeDemonCardSelectSession
             RefreshHandConfirmButton(hand);
 
             ApplyHandVisibility(hand, hand.PeekButton.IsPeeking);
+            _libraryPile.SetControllerNavigationEnabled(true);
+            _libraryPile.FocusFirstControllerHolder();
 
             LogState("SelectReady");
 
@@ -496,6 +502,7 @@ internal sealed class KnowledgeDemonCardSelectSession
         }
 
         RefreshLibraryHolderVisibilityForPeek(button.IsPeeking);
+        _libraryPile.SetControllerNavigationEnabled(true);
         _libraryPile.ApplySelectBackstopPeekVisibility(!button.IsPeeking);
     }
 
@@ -586,6 +593,7 @@ internal sealed class KnowledgeDemonCardSelectSession
         _sharedHandOriginCards.Clear();
 
         _libraryPile.HideSelectionUi();
+        _libraryPile.SetControllerNavigationEnabled(false);
         if (_isForcingLibraryVisible)
         {
             _libraryPile.ReleaseForcedShowCards();
