@@ -24,6 +24,8 @@ public sealed class ContinuationFlameCharm : KnowledgeDemonCardModel
         new EnergyVar(2),
     ];
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
+
     public ContinuationFlameCharm()
         : base(energyCost, type, rarity, targetType, shouldShowInCardLibrary)
     {
