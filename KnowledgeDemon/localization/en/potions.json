@@ -1,0 +1,20 @@
+{
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.title": "Concentrated Coffee",
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.description": "Immediately trigger [blue]1[/blue] [gold]Knowledge Overload[/gold].",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.title": "Meditation Potion",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.description": "Choose [blue]1[/blue] card in your [gold]hand[/gold], [gold]Record[/gold] it, then [gold]discard[/gold] it.",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.selectionScreenPrompt": "Choose [blue]1[/blue] card in your [gold]hand[/gold].",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.title": "Developer",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.description": "[gold]Materialize 1[/gold]. That card can be played for free this combat.",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.selectionScreenPrompt": "Choose [blue]1[/blue] card to [gold]Materialize[/gold].",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.title": "Split Potion",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.description": "Choose [blue]1[/blue] card from your [gold]hand[/gold] or [gold]Library[/gold]. Copy it [blue]1[/blue] time.",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt": "Choose 1 card from your [gold]hand[/gold] or [gold]Library[/gold].",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt2": "Choose 1 card in your [gold]hand[/gold].",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.title": "Twin Potion",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.description": "The next card chosen with [gold]Choose[/gold] is played [blue]1[/blue] additional time.",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.selectionScreenPrompt": "Choose [blue]1[/blue] card.",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.title": "Status Potion",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.description": "Choose [blue]1[/blue] of [blue]3[/blue] random Knowledge Demon Status cards to add to your [gold]hand[/gold]. It can be played this combat.",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.selectionScreenPrompt": "Choose [blue]1[/blue] Knowledge Demon Status card."
+}

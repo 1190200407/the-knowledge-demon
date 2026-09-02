@@ -1,0 +1,21 @@
+{
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.description": "Add a [gold]temporary copy[/gold] of a generated card to the [gold]Library[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.title": "Record",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.description": "Choose cards from the [gold]Library[/gold] and add them to your [gold]hand[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.smartDescription": "Choose {Materialize} cards from the [gold]Library[/gold] and add them to your [gold]hand[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.title": "Materialize",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.description": "Randomly reveal [blue]3[/blue] cards from the [gold]Library[/gold]. Choose [blue]1[/blue] to play and [gold]discard[/gold] the other 2.",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.title": "Choose",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.description": "Randomly reveal [red]2[/red] cards from the [gold]Library[/gold]. Choose [blue]1[/blue] to play and [gold]discard[/gold] the other 1.",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.title": "Choose Ω",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.description": "Only 1 [gold]Unique[/gold] card with the same name can exist. Duplicate cards are [gold]transformed[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.title": "Unique",
+    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.description": "No longer affected by [gold]Unique[/gold]. Multiple copies can exist.",
+    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.title": "Infinite",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.description": "Continue to [gold]Choose[/gold] until fewer than [blue]3[/blue] cards remain in the [gold]Library[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.title": "Knowledge Overload",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.description": "Continue to [red]Choose Ω[/red] until fewer than [red]2[/red] cards remain in the [gold]Library[/gold].",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.title": "Knowledge Overload Ω",
+    "SLY.description": "If this card is [gold]discarded[/gold] from your [gold]hand[/gold] or [gold]Library[/gold] before the end of your turn, play it for free.",
+    "SLY.title": "Sly"
+}

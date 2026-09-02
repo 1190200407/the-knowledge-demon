@@ -21,6 +21,8 @@ public sealed class HiveConsciousness : KnowledgeDemonCardModel
     private const TargetType targetType = TargetType.AnyEnemy;
     private const bool shouldShowInCardLibrary = true;
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Sly];
+
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.Static(StaticHoverTip.Transform)];
 

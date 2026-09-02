@@ -1,0 +1,6 @@
+{
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.title": "Library (C)",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.description": "Stores [gold]temporary[/gold] copies of cards. They disappear when played or [gold]discarded[/gold].\n[blue]Click this button to show or hide the Library.[/blue]",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.hotkey": "Show or hide the Library (default hotkey: C)",
+    "KNOWLEDGE_DEMON_CARDPILE_LIBRARY.empty": "No cards have been recorded in the Library."
+}

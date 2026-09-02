@@ -1,0 +1,12 @@
+{
+    "KNOWLEDGE_DEMON_RULE_FTUE_TITLE": "Knowledge Demon",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_1": "The Knowledge Demon has a separate card pile unlike other characters, called the [gold]Library[/gold].\nThe [gold]Library[/gold] appears above your [gold]hand[/gold].\nThrough [gold]Record[/gold], you can add [gold]temporary copies[/gold] of certain cards to the [gold]Library[/gold].",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_2": "When a card you [red]manually play[/red] enters the [red]discard pile[/red], it is [gold]Recorded[/gold].\nSome card effects can also trigger [gold]Record[/gold].",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_3": "When the [gold]Library[/gold] contains more than [blue]9[/blue] cards, [gold]Knowledge Overload[/gold] triggers.\n[gold]Knowledge Overload[/gold] lets you repeatedly choose [blue]1[/blue] of [blue]3[/blue] cards from the [gold]Library[/gold] to play automatically, then [gold]discard[/gold] the other [blue]2[/blue].\nThis [gold]discard[/gold] can trigger cards' [gold]Sly[/gold] effects.\n[blue]Note: Cards in the Library are removed from combat when played or discarded. They do not enter the discard pile.[/blue]",
+    "UNIQUE_RULE_FTUE_TITLE": "Unique",
+    "UNIQUE_RULE_FTUE_BODY_1": "[gold]Unique[/gold] is a keyword.\nOnly [blue]1[/blue] card with the same name and the [gold]Unique[/gold] keyword can exist in combat.\nCards in combat include your [gold]hand[/gold], [gold]Library[/gold], [gold]draw pile[/gold], [gold]discard pile[/gold], and [gold]exhaust pile[/gold].",
+    "UNIQUE_RULE_FTUE_BODY_2": "If [blue]2[/blue] cards with the same name and the [gold]Unique[/gold] keyword appear in combat, the second card is [gold]transformed[/gold].\nBecause [gold]Unique[/gold] interacts with the copying behavior of [gold]Record[/gold], [gold]Recording[/gold] a [gold]Unique[/gold] card immediately triggers [gold]Transform[/gold].",
+    "UNIQUE_RULE_FTUE_BODY_3": "Similarly, only [blue]1[/blue] card with the same name and the [gold]Unique[/gold] keyword can exist in your deck.\nIf you add another [gold]Unique[/gold] card with the same name, it is immediately [gold]transformed[/gold].",
+    "INFINITY_RULE_FTUE_TITLE": "Infinite",
+    "INFINITY_RULE_FTUE_BODY_1": "Congratulations, you triggered [gold]Infinite[/gold]!\nWhen a specific effect creates an infinite [gold]transformation[/gold] loop, it transforms into [gold]Infinite[/gold].\nExplore and discover more ways to trigger [gold]Infinite[/gold]!"
+}
