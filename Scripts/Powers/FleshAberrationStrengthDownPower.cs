@@ -1,12 +1,22 @@
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using STS2RitsuLib.Interop.AutoRegistration;
+using STS2RitsuLib.Scaffolding.Content;
+using STS2RitsuLib.Scaffolding.Content.Patches;
 
 namespace ComicChess.KnowledgeDemon;
 
 [RegisterPower]
-public sealed class FleshAberrationStrengthDownPower : TemporaryStrengthPower
+public sealed class FleshAberrationStrengthDownPower : TemporaryStrengthPower, IModPowerAssetOverrides
 {
+    public PowerAssetProfile AssetProfile => new(
+        IconPath: "res://KnowledgeDemon/images/powers/FLESH_ABERRATION.png",
+        BigIconPath: "res://KnowledgeDemon/images/powers/big/FLESH_ABERRATION.png");
+
+    public string? CustomIconPath => "res://KnowledgeDemon/images/powers/FLESH_ABERRATION.png";
+
+    public string? CustomBigIconPath => "res://KnowledgeDemon/images/powers/big/FLESH_ABERRATION.png";
+
     public override AbstractModel OriginModel => ModelDb.Card<FleshAberration>();
 
     protected override bool IsPositive => false;
