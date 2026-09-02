@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -31,13 +33,24 @@ public sealed class CrystalProjection : KnowledgeDemonCardModel
     {
         _ = cardPlay;
 
-        if (CombatState is null)
+        if (Owner.Creature.CombatState is null)
         {
             return;
         }
 
-        var mindAscension = CombatState.CreateCard<MindAscension>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(mindAscension, PileType.Draw, Owner);
+        var selected = (await CardSelectCmd.FromCombatPile(
+            choiceContext,
+            PileType.Draw.GetPile(Owner),
+            Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1))).FirstOrDefault();
+
+        if (selected is null)
+        {
+            return;
+        }
+
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await CardCmd.TransformTo<MindAscension>(selected);
     }
 
     protected override void OnUpgrade()

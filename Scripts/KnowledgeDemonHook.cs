@@ -244,6 +244,11 @@ public static class KnowledgeDemonHook
             return;
         }
 
+        if (context.Replacement is Infinite)
+        {
+            KnowledgeDemonRuleFtueBootstrap.NotifyInfiniteGenerated(player);
+        }
+
         foreach (var model in combatState.IterateHookListeners())
         {
             if (model is not IKnowledgeDemonEventListener listener)

@@ -1,0 +1,12 @@
+{
+    "KNOWLEDGE_DEMON_RULE_FTUE_TITLE": "知识恶魔",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_1": "知识恶魔有不同于其他角色的独立牌库，被称为[gold]藏书库[/gold]。\n[gold]藏书库[/gold]显示在[gold]手牌[/gold]的上方。\n通过[gold]记录[/gold]，你可以将某些牌的[gold]临时复制品[/gold]加入[gold]藏书库[/gold]中。",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_2": "当你[red]手动打出[/red]的卡牌进入[red]弃牌堆[/red]时，将会被[gold]记录[/gold]。\n除此之外，某些卡牌的效果也可以触发[gold]记录[/gold]。",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_3": "当[gold]藏书库[/gold]的牌超过[blue]9[/blue]张时，将触发[gold]知识过载[/gold]。\n[gold]知识过载[/gold]会使你不断从[gold]藏书库[/gold]中的[blue]3[/blue]张牌中选择[blue]1[/blue]张自动打出，并[gold]丢弃[/gold]另外[blue]2[/blue]张。\n这个[gold]丢弃[/gold]可以触发卡牌的[gold]奇巧[/gold]效果。\n[blue]注意：在藏书库里的牌，无论是被打出还是被丢弃，都不会进入弃牌堆，而是从战斗中直接被移除。[/blue]",
+    "UNIQUE_RULE_FTUE_TITLE": "独一",
+    "UNIQUE_RULE_FTUE_BODY_1": "[gold]独一[/gold]是一种关键词。\n同名的[gold]独一[/gold]的卡牌在战斗中只会出现[blue]1[/blue]张。\n战斗中的牌库包括[gold]手牌[/gold]、[gold]藏书库[/gold]、[gold]抽牌堆[/gold]、[gold]弃牌堆[/gold]、[gold]消耗牌堆[/gold]。",
+    "UNIQUE_RULE_FTUE_BODY_2":"如果在战斗中出现了[blue]2[/blue]张同名的[gold]独一[/gold]的卡牌，则第二张牌将会被[gold]变化[/gold]。\n基于[gold]独一[/gold]和[gold]记录[/gold]的复制特性，当你[gold]记录[/gold]带[gold]独一[/gold]的牌时，将会直接触发[gold]变化[/gold]。",
+    "UNIQUE_RULE_FTUE_BODY_3": "同样地，在牌组中，同名的[gold]独一[/gold]的卡牌也只会出现[blue]1[/blue]张。\n如果你加入了另一张同名的[gold]独一[/gold]的牌，则会直接被[gold]变化[/gold]。",
+    "INFINITY_RULE_FTUE_TITLE": "无限",
+    "INFINITY_RULE_FTUE_BODY_1": "恭喜你触发[gold]无限[/gold]!\n当你在某个特定效果时，触发了[gold]死循环[/gold]的变化，就会变化出[gold]无限[/gold]。\n可以探索探索，找出更多触发[gold]无限[/gold]的方法！"
+}

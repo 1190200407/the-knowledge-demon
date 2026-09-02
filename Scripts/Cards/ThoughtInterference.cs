@@ -15,9 +15,10 @@ public sealed class ThoughtInterference : KnowledgeDemonCardModel
 {
     private const int energyCost = 2;
     private const CardType type = CardType.Power;
-    private const CardRarity rarity = CardRarity.Rare;
+    private const CardRarity rarity = CardRarity.Uncommon;
     private const TargetType targetType = TargetType.Self;
     private const bool shouldShowInCardLibrary = true;
+    private const string PowerVarName = "Power";
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
@@ -27,6 +28,11 @@ public sealed class ThoughtInterference : KnowledgeDemonCardModel
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
         ModKeywordRegistry.GetCardKeyword(KnowledgeDemonKeyword.Choose),
+    ];
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new PowerVar<ThoughtInterferencePower>(PowerVarName, 1m),
     ];
 
     public ThoughtInterference()
@@ -47,6 +53,6 @@ public sealed class ThoughtInterference : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars[PowerVarName].UpgradeValueBy(1m);
     }
 }

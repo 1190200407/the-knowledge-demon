@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -7,8 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Interop.AutoRegistration;
 
@@ -17,71 +16,39 @@ namespace ComicChess.KnowledgeDemon;
 [RegisterPower]
 public sealed class SalliSalliPower : KnowledgeDemonPowerModel
 {
-    private sealed class Data
-    {
-        public string? previousCardId;
-        public int remainingTriggers;
-        public int syncedTurnNumber = -1;
-        public int syncedAmount;
-        public bool initialized;
-    }
-
-    private const string PreviousCardVarName = "PreviousCard";
+    private CardModel? _autoPlayedLibraryCard;
 
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public override PowerStackType StackType => PowerStackType.Single;
 
-    public override int DisplayAmount => GetInternalData<Data>().remainingTriggers;
-
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new StringVar(PreviousCardVarName, "无")];
-
-    protected override object InitInternalData() => new Data();
-
-    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+        CardModel card,
+        bool isAutoPlay,
+        ResourceInfo resources,
+        PileType pileType,
+        CardPilePosition position)
     {
-        _ = applier;
-        _ = cardSource;
+        _ = resources;
 
-        var data = GetInternalData<Data>();
-        if (!data.initialized)
+        if (isAutoPlay && ReferenceEquals(card, _autoPlayedLibraryCard))
         {
-            data.previousCardId = null;
-            data.initialized = true;
-            SyncPreviousCardVar(null);
+            return (PileType.None, position);
         }
 
-        if (Owner.Player is { } player)
-        {
-            SyncRemainingTriggers(player);
-        }
-
-        return Task.CompletedTask;
+        return (pileType, position);
     }
 
-    public override Task BeforeSideTurnStart(
-        PlayerChoiceContext choiceContext,
-        CombatSide side,
-        IReadOnlyList<Creature> participants,
-        ICombatState combatState)
+    public override Task AfterModifyingCardPlayResultPileOrPosition(
+        CardModel card,
+        PileType pileType,
+        CardPilePosition position)
     {
-        _ = choiceContext;
-        _ = participants;
-        _ = combatState;
+        _ = card;
+        _ = pileType;
+        _ = position;
 
-        if (side != CombatSide.Player || Owner.Player is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var data = GetInternalData<Data>();
-        data.previousCardId = null;
-        data.remainingTriggers = System.Math.Max(0, Amount);
-        data.syncedTurnNumber = Owner.Player.PlayerCombatState?.TurnNumber ?? -1;
-        data.syncedAmount = Amount;
-        InvokeDisplayAmountChanged();
-        SyncPreviousCardVar(null);
+        _autoPlayedLibraryCard = null;
         return Task.CompletedTask;
     }
 
@@ -89,65 +56,47 @@ public sealed class SalliSalliPower : KnowledgeDemonPowerModel
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay)
     {
-        _ = choiceContext;
-        if (Owner.Player is not { } player || cardPlay.Card.Owner != player)
+        if (Owner.Player is not { } player
+            || cardPlay.IsAutoPlay
+            || cardPlay.Card.Owner != player)
         {
             return;
         }
 
-        var data = GetInternalData<Data>();
-        var currentCardId = cardPlay.Card.Id.Entry;
-        var isConsecutiveDuplicate =
-            data.previousCardId is not null
-            && data.previousCardId == currentCardId;
-
-        SyncRemainingTriggers(player);
-        if (isConsecutiveDuplicate && data.remainingTriggers > 0)
-        {
-            data.remainingTriggers--;
-            InvokeDisplayAmountChanged();
-            Flash();
-            var refundedEnergy = cardPlay.Resources.EnergyValue;
-            if (refundedEnergy > 0)
-            {
-                await PlayerCmd.GainEnergy(refundedEnergy, player);
-            }
-        }
-
-        data.previousCardId = currentCardId;
-        SyncPreviousCardVar(cardPlay.Card);
-    }
-
-    private void SyncPreviousCardVar(CardModel? card)
-    {
-        ((StringVar)DynamicVars[PreviousCardVarName]).StringValue =
-            card?.Title ?? "无";
-        InvokeDisplayAmountChanged();
-    }
-
-    private void SyncRemainingTriggers(Player player)
-    {
-        var data = GetInternalData<Data>();
-        var currentTurnNumber = player.PlayerCombatState?.TurnNumber ?? -1;
-
-        if (data.syncedTurnNumber != currentTurnNumber)
-        {
-            data.remainingTriggers = System.Math.Max(0, Amount);
-            data.syncedTurnNumber = currentTurnNumber;
-            data.syncedAmount = Amount;
-            InvokeDisplayAmountChanged();
-            return;
-        }
-
-        if (data.syncedAmount == Amount)
+        var libraryPile = BookLibraryUtility.TryGetLibraryPile(player);
+        if (libraryPile is null)
         {
             return;
         }
 
-        data.remainingTriggers = System.Math.Max(
-            0,
-            data.remainingTriggers + Amount - data.syncedAmount);
-        data.syncedAmount = Amount;
-        InvokeDisplayAmountChanged();
+        var matchingCard = libraryPile.Cards
+            .FirstOrDefault(card => card.Id.Entry == cardPlay.Card.Id.Entry);
+        if (matchingCard is null)
+        {
+            return;
+        }
+
+        Flash();
+
+        var combatState = player.Creature.CombatState;
+        if (combatState is null || matchingCard.Pile is not { } pile)
+        {
+            return;
+        }
+
+        var oldPileType = pile.Type;
+        matchingCard.RemoveFromCurrentPile(silent: false);
+        BookLibraryUtility.ResetCardTint(matchingCard);
+        await Cmd.CustomScaledWait(0.2f, 0.5f);
+        await Hook.AfterCardChangedPiles(player.RunState, combatState, matchingCard, oldPileType, null);
+        _autoPlayedLibraryCard = matchingCard;
+        try
+        {
+            await CardCmd.AutoPlay(choiceContext, matchingCard, null);
+        }
+        finally
+        {
+            _autoPlayedLibraryCard = null;
+        }
     }
 }

@@ -38,7 +38,8 @@ internal static class TransformOptionUtility
         var knowledgeDemonStatusCards = FilterTransformCandidates(
                 original,
                 GetKnowledgeDemonStatusPoolCards(player),
-                isInCombat)
+                isInCombat,
+                allowKnowledgeDemonTokenStatuses: true)
             .GroupBy(card => card.Id)
             .Select(group => group.First());
 
@@ -117,17 +118,18 @@ internal static class TransformOptionUtility
     internal static IEnumerable<CardModel> FilterTransformCandidates(
         CardModel original,
         IEnumerable<CardModel> candidates,
-        bool isInCombat)
+        bool isInCombat,
+        bool allowKnowledgeDemonTokenStatuses = false)
     {
         var source = candidates.Where(card => !IsInfinite(card));
         var rarity = original.Rarity;
         if ((uint)(rarity - 8) > 1u)
         {
             source = source.Where(candidate =>
-            {
-                var candidateRarity = candidate.Rarity;
-                return (uint)(candidateRarity - 2) <= 2u;
-            });
+                (allowKnowledgeDemonTokenStatuses
+                    && candidate.Rarity == CardRarity.Token
+                    && IsKnowledgeDemonStatusCard(candidate))
+                || (uint)(candidate.Rarity - 2) <= 2u);
         }
 
         if (isInCombat)

@@ -32,6 +32,7 @@ public class Entry
 		KnowledgeDemonTelemetry.Register();
 		KnowledgeDemonModSettingsPage.Register();
 		KnowledgeDemonRuntimeHotkeys.Register();
+		KnowledgeDemonRuleFtueBootstrap.Register();
 
         ModNodeAttachmentRegistry.For(ModId)
             .RegisterReadyChildFromScene<NCombatPilesContainer, NLibraryPileButton>(

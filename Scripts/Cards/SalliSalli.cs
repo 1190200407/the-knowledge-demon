@@ -13,7 +13,7 @@ public sealed class SalliSalli : KnowledgeDemonCardModel
 {
     private const int EnergyCostValue = 2;
     private const CardType TypeValue = CardType.Power;
-    private const CardRarity RarityValue = CardRarity.Uncommon;
+    private const CardRarity RarityValue = CardRarity.Rare;
     private const TargetType TargetTypeValue = TargetType.Self;
     private const bool ShouldShowInCardLibraryValue = true;
 

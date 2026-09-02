@@ -41,7 +41,7 @@ public class KnowledgeDemon : ModCharacterTemplate<KnowledgeDemonCardPool, Knowl
                 // 能量表盘tscn路径。
                 EnergyCounterPath: "res://KnowledgeDemon/scenes/energycost/knowledge_demon_energy_counter.tscn",
                 // 商店人物场景。
-                //MerchantAnimPath: "res://Test/scenes/test_character_merchant.tscn",
+                MerchantAnimPath: "res://KnowledgeDemon/scenes/knowledge_demon_merchant.tscn",
                 // 篝火休息场景。
                 RestSiteAnimPath: "res://KnowledgeDemon/scenes/knowledge_demon_rest_site.tscn"
             ),
