@@ -48,7 +48,7 @@ public sealed class AncientPulsePower : KnowledgeDemonPowerModel
         Flash();
         await CreatureCmd.Damage(
             choiceContext,
-            combatState.HittableEnemies.First(),
+            combatState.HittableEnemies,
             Amount,
             ValueProp.Unpowered,
             Owner,

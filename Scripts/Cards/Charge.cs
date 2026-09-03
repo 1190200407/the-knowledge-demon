@@ -96,7 +96,7 @@ public sealed class Charge : KnowledgeDemonCardModel
         {
             await CreatureCmd.Damage(
                 choiceContext,
-                CombatState.HittableEnemies.First(),
+                CombatState.HittableEnemies,
                 DynamicVars.Damage.BaseValue,
                 ValueProp.Unpowered,
                 Owner.Creature,
