@@ -49,7 +49,7 @@ public sealed class MomentumSigilCharm : KnowledgeDemonCardModel
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount(HitCount)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .TargetingRandomOpponents(CombatState!),
             Owner.Character,
             onlyPlayAnimOnce: true)

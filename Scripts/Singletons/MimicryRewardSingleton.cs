@@ -145,7 +145,10 @@ public sealed class MimicryRewardSingleton : HookedSingletonModel
             return false;
         }
 
-        var rollOptions = new CardCreationOptions(pickFrom, CardCreationSource.Other, creationOptions.RarityOdds)
+        var rollOptions = new CardCreationOptions(
+            pickFrom.Select(card => card.VisualCardPool).Distinct(),
+            CardCreationSource.Other,
+            creationOptions.RarityOdds)
             .WithFlags(CardCreationFlags.NoModifyHooks | CardCreationFlags.NoCardPoolModifications);
         var cardModel = CardFactory.CreateForReward(player, 1, rollOptions).FirstOrDefault()?.Card;
         if (cardModel is null)

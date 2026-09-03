@@ -55,7 +55,7 @@ public sealed class FinalSolution : KnowledgeDemonCardModel
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .WithHitCount(hitCount)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .WithAttackerAnim(
                 KnowledgeDemon.GetSuperAnimIfApplicable(Owner.Character),
                 KnowledgeDemon.GetSuperAttackDelayIfApplicable(Owner.Character))

@@ -63,7 +63,7 @@ public sealed class Pandora : KnowledgeDemonCardModel
             return;
         }
 
-        var damage = GetAttackCardDamage(played, Owner, cardPlay.Target);
+        var damage = GetAttackCardDamage(played, Owner, cardPlay.Target, cardPlay);
         DynamicVars.Damage.BaseValue += damage;
         ExtraDamage += damage;
         BookLibraryUtility.RefreshCardVisual(this);
@@ -77,7 +77,7 @@ public sealed class Pandora : KnowledgeDemonCardModel
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount(DynamicVars.Repeat.IntValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target),
             Owner.Character,
             onlyPlayAnimOnce: true)
@@ -96,7 +96,11 @@ public sealed class Pandora : KnowledgeDemonCardModel
         DynamicVars.Repeat.UpgradeValueBy(1m);
     }
 
-    private static decimal GetAttackCardDamage(CardModel attackCard, Player owner, Creature? target)
+    private static decimal GetAttackCardDamage(
+        CardModel attackCard,
+        Player owner,
+        Creature? target,
+        CardPlay cardPlay)
     {
         decimal damage = default;
         if (attackCard.DynamicVars.ContainsKey("CalculatedDamage"))
@@ -126,6 +130,7 @@ public sealed class Pandora : KnowledgeDemonCardModel
             damage,
             ValueProp.Move,
             attackCard,
+            cardPlay,
             ModifyDamageHookType.All,
             CardPreviewMode.None,
             out _);

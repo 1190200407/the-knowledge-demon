@@ -48,7 +48,7 @@ public sealed class MentalStrike : KnowledgeDemonCardModel
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount(discardedCards.Count)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .TargetingRandomOpponents(CombatState!),
             Owner.Character,
             onlyPlayAnimOnce: true)

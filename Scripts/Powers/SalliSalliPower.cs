@@ -22,31 +22,28 @@ public sealed class SalliSalliPower : KnowledgeDemonPowerModel
 
     public override PowerStackType StackType => PowerStackType.Single;
 
-    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+    public override CardLocation ModifyCardPlayResultLocation(
         CardModel card,
         bool isAutoPlay,
         ResourceInfo resources,
-        PileType pileType,
-        CardPilePosition position)
+        CardLocation cardLocation)
     {
         _ = resources;
 
         if (isAutoPlay && ReferenceEquals(card, _autoPlayedLibraryCard))
         {
-            return (PileType.None, position);
+            return new CardLocation(cardLocation.player, PileType.None, cardLocation.position);
         }
 
-        return (pileType, position);
+        return cardLocation;
     }
 
-    public override Task AfterModifyingCardPlayResultPileOrPosition(
+    public override Task AfterModifyingCardPlayResultLocation(
         CardModel card,
-        PileType pileType,
-        CardPilePosition position)
+        CardLocation cardLocation)
     {
         _ = card;
-        _ = pileType;
-        _ = position;
+        _ = cardLocation;
 
         _autoPlayedLibraryCard = null;
         return Task.CompletedTask;

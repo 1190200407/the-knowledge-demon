@@ -44,6 +44,7 @@ public sealed class LightTrapPower : KnowledgeDemonPowerModel, IKnowledgeDemonEv
             Amount,
             ValueProp.Unpowered,
             Owner,
+            null,
             null);
     }
 }

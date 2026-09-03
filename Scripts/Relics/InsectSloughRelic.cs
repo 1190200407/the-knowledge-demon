@@ -37,10 +37,11 @@ public sealed class InsectSloughRelic : KnowledgeDemonRelicModel, IKnowledgeDemo
         Flash();
         await CreatureCmd.Damage(
             choiceContext,
-            combatState.HittableEnemies,
+            combatState.HittableEnemies.First(),
             DamageAmount * materialized.Count,
             ValueProp.Unpowered,
             Owner.Creature,
+            null,
             null);
     }
 }

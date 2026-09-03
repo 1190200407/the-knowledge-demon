@@ -94,7 +94,7 @@ public sealed class Nirvana : KnowledgeDemonCardModel, IKnowledgeDemonEventListe
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .WithAttackerAnim(
                 KnowledgeDemon.GetSuperAnimIfApplicable(Owner.Character),
                 KnowledgeDemon.GetSuperAttackDelayIfApplicable(Owner.Character))

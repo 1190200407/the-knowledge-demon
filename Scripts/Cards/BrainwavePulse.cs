@@ -36,7 +36,7 @@ public sealed class BrainwavePulse : KnowledgeDemonCardModel
     {
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .TargetingAllOpponents(CombatState!),
             Owner.Character)
             .WithHitFx("vfx/vfx_attack_blunt")

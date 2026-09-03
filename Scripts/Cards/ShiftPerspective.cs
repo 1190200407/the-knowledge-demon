@@ -41,7 +41,7 @@ public sealed class ShiftPerspective : KnowledgeDemonCardModel
         if (cardPlay.Target is not null)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_blunt")
                 .Execute(choiceContext);

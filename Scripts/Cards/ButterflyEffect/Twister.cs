@@ -42,7 +42,7 @@ public sealed class Twister : KnowledgeDemonCardModel
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .WithAttackerAnim(
                 KnowledgeDemon.GetSuperAnimIfApplicable(Owner.Character),
                 KnowledgeDemon.GetSuperAttackDelayIfApplicable(Owner.Character))

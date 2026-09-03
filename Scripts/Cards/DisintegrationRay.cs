@@ -40,7 +40,7 @@ public sealed class DisintegrationRay : KnowledgeDemonCardModel
 
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target),
             Owner.Character)
             .WithHitFx("vfx/vfx_attack_blunt")

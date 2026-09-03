@@ -38,7 +38,7 @@ public sealed class CrossSigilCharm : KnowledgeDemonCardModel
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount(hitCount)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target),
             Owner.Character,
             onlyPlayAnimOnce: true)

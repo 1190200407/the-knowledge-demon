@@ -38,25 +38,23 @@ public sealed class TouchGold : KnowledgeDemonCardModel
     {
     }
 
-    public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(
+    public override CardLocation ModifyCardPlayResultLocation(
         CardModel card,
         bool isAutoPlay,
         ResourceInfo resources,
-        PileType pileType,
-        CardPilePosition position)
+        CardLocation cardLocation)
     {
-        if (!_returnToHandThisPlay.Contains(card) || pileType != PileType.Discard)
+        if (!_returnToHandThisPlay.Contains(card) || cardLocation.pileType != PileType.Discard)
         {
-            return (pileType, position);
+            return cardLocation;
         }
 
-        return (PileType.Hand, position);
+        return new CardLocation(cardLocation.player, PileType.Hand, cardLocation.position);
     }
 
-    public override Task AfterModifyingCardPlayResultPileOrPosition(
+    public override Task AfterModifyingCardPlayResultLocation(
         CardModel card,
-        PileType pileType,
-        CardPilePosition position)
+        CardLocation cardLocation)
     {
         _returnToHandThisPlay.Remove(card);
         return Task.CompletedTask;
@@ -66,7 +64,7 @@ public sealed class TouchGold : KnowledgeDemonCardModel
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_blunt")
             .Execute(choiceContext);

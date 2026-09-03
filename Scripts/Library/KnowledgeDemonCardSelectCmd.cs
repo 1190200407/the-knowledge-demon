@@ -97,7 +97,7 @@ public static class KnowledgeDemonCardSelectCmd
         }
 
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
-        await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions);
+        await context.SignalPlayerChoiceBegun(player, PlayerChoiceOptions.CancelPlayCardActions);
 
         IEnumerable<CardModel> result;
         if (ShouldSelectLocalCard(player))

@@ -24,11 +24,13 @@ public sealed class SwiftPower : KnowledgeDemonPowerModel
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource)
+        CardModel? cardSource,
+        CardPlay? cardPlay)
     {
         _ = target;
         _ = amount;
         _ = cardSource;
+        _ = cardPlay;
 
         if (dealer != Owner || !props.IsPoweredAttack() || Amount <= 0)
         {

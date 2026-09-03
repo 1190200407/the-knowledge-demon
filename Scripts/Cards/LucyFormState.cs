@@ -125,7 +125,7 @@ public sealed class LucyFormState : KnowledgeDemonCardModel
         var stage = GetStage();
         var damage = ((ComputedDynamicVar)DynamicVars[DamageKey]).Calculate(cardPlay.Target);
         var attack = DamageCmd.Attack(damage)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash");
 

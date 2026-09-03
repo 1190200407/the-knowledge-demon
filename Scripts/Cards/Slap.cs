@@ -45,7 +45,7 @@ public sealed class Slap : KnowledgeDemonCardModel
         await KnowledgeDemon.WithKnowledgeDemonAttackAnim(
             DamageCmd.Attack(DynamicVars.Damage.BaseValue)
                 .WithHitCount((int)GetHitCount(this))
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target),
             Owner.Character,
             onlyPlayAnimOnce: true)
