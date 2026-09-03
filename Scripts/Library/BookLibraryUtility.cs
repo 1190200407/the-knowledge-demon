@@ -70,7 +70,7 @@ public static class BookLibraryUtility
             return;
         }
 
-        var ncard = NCard.FindOnTable(card);
+        var ncard = NBookLibraryPile.Instance?.TryGetHolder(card)?.CardNode;
         if (ncard != null)
         {
             ApplyLibraryCardPreviewVisuals(ncard);
@@ -197,7 +197,7 @@ public static class BookLibraryUtility
 
     public static void ResetCardTint(CardModel card)
     {
-        var ncard = NCard.FindOnTable(card);
+        var ncard = NBookLibraryPile.Instance?.TryGetHolder(card)?.CardNode;
         if (ncard == null || !GodotObject.IsInstanceValid(ncard))
         {
             return;

@@ -177,40 +177,6 @@ internal sealed class BookLibraryPileInitializePatch : IPatchMethod
 }
 
 /// <summary>
-/// Headless 藏书库牌堆不走 RitsuLib <see cref="NModExtraHand" />，需自行解析 <see cref="NCard.FindOnTable" />。
-/// </summary>
-internal sealed class BookLibraryFindOnTablePatch : IPatchMethod
-{
-    public static string PatchId => "knowledgedemon_book_library_find_on_table";
-    public static string Description => "Resolve NCard.FindOnTable for custom library pile visuals";
-    public static bool IsCritical => true;
-
-    public static ModPatchTarget[] GetTargets() =>
-    [
-        new(typeof(NCard), nameof(NCard.FindOnTable)),
-    ];
-
-    public static void Postfix(CardModel card, ref NCard? __result)
-    {
-        if (__result != null)
-        {
-            return;
-        }
-
-        if (card.Pile is not { } pile || !BookLibraryUtility.IsBookLibraryPile(pile.Type))
-        {
-            return;
-        }
-
-        __result = NBookLibraryPile.Instance?.GetCard(card);
-        if (__result != null && NBookLibraryPile.Instance?.TryGetHolder(card) is { } holder)
-        {
-            holder.ResetCardTransform();
-        }
-    }
-}
-
-/// <summary>
 /// 藏书库牌堆：原版跑完后，再按 Hand/Play 规则重算一遍带全局 hook 的动态数值预览。
 /// </summary>
 internal sealed class BookLibraryDynamicVarPreviewPatch : IPatchMethod

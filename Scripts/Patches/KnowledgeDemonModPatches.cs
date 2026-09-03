@@ -14,7 +14,6 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<LibraryPileButtonEnablePatch>();
 		patcher.RegisterPatch<LibraryPileButtonDisablePatch>();
 		patcher.RegisterPatch<BookLibraryPileInitializePatch>();
-		patcher.RegisterPatch<BookLibraryFindOnTablePatch>();
 		patcher.RegisterPatch<BookLibraryDynamicVarPreviewPatch>();
 		patcher.RegisterPatch<BookLibrarySharedHandSimpleSelectPatch>();
 		patcher.RegisterPatch<BookLibrarySharedHandRevalidatePatch>();
