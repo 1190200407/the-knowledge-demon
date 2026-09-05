@@ -39,7 +39,7 @@ public sealed class EnvironmentalTolerancePower : KnowledgeDemonPowerModel
         await uniqueSingleton.AddUniqueKeywordsAndResolveAsync(player, currentStatusCards);
     }
 
-    public override async Task AfterCardChangedPiles(
+    public override Task AfterCardChangedPiles(
         CardModel card,
         PileType oldPileType,
         AbstractModel? clonedBy)
@@ -54,9 +54,10 @@ public sealed class EnvironmentalTolerancePower : KnowledgeDemonPowerModel
             || card.Type != CardType.Status
             || KnowledgeDemonUniqueSingleton.Instance is not { } uniqueSingleton)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await uniqueSingleton.AddUniqueKeywordsAndResolveAsync(player, [card]);
+        uniqueSingleton.AddUniqueKeywordsAndQueueResolution(player, [card]);
+        return Task.CompletedTask;
     }
 }

@@ -53,7 +53,7 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
         InvokeDisplayAmountChanged();
     }
 
-    internal TransformReplacement? CreateReplacement(CardModel original)
+    internal TransformReplacement? CreateReplacement(CardModel original, bool countTransform)
     {
         if (TransformOptionUtility.IsInfinite(original))
         {
@@ -66,7 +66,10 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
             return null;
         }
 
-        TransformCount++;
+        if (countTransform)
+        {
+            TransformCount++;
+        }
 
         var useInfinite = TransformCount >= InfiniteThreshold;
         var template = targetTemplate;
@@ -96,6 +99,20 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
         }
 
         return new TransformReplacement(replacement, TransformCount, false);
+    }
+
+    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        _ = choiceContext;
+
+        if (Owner.Player != cardPlay.Card.Owner)
+        {
+            return Task.CompletedTask;
+        }
+
+        TransformCount = 0;
+        InvokeDisplayAmountChanged();
+        return Task.CompletedTask;
     }
 
     public override Task AfterApplied(Creature? applier, CardModel? cardSource)
