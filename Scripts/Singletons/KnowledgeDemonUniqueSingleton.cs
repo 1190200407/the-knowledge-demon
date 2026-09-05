@@ -25,7 +25,9 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
 {
     public static KnowledgeDemonUniqueSingleton? Instance { get; private set; }
 
+    private readonly HashSet<Player> _scheduledCombatResolutionPlayers = [];
     private bool _resolvingCombatViolations;
+    private bool _combatResolutionDrainScheduled;
 
     public KnowledgeDemonUniqueSingleton()
         : base(HookType.Combat)
@@ -53,7 +55,7 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         return true;
     }
 
-    public override async Task AfterCardChangedPiles(
+    public override Task AfterCardChangedPiles(
         CardModel card,
         PileType oldPileType,
         AbstractModel? clonedBy)
@@ -63,15 +65,16 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
 
         if (card.Owner is not { } player || card.CombatState == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (card.Pile is not { IsCombatPile: true })
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await ResolveCombatViolationsAsync(player, card);
+        QueueCombatViolationResolution(player);
+        return Task.CompletedTask;
     }
 
     public async Task AddUniqueKeywordsAndResolveAsync(Player player, IEnumerable<CardModel> cards)
@@ -91,6 +94,45 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         if (preferredDuplicate is not null)
         {
             await ResolveCombatViolationsAsync(player, preferredDuplicate);
+        }
+    }
+
+    public void AddUniqueKeywordsAndQueueResolution(Player player, IEnumerable<CardModel> cards)
+    {
+        foreach (var card in cards)
+        {
+            AddUniqueKeyword(card);
+        }
+
+        QueueCombatViolationResolution(player);
+    }
+
+    public void QueueCombatViolationResolution(Player player)
+    {
+        _scheduledCombatResolutionPlayers.Add(player);
+        if (_combatResolutionDrainScheduled)
+        {
+            return;
+        }
+
+        _combatResolutionDrainScheduled = true;
+        Callable.From(DrainScheduledCombatResolutions).CallDeferred();
+    }
+
+    private void DrainScheduledCombatResolutions()
+    {
+        _ = TaskHelper.RunSafely(DrainScheduledCombatResolutionsAsync());
+    }
+
+    private async Task DrainScheduledCombatResolutionsAsync()
+    {
+        _combatResolutionDrainScheduled = false;
+        var players = _scheduledCombatResolutionPlayers.ToArray();
+        _scheduledCombatResolutionPlayers.Clear();
+
+        foreach (var player in players)
+        {
+            await ResolveCombatViolationsAsync(player);
         }
     }
 
