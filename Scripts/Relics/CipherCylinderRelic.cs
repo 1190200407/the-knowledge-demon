@@ -27,11 +27,13 @@ public sealed class CipherCylinderRelic : KnowledgeDemonRelicModel
         }
 
         var candidates = ModelDb.AllCards
-            .Where(static card =>
+            .Where(card =>
                 card.CanBeGeneratedInCombat
                 && card.Rarity != CardRarity.Ancient
                 && card.Rarity != CardRarity.Event
                 && card.Rarity != CardRarity.Token
+                && (card.MultiplayerConstraint == CardMultiplayerConstraint.None
+                    || card.MultiplayerConstraint == Owner.RunState.CardMultiplayerConstraint)
                 && KnowledgeDemonUniqueUtility.IsUnique(card))
             .ToArray();
 
