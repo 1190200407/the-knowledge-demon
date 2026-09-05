@@ -53,7 +53,7 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
         InvokeDisplayAmountChanged();
     }
 
-    internal TransformReplacement? CreateReplacement(CardModel original, bool countTransform)
+    internal TransformReplacement? CreateReplacement(CardModel original)
     {
         if (TransformOptionUtility.IsInfinite(original))
         {
@@ -66,7 +66,7 @@ public sealed class SingularityPower : KnowledgeDemonPowerModel
             return null;
         }
 
-        if (countTransform)
+        if (targetTemplate.Id == original.Id)
         {
             TransformCount++;
         }
