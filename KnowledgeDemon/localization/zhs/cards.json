@@ -183,7 +183,7 @@
     "KNOWLEDGE_DEMON_CARD_CRYSTAL_PROJECTION.description": "从[gold]抽牌堆[/gold]中选择1张牌[gold]变化[/gold]为[gold]心灵升华[/gold]。",
     "KNOWLEDGE_DEMON_CARD_CRYSTAL_PROJECTION.selectionScreenPrompt": "选择[blue]1[/blue]张[gold]抽牌堆[/gold]中的牌[gold]变化[/gold]。",
     "KNOWLEDGE_DEMON_CARD_ABERRANT.title": "异变体",
-    "KNOWLEDGE_DEMON_CARD_ABERRANT.description": "你每回合前{Power:diff()}次生成状态牌时，为其添加[gold]奇巧[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_ABERRANT.description": "你每回合{IfUpgraded:show:前2次|第1次}生成状态牌时，为其添加[gold]奇巧[/gold]。",
     "KNOWLEDGE_DEMON_CARD_RESHAPE.title": "重塑",
     "KNOWLEDGE_DEMON_CARD_RESHAPE.description": "获得{Block:diff()}点[gold]格挡[/gold]。下回合获得等同于当前格挡一半的[gold]格挡[/gold]。",
     "KNOWLEDGE_DEMON_CARD_PONDER.title": "思考",
