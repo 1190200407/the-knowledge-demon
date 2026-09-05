@@ -39,8 +39,7 @@ public static class KnowledgeDemonTelemetry
                     "发送异常与少量诊断上下文，用来定位崩溃、卡死和脚本错误。")),
                 TelemetryRequest.RunHistory(
                     ModSettingsText.Literal(
-                        "发送已结束跑局的 run-history，用来分析卡牌、遗物与玩法平衡。"),
-                    captureFilter: static evt => !evt.IsAbandoned),
+                        "发送已结束跑局的 run-history，用来分析卡牌、遗物与玩法平衡。")),
                 TelemetryRequest.Custom(
                     KnowledgeDemonTelemetryConfig.GameplayRequestId,
                     ModSettingsText.Literal(
