@@ -28,6 +28,13 @@
     <PackageReference Include="STS2.RitsuLib" Version="0.5.18" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <_Sts2ReleaseInfoPath>$(Sts2Dir)/release_info.json</_Sts2ReleaseInfoPath>
+    <_Sts2ReleaseInfoText Condition="Exists('$(_Sts2ReleaseInfoPath)')">$([System.IO.File]::ReadAllText('$(_Sts2ReleaseInfoPath)'))</_Sts2ReleaseInfoText>
+    <_Sts2GameVersion Condition="'$(_Sts2ReleaseInfoText)' != ''">$([System.Text.RegularExpressions.Regex]::Match('$(_Sts2ReleaseInfoText)', '"version"\s*:\s*"v([^\"]+)"').Groups[1].Value)</_Sts2GameVersion>
+    <_Sts2GameVersion Condition="'$(_Sts2GameVersion)' == ''">0.107.1</_Sts2GameVersion>
+  </PropertyGroup>
+
   <Target Name="ValidateSts2References" BeforeTargets="CoreCompile">
     <Error
       Condition="!Exists('$(Sts2DataDir)/sts2.dll')"
@@ -42,21 +49,20 @@
   <Target Name="Copy Mod" AfterTargets="PostBuildEvent" Condition="Exists('$(Sts2DataDir)/sts2.dll')">
     <PropertyGroup>
       <_ModDir>$(Sts2Dir)/mods/$(MSBuildProjectName)</_ModDir>
+      <_ModLibDir>$(_ModDir)/lib/$(_Sts2GameVersion)</_ModLibDir>
       <_ModPck>$(MSBuildProjectDirectory)/$(MSBuildProjectName).pck</_ModPck>
-      <_StaleLooseDir>$(_ModDir)/KnowledgeDemon</_StaleLooseDir>
     </PropertyGroup>
 
-    <Message Text="Copying mod to $(_ModDir)..." Importance="high" />
+    <Message Text="Copying mod to $(_ModDir) and $(_ModLibDir)..." Importance="high" />
     <MakeDir Directories="$(_ModDir)/" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(_ModDir)/" />
+    <MakeDir Directories="$(_ModLibDir)/" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(_ModLibDir)/KnowledgeDemon.dll" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).pdb" DestinationFiles="$(_ModLibDir)/KnowledgeDemon.pdb" Condition="Exists('$(TargetDir)$(AssemblyName).pdb')" />
     <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(_ModDir)/" />
     <Copy
       SourceFiles="$(_ModPck)"
       DestinationFolder="$(_ModDir)/"
       Condition="Exists('$(_ModPck)')"
       SkipUnchangedFiles="true" />
-
-    <!-- 清理旧版 PostBuild 误复制的 loose KnowledgeDemon/（含 localization/*.json） -->
-    <RemoveDir Directories="$(_StaleLooseDir)" Condition="Exists('$(_StaleLooseDir)')" />
   </Target>
 </Project>
