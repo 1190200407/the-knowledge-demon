@@ -25,13 +25,24 @@
       <Private>false</Private>
     </Reference>
 
-    <PackageReference Include="STS2.RitsuLib" Version="0.5.18" />
+    <Reference Include="STS2-RitsuLib">
+      <HintPath>$(RitsuLibDllPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
+
+  <PropertyGroup>
+    <_Sts2GameVersion>0.111.0</_Sts2GameVersion>
+    <RitsuLibDllPath Condition="'$(RitsuLibDllPath)' == ''">$(Sts2Dir)/mods/RitsuLib/lib/$(_Sts2GameVersion)/STS2-RitsuLib.dll</RitsuLibDllPath>
+  </PropertyGroup>
 
   <Target Name="ValidateSts2References" BeforeTargets="CoreCompile">
     <Error
       Condition="!Exists('$(Sts2DataDir)/sts2.dll')"
       Text="sts2.dll not found at '$(Sts2DataDir)'. Install Slay the Spire 2 or set Sts2Dir / Sts2DataDir in local.props (see local.props.example)." />
+    <Error
+      Condition="!Exists('$(RitsuLibDllPath)')"
+      Text="STS2-RitsuLib.dll not found at '$(RitsuLibDllPath)'." />
   </Target>
 
   <!--
@@ -42,21 +53,20 @@
   <Target Name="Copy Mod" AfterTargets="PostBuildEvent" Condition="Exists('$(Sts2DataDir)/sts2.dll')">
     <PropertyGroup>
       <_ModDir>$(Sts2Dir)/mods/$(MSBuildProjectName)</_ModDir>
+      <_ModLibDir>$(_ModDir)/lib/$(_Sts2GameVersion)</_ModLibDir>
       <_ModPck>$(MSBuildProjectDirectory)/$(MSBuildProjectName).pck</_ModPck>
-      <_StaleLooseDir>$(_ModDir)/KnowledgeDemon</_StaleLooseDir>
     </PropertyGroup>
 
-    <Message Text="Copying mod to $(_ModDir)..." Importance="high" />
+    <Message Text="Copying mod to $(_ModDir) and $(_ModLibDir)..." Importance="high" />
     <MakeDir Directories="$(_ModDir)/" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(_ModDir)/" />
+    <MakeDir Directories="$(_ModLibDir)/" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(_ModLibDir)/KnowledgeDemon.dll" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).pdb" DestinationFiles="$(_ModLibDir)/KnowledgeDemon.pdb" Condition="Exists('$(TargetDir)$(AssemblyName).pdb')" />
     <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(_ModDir)/" />
     <Copy
       SourceFiles="$(_ModPck)"
       DestinationFolder="$(_ModDir)/"
       Condition="Exists('$(_ModPck)')"
       SkipUnchangedFiles="true" />
-
-    <!-- 清理旧版 PostBuild 误复制的 loose KnowledgeDemon/（含 localization/*.json） -->
-    <RemoveDir Directories="$(_StaleLooseDir)" Condition="Exists('$(_StaleLooseDir)')" />
   </Target>
 </Project>
