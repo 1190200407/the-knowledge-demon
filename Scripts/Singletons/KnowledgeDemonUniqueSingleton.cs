@@ -72,9 +72,7 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
         {
             return Task.CompletedTask;
         }
-
-        QueueCombatViolationResolution(player);
-        return Task.CompletedTask;
+        return ResolveCombatViolationsAsync(player, card);
     }
 
     public async Task AddUniqueKeywordsAndResolveAsync(Player player, IEnumerable<CardModel> cards)
