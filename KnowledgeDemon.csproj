@@ -25,25 +25,12 @@
       <Private>false</Private>
     </Reference>
 
-    <Reference Include="STS2-RitsuLib">
-      <HintPath>$(RitsuLibDllPath)</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="STS2.RitsuLib" Version="0.5.18" />
   </ItemGroup>
 
   <PropertyGroup>
     <_Sts2GameVersion>0.111.0</_Sts2GameVersion>
-    <RitsuLibDllPath Condition="'$(RitsuLibDllPath)' == ''">$(Sts2Dir)/mods/RitsuLib/lib/$(_Sts2GameVersion)/STS2-RitsuLib.dll</RitsuLibDllPath>
   </PropertyGroup>
-
-  <Target Name="ValidateSts2References" BeforeTargets="CoreCompile">
-    <Error
-      Condition="!Exists('$(Sts2DataDir)/sts2.dll')"
-      Text="sts2.dll not found at '$(Sts2DataDir)'. Install Slay the Spire 2 or set Sts2Dir / Sts2DataDir in local.props (see local.props.example)." />
-    <Error
-      Condition="!Exists('$(RitsuLibDllPath)')"
-      Text="STS2-RitsuLib.dll not found at '$(RitsuLibDllPath)'." />
-  </Target>
 
   <!--
     只复制 manifest + dll + pck。勿把 KnowledgeDemon/ 整包复制到 mods 下：
