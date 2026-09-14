@@ -1,13 +1,18 @@
 shader_type canvas_item;
 render_mode blend_mix;
 
-#include "res://TheQueen/shaders/polar_coordinates.gdshaderinc"
-
 uniform sampler2D erosion_curve;
 uniform float erosion_offset = 0.1;
 
 varying float lifetime;
 varying vec4 vertex_color;
+
+vec2 polar_coordinates(vec2 uv, vec2 center, float zoom, float repeat) {
+	vec2 dir = uv - center;
+	float radius = length(dir) * 2.0;
+	float angle = atan(dir.y, dir.x) * 1.0 / (3.1416 * 2.0);
+	return mod(vec2(radius * zoom, angle * repeat), 1.0);
+}
 
 vec2 polar_uv_twist(vec2 polar_uv, float twist) {
 	return vec2(
