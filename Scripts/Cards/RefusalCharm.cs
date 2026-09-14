@@ -30,7 +30,7 @@ public sealed class RefusalCharm : KnowledgeDemonCardModel, IKnowledgeDemonEvent
         HoverTipFactory.FromPower<WeakPower>(),
         KnowledgeDemonKeywordHoverTips.FromRecord(),
         HoverTipFactory.Static(StaticHoverTip.Transform),
-        HoverTipFactory.FromCard<LavishTakingCharm>(),
+        HoverTipFactory.FromCard<LavishTakingCharm>(base.IsUpgraded),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [

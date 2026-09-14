@@ -210,7 +210,7 @@
     "KNOWLEDGE_DEMON_CARD_THREE_HEADS_SIX_ARMS.title": "三头六臂",
     "KNOWLEDGE_DEMON_CARD_THREE_HEADS_SIX_ARMS.description": "你[gold]具象[/gold]技能牌时，将其[gold]附魔[/gold]：{IfUpgraded:show:[purple]伶俐[/purple]|[purple]灵巧[/purple]}2。你[gold]具象[/gold]攻击牌时，将其[gold]附魔[/gold]：{IfUpgraded:show:[purple]动量[/purple]|[purple]锋利[/purple]}2。",
     "KNOWLEDGE_DEMON_CARD_PETRIFY.title": "石化",
-    "KNOWLEDGE_DEMON_CARD_PETRIFY.description": "获得{Block:diff()}点[gold]格挡[/gold]。本回合当你格挡住敌人的攻击伤害时，将1张[gold]瓦解[/gold]加入你的[gold]手牌[/gold]。",
+    "KNOWLEDGE_DEMON_CARD_PETRIFY.description": "获得{Block:diff()}点[gold]格挡[/gold]。本回合当你完全格挡住敌人的攻击伤害时，将1张[gold]瓦解[/gold]加入你的[gold]手牌[/gold]。",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.title": "显化",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.description": "[gold]具象[/gold]{Materialize:diff()}。",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",

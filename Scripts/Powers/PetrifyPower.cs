@@ -30,7 +30,11 @@ public sealed class PetrifyPower : KnowledgeDemonPowerModel
     {
         _ = cardSource;
 
-        if (target != Owner || dealer is null || !props.IsPoweredAttack() || result.BlockedDamage <= 0)
+        if (target != Owner
+            || dealer is null
+            || !props.IsPoweredAttack()
+            || !result.WasFullyBlocked
+            || result.BlockedDamage <= 0)
         {
             return;
         }
