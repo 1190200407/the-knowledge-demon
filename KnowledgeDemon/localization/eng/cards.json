@@ -210,7 +210,7 @@
     "KNOWLEDGE_DEMON_CARD_THREE_HEADS_SIX_ARMS.title": "Three Heads, Six Arms",
     "KNOWLEDGE_DEMON_CARD_THREE_HEADS_SIX_ARMS.description": "When you [gold]Materialize[/gold] a Skill, [gold]Enchant[/gold] it with {IfUpgraded:show:[purple]Clever[/purple]|[purple]Dexterous[/purple]} 2. When you [gold]Materialize[/gold] an Attack, [gold]Enchant[/gold] it with {IfUpgraded:show:[purple]Momentum[/purple]|[purple]Sharp[/purple]} 2.",
     "KNOWLEDGE_DEMON_CARD_PETRIFY.title": "Petrify",
-    "KNOWLEDGE_DEMON_CARD_PETRIFY.description": "Gain {Block:diff()} [gold]Block[/gold]. Whenever you block attack damage this turn, add 1 [gold]Disintegration[/gold] to your [gold]hand[/gold].",
+    "KNOWLEDGE_DEMON_CARD_PETRIFY.description": "Gain {Block:diff()} [gold]Block[/gold]. Whenever you fully block attack damage this turn, add 1 [gold]Disintegration[/gold] to your [gold]hand[/gold].",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.title": "Manifestation",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.description": "[gold]Materialize[/gold] {Materialize:diff()}.",
     "KNOWLEDGE_DEMON_CARD_MANIFESTATION.selectionScreenPrompt": "Choose [blue]{Amount}[/blue] cards to [gold]Materialize[/gold].",

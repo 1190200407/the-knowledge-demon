@@ -29,7 +29,7 @@ public sealed class LavishTakingCharm : KnowledgeDemonCardModel, IKnowledgeDemon
         HoverTipFactory.FromPower<VulnerablePower>(),
         KnowledgeDemonKeywordHoverTips.FromRecord(),
         HoverTipFactory.Static(StaticHoverTip.Transform),
-        HoverTipFactory.FromCard<RefusalCharm>(),
+        HoverTipFactory.FromCard<RefusalCharm>(base.IsUpgraded),
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [
