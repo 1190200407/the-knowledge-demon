@@ -1,0 +1,21 @@
+{
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.description": "生成されたカードの[gold]一時的なコピー[/gold]を[gold]蔵書庫[/gold]に加える。",
+    "KNOWLEDGE_DEMON_KEYWORD_RECORD.title": "記録",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.description": "[gold]蔵書庫[/gold]からカードを選び、[gold]手札[/gold]に加える。",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.smartDescription": "[gold]蔵書庫[/gold]からカードを{Materialize}枚選び、[gold]手札[/gold]に加える。",
+    "KNOWLEDGE_DEMON_KEYWORD_MATERIALIZE.title": "実体化",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.description": "[gold]蔵書庫[/gold]からランダムなカードを[blue]3[/blue]枚公開する。[blue]1[/blue]枚を選んでプレイし、残りの2枚を[gold]捨てる[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE.title": "選択",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.description": "[gold]蔵書庫[/gold]からランダムなカードを[red]2[/red]枚公開する。[blue]1[/blue]枚を選んでプレイし、残りの1枚を[gold]捨てる[/gold]。",
+    "KNOWLEDGE_DEMON_KEYWORD_CHOOSE_OMEGA.title": "選択 Ω",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.description": "[gold]唯一[/gold]を持つ同名カードは1枚しか存在できない。重複したカードは[gold]変化[/gold]する。",
+    "KNOWLEDGE_DEMON_KEYWORD_UNIQUE.title": "唯一",
+    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.description": "[gold]唯一[/gold]の影響を受けなくなり、同じカードが複数存在できる。",
+    "KNOWLEDGE_DEMON_KEYWORD_INFINITE.title": "無限",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.description": "[gold]蔵書庫[/gold]のカードが[blue]3[/blue]枚未満になるまで、[gold]選択[/gold]を繰り返す。",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD.title": "知識の過負荷",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.description": "[gold]蔵書庫[/gold]のカードが[red]2[/red]枚未満になるまで、[red]選択 Ω[/red]を繰り返す。",
+    "KNOWLEDGE_DEMON_KEYWORD_KNOWLEDGE_OVERLOAD_OMEGA.title": "知識の過負荷 Ω",
+    "SLY.description": "自分のターン終了前にこのカードが[gold]手札[/gold]または[gold]蔵書庫[/gold]から[gold]捨てられた[/gold]場合、コストを支払わずにプレイする。",
+    "SLY.title": "スライ"
+}

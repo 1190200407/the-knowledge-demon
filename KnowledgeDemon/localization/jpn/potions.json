@@ -1,0 +1,20 @@
+{
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.title": "濃縮コーヒー",
+    "KNOWLEDGE_DEMON_POTION_CONCENTRATED_COFFEE.description": "直ちに[gold]知識の過負荷[/gold]を[blue]1[/blue]回発動する。",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.title": "瞑想ポーション",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.description": "[gold]手札[/gold]からカードを[blue]1[/blue]枚選び、[gold]記録[/gold]してから[gold]捨てる[/gold]。",
+    "KNOWLEDGE_DEMON_POTION_MEDITATION_POTION.selectionScreenPrompt": "[gold]手札[/gold]からカードを[blue]1[/blue]枚選ぶ。",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.title": "現像液",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.description": "[gold]実体化[/gold]1。実体化したカードはこの戦闘中、コストを支払わずにプレイできる。",
+    "KNOWLEDGE_DEMON_POTION_DEVELOPER.selectionScreenPrompt": "[gold]実体化[/gold]するカードを[blue]1[/blue]枚選ぶ。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.title": "分裂ポーション",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.description": "[gold]手札[/gold]または[gold]蔵書庫[/gold]からカードを[blue]1[/blue]枚選び、そのコピーを[blue]1[/blue]枚作る。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt": "[gold]手札[/gold]または[gold]蔵書庫[/gold]からカードを1枚選ぶ。",
+    "KNOWLEDGE_DEMON_POTION_SPLIT_POTION.selectionScreenPrompt2": "[gold]手札[/gold]からカードを1枚選ぶ。",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.title": "双生ポーション",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.description": "次に[gold]選択[/gold]したカードを追加で[blue]1[/blue]回プレイする。",
+    "KNOWLEDGE_DEMON_POTION_TWIN_POTION.selectionScreenPrompt": "カードを[blue]1[/blue]枚選ぶ。",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.title": "状態異常ポーション",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.description": "ランダムな知識の悪魔の状態異常カード[blue]3[/blue]枚から[blue]1[/blue]枚を選び、[gold]手札[/gold]に加える。この戦闘中、そのカードをプレイできる。",
+    "KNOWLEDGE_DEMON_POTION_STATUS_POTION.selectionScreenPrompt": "知識の悪魔の状態異常カードを[blue]1[/blue]枚選ぶ。"
+}

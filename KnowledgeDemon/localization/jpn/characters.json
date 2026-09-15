@@ -1,0 +1,17 @@
+{
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.aromaPrinciple": "[sine]我と同質の魔力を感じる……[/sine]",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.banter.alive.endTurnPing": "時間は貴重だ……",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.banter.dead.endTurnPing": "時間は……貴重だ……",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.cardsModifierDescription": "知識の悪魔のカードが報酬やショップに出現するようになる。",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.cardsModifierTitle": "知識の悪魔のカード",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.description": "塔に棲み、秘密と魔導書を糧とする知識の悪魔。",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.eventDeathPrevention": "まだ我の死は許されていないようだ……",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.goldMonologue": "[sine]金など俗世の財にすぎぬ……だが、いざという時のために少しは残しておこう。[/sine]",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.possessiveAdjective": "その",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounObject": "それ",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounPossessive": "その",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.pronounSubject": "それ",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.title": "知識の悪魔",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.titleObject": "知識の悪魔",
+    "KNOWLEDGE_DEMON_CHARACTER_KNOWLEDGE_DEMON.unlockText": "[blue]{Prerequisite}[/blue]でゲームをクリアすると、このキャラクターがアンロックされる。"
+}

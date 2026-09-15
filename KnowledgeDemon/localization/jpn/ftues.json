@@ -1,0 +1,12 @@
+{
+    "KNOWLEDGE_DEMON_RULE_FTUE_TITLE": "知識の悪魔",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_1": "知識の悪魔は、他のキャラクターにはない[gold]蔵書庫[/gold]という独立したカード置き場を持つ。\n[gold]蔵書庫[/gold]は[gold]手札[/gold]の上に表示される。\n[gold]記録[/gold]によって、特定のカードの[gold]一時的なコピー[/gold]を[gold]蔵書庫[/gold]に加えられる。",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_2": "[red]手動でプレイ[/red]したカードが[red]捨て札[/red]に入ると、そのカードは[gold]記録[/gold]される。\n一部のカード効果でも[gold]記録[/gold]は発動する。",
+    "KNOWLEDGE_DEMON_RULE_FTUE_BODY_3": "[gold]蔵書庫[/gold]のカードが[blue]9[/blue]枚以上になると、[gold]知識の過負荷[/gold]が発動する。\n[gold]知識の過負荷[/gold]では、[gold]蔵書庫[/gold]のカード[blue]3[/blue]枚から[blue]1[/blue]枚を選んで自動的にプレイし、残りの[blue]2[/blue]枚を[gold]捨てる[/gold]操作を繰り返す。\nこの[gold]捨てる[/gold]効果でカードの[gold]スライ[/gold]を発動できる。\n[blue]注意：蔵書庫のカードはプレイまたは捨てると戦闘から取り除かれ、捨て札には入らない。[/blue]",
+    "UNIQUE_RULE_FTUE_TITLE": "唯一",
+    "UNIQUE_RULE_FTUE_BODY_1": "[gold]唯一[/gold]はキーワードである。\n[gold]唯一[/gold]を持つ同名カードは、戦闘中に[blue]1[/blue]枚しか存在できない。\n戦闘中のカードには、[gold]手札[/gold]、[gold]蔵書庫[/gold]、[gold]山札[/gold]、[gold]捨て札[/gold]、[gold]廃棄札[/gold]が含まれる。",
+    "UNIQUE_RULE_FTUE_BODY_2": "[gold]唯一[/gold]を持つ同名カードが戦闘中に[blue]2[/blue]枚現れた場合、2枚目は[gold]変化[/gold]する。\n[gold]唯一[/gold]は[gold]記録[/gold]によるコピーと相互作用するため、[gold]唯一[/gold]を持つカードを[gold]記録[/gold]すると直ちに[gold]変化[/gold]が発生する。",
+    "UNIQUE_RULE_FTUE_BODY_3": "同様に、[gold]唯一[/gold]を持つ同名カードはデッキ内にも[blue]1[/blue]枚しか存在できない。\n[gold]唯一[/gold]を持つ同名カードをもう1枚加えると、直ちに[gold]変化[/gold]する。",
+    "INFINITY_RULE_FTUE_TITLE": "無限",
+    "INFINITY_RULE_FTUE_BODY_1": "おめでとう、[gold]無限[/gold]が発動した！\n特定の効果によって[gold]変化[/gold]が無限に繰り返されると、カードは[gold]無限[/gold]へ変化する。\nほかの[gold]無限[/gold]の発動方法も探してみよう！"
+}
