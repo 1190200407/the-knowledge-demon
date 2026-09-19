@@ -21,9 +21,9 @@
     "KNOWLEDGE_DEMON_RELIC_FADED_MANUSCRIPT_RELIC.description": "When you [gold]Transform[/gold], you may transform into Colorless cards.",
     "KNOWLEDGE_DEMON_RELIC_FADED_MANUSCRIPT_RELIC.flavor": "[red]The details of this relic will be revealed in the future...[/red]",
     "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.title": "Cognition Vessel",
-    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.description": "Cards you manually play are [gold]Recorded[/gold] before entering the [gold]discard pile[/gold].\nWhenever you [gold]Record[/gold] [blue]9[/blue] cards, trigger [gold]Knowledge Overload[/gold].",
+    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.description": "Cards you manually play are [gold]Recorded[/gold] before entering the [gold]discard pile[/gold].\nWhenever you [gold]Record[/gold] [blue]9[/blue] cards, trigger [gold]Knowledge Overload[/gold].{InCombat:\n[blue]Right-click this relic to view the tutorial[/blue]|}",
     "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.flavor": "[red]The details of this relic will be revealed in the future...[/red]",
     "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.title": "Knowledge Host",
-    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.description": "Cards you manually play are [gold]Recorded[/gold] before entering the [gold]discard pile[/gold].\nWhenever you [gold]Record[/gold] [blue]9[/blue] cards, trigger [red]Knowledge Overload Ω[/red].",
+    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.description": "Cards you manually play are [gold]Recorded[/gold] before entering the [gold]discard pile[/gold].\nWhenever you [gold]Record[/gold] [blue]9[/blue] cards, trigger [red]Knowledge Overload Ω[/red].{InCombat:\n[blue]Right-click this relic to view the tutorial[/blue]|}",
     "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.flavor": "[red]The details of this relic will be revealed in the future...[/red]"
 }

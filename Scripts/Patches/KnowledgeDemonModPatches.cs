@@ -22,6 +22,7 @@ internal sealed class KnowledgeDemonModPatches : IModPatches
 		patcher.RegisterPatch<KnowledgeDemonUniqueTransformOptionsPatch>();
 		patcher.RegisterPatch<SingularityTransformPatch>();
 		patcher.RegisterPatch<DustyTomeInfiniteAncientCardSetterPatch>();
+		patcher.RegisterPatch<KnowledgeDemonRelicDynamicDescriptionPatch>();
 		patcher.RegisterPatch<TouchOfOrobasStarterRelicHoverTipPatch>();
 		patcher.RegisterPatch<BigMushroomGrowScalePatch>();
 		patcher.RegisterPatch<SurroundedPowerKnowledgeDemonFacingPatch>();

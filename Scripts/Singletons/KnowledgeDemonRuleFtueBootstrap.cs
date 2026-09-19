@@ -61,6 +61,19 @@ public static class KnowledgeDemonRuleFtueBootstrap
         _ = QueueRuleFtueAsync(NKnowledgeDemonRuleFtue.RuleType.Infinity);
     }
 
+    public static async Task ShowRuleFtueAsync(NKnowledgeDemonRuleFtue.RuleType ruleType)
+    {
+        await _ftueGate.WaitAsync();
+        try
+        {
+            await ShowRuleFtueCoreAsync(ruleType);
+        }
+        finally
+        {
+            _ftueGate.Release();
+        }
+    }
+
     private static async Task ShowFtueAsync(CombatStartingEvent evt)
     {
         if (TestMode.IsOn || evt.CombatState is null)
@@ -81,13 +94,13 @@ public static class KnowledgeDemonRuleFtueBootstrap
         {
             if (!HasCompletedRuleFtue(NKnowledgeDemonRuleFtue.id))
             {
-                await ShowRuleFtueAsync(NKnowledgeDemonRuleFtue.RuleType.KnowledgeDemon);
+                await ShowRuleFtueCoreAsync(NKnowledgeDemonRuleFtue.RuleType.KnowledgeDemon);
             }
 
             if (!HasCompletedRuleFtue(NKnowledgeDemonRuleFtue.UniqueId)
                 && PileType.Deck.GetPile(player).Cards.Any(KnowledgeDemonUniqueUtility.IsUnique))
             {
-                await ShowRuleFtueAsync(NKnowledgeDemonRuleFtue.RuleType.Unique);
+                await ShowRuleFtueCoreAsync(NKnowledgeDemonRuleFtue.RuleType.Unique);
             }
         }
         finally
@@ -101,7 +114,10 @@ public static class KnowledgeDemonRuleFtueBootstrap
         await _ftueGate.WaitAsync();
         try
         {
-            await ShowRuleFtueAsync(ruleType);
+            if (!HasCompletedRuleFtue(GetTutorialId(ruleType)))
+            {
+                await ShowRuleFtueCoreAsync(ruleType);
+            }
         }
         finally
         {
@@ -109,19 +125,9 @@ public static class KnowledgeDemonRuleFtueBootstrap
         }
     }
 
-    private static async Task ShowRuleFtueAsync(NKnowledgeDemonRuleFtue.RuleType ruleType)
+    private static async Task ShowRuleFtueCoreAsync(NKnowledgeDemonRuleFtue.RuleType ruleType)
     {
-        var tutorialId = ruleType switch
-        {
-            NKnowledgeDemonRuleFtue.RuleType.Unique => NKnowledgeDemonRuleFtue.UniqueId,
-            NKnowledgeDemonRuleFtue.RuleType.Infinity => NKnowledgeDemonRuleFtue.InfinityId,
-            _ => NKnowledgeDemonRuleFtue.id,
-        };
-
-        if (TestMode.IsOn || HasCompletedRuleFtue(tutorialId))
-        {
-            return;
-        }
+        var tutorialId = GetTutorialId(ruleType);
 
         for (var i = 0; i < 20 && NModalContainer.Instance is null; i++)
         {
@@ -148,6 +154,14 @@ public static class KnowledgeDemonRuleFtueBootstrap
         ftue.Start();
         await ftue.WaitForCompletionAsync();
     }
+
+    private static string GetTutorialId(NKnowledgeDemonRuleFtue.RuleType ruleType) =>
+        ruleType switch
+        {
+            NKnowledgeDemonRuleFtue.RuleType.Unique => NKnowledgeDemonRuleFtue.UniqueId,
+            NKnowledgeDemonRuleFtue.RuleType.Infinity => NKnowledgeDemonRuleFtue.InfinityId,
+            _ => NKnowledgeDemonRuleFtue.id,
+        };
 
     private static bool HasCompletedRuleFtue(string tutorialId) =>
         SaveManager.Instance.Progress.FtueCompleted.Contains(tutorialId);

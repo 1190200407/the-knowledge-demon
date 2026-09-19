@@ -21,9 +21,9 @@
     "KNOWLEDGE_DEMON_RELIC_FADED_MANUSCRIPT_RELIC.description": "[gold]変化[/gold]先の候補に無色カードが追加される。",
     "KNOWLEDGE_DEMON_RELIC_FADED_MANUSCRIPT_RELIC.flavor": "[red]このレリックの詳細は今後明かされる……[/red]",
     "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.title": "認知の器",
-    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.description": "手動でプレイしたカードは[gold]捨て札[/gold]に入る前に[gold]記録[/gold]される。\n[gold]蔵書庫[/gold]のカードが[blue]9[/blue]枚以上になると、[gold]知識の過負荷[/gold]を発動する。",
+    "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.description": "手動でプレイしたカードは[gold]捨て札[/gold]に入る前に[gold]記録[/gold]される。\n[gold]蔵書庫[/gold]のカードが[blue]9[/blue]枚以上になると、[gold]知識の過負荷[/gold]を発動する。{InCombat:\n[blue]このレリックを右クリックしてチュートリアルを見る[/blue]|}",
     "KNOWLEDGE_DEMON_RELIC_COGNITION_VESSEL_RELIC.flavor": "[red]このレリックの詳細は今後明かされる……[/red]",
     "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.title": "知識の宿主",
-    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.description": "手動でプレイしたカードは[gold]捨て札[/gold]に入る前に[gold]記録[/gold]される。\n[gold]蔵書庫[/gold]のカードが[blue]9[/blue]枚以上になると、[red]知識の過負荷 Ω[/red]を発動する。",
+    "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.description": "手動でプレイしたカードは[gold]捨て札[/gold]に入る前に[gold]記録[/gold]される。\n[gold]蔵書庫[/gold]のカードが[blue]9[/blue]枚以上になると、[red]知識の過負荷 Ω[/red]を発動する。{InCombat:\n[blue]このレリックを右クリックしてチュートリアルを見る[/blue]|}",
     "KNOWLEDGE_DEMON_RELIC_KNOWLEDGE_HOST_RELIC.flavor": "[red]このレリックの詳細は今後明かされる……[/red]"
 }
