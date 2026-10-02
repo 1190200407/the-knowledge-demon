@@ -14,17 +14,7 @@ internal static class TransformOptionResolver
         bool isInCombat,
         IEnumerable<CardModel> baseCandidates)
     {
-        IEnumerable<CardModel> candidates = baseCandidates ?? [];
-        if (original.Type == CardType.Status
-            && player.Creature.GetPower<EnvironmentalTolerancePower>() is not null)
-        {
-            candidates = TransformOptionUtility.GetEnvironmentalToleranceTransformCandidates(
-                player,
-                original,
-                isInCombat);
-        }
-
-        var merged = candidates.ToList();
+        var merged = (baseCandidates ?? []).ToList();
         var existingIds = merged.Select(card => card.Id).ToHashSet();
 
         foreach (var provider in EnumerateProviders(player))

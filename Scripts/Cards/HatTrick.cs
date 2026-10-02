@@ -33,7 +33,7 @@ public sealed class HatTrick : KnowledgeDemonCardModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new PowerVar<HatTrickPower>(PowerVarName, 3m),
+        new PowerVar<HatTrickPower>(PowerVarName, 2m),
         new MaterializeVar(1),
     ];
 
@@ -56,6 +56,6 @@ public sealed class HatTrick : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Sly);
+        DynamicVars[PowerVarName].UpgradeValueBy(1m);
     }
 }

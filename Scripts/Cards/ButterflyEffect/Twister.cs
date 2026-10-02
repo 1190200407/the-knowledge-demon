@@ -53,6 +53,6 @@ public sealed class Twister : KnowledgeDemonCardModel
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Retain);
+        base.EnergyCost.UpgradeBy(-1);
     }
 }

@@ -18,7 +18,7 @@ public sealed class MechanicalAscensionPower : KnowledgeDemonPowerModel
 {
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public override PowerStackType StackType => PowerStackType.Single;
 
     protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [HoverTipFactory.FromKeyword(CardKeyword.Unplayable)];
@@ -56,7 +56,7 @@ public sealed class MechanicalAscensionPower : KnowledgeDemonPowerModel
 
         if (side == CombatSide.Player)
         {
-            await PowerCmd.Decrement(this);
+            await PowerCmd.Remove(this);
         }
     }
 }

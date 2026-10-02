@@ -30,29 +30,18 @@ internal static class TransformOptionUtility
         return FilterTransformCandidates(original, unlockedCards, isInCombat);
     }
 
-    internal static IEnumerable<CardModel> GetEnvironmentalToleranceTransformCandidates(
+    internal static IEnumerable<CardModel> GetKnowledgeDemonStatusTransformCandidates(
         Player player,
         CardModel original,
         bool isInCombat)
     {
-        var knowledgeDemonStatusCards = FilterTransformCandidates(
+        return FilterTransformCandidates(
                 original,
                 GetKnowledgeDemonStatusPoolCards(player),
                 isInCombat,
                 allowKnowledgeDemonTokenStatuses: true)
             .GroupBy(card => card.Id)
             .Select(group => group.First());
-
-        if (IsKnowledgeDemonStatusCard(original))
-        {
-            return knowledgeDemonStatusCards;
-        }
-
-        var baseCandidates = GetDefaultTransformCandidates(player, original, isInCombat).ToList();
-        var existingIds = baseCandidates.Select(card => card.Id).ToHashSet();
-
-        return baseCandidates.Concat(
-            knowledgeDemonStatusCards.Where(card => !existingIds.Contains(card.Id)));
     }
 
     internal static IEnumerable<CardModel> GetInfiniteTransformationStatusCandidates(Player player)

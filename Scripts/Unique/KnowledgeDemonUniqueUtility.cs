@@ -210,9 +210,7 @@ public static class KnowledgeDemonUniqueUtility
 
     private static bool IsUniqueForCombat(Player player, CardModel card) =>
         !IsImmuneToUnique(card)
-        && (IsUnique(card)
-            || (player.Creature.GetPower<EnvironmentalTolerancePower>() is not null
-                && card.Type == CardType.Status));
+        && IsUnique(card);
 
     private static void PreserveUpgradeLevel(CardModel source, CardModel replacement)
     {

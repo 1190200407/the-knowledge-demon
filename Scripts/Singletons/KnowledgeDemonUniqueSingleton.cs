@@ -184,31 +184,6 @@ public sealed class KnowledgeDemonUniqueSingleton : HookedSingletonModel
             return null;
         }
 
-        if (duplicate.Type == CardType.Status
-            && player.Creature.GetPower<EnvironmentalTolerancePower>() is not null)
-        {
-            var candidates = TransformOptionUtility
-                .GetEnvironmentalToleranceTransformCandidates(player, duplicate, duplicate.IsInCombat)
-                .Where(candidate =>
-                    !KnowledgeDemonUniqueUtility.WouldViolateCombatUniqueRule(player, candidate, duplicate))
-                .GroupBy(card => card.Id)
-                .Select(group => group.First())
-                .ToArray();
-
-            if (candidates.Length > 0)
-            {
-                var selected = player.RunState.Rng.Niche.NextItem(candidates);
-                return selected is null ? null : cardScope.CreateCard(selected, player);
-            }
-
-            if (TransformOptionUtility.GetInfiniteCard() is { } infinite)
-            {
-                return cardScope.CreateCard(infinite, player);
-            }
-
-            return null;
-        }
-
         var replacement = new CardTransformation(duplicate).GetReplacement(player.RunState.Rng.Niche);
         if (replacement is null)
         {

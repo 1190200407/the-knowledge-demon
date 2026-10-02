@@ -40,9 +40,6 @@
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.description": "At the end of combat, your card reward contains 1 card from the chosen character.",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.smartDescription": "At the end of combat, your [gold]card reward[/gold] contains 1 card from [gold]{ChosenCharacter}[/gold].",
     "KNOWLEDGE_DEMON_POWER_MIMICRY_POWER.upgradedSmartDescription": "At the end of combat, your [gold]card reward[/gold] contains 1 upgraded card from [gold]{ChosenCharacter}[/gold].",
-    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.title": "Environmental Tolerance",
-    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.description": "All Status cards gain [gold]Unique[/gold], and you can [gold]Transform[/gold] generated Status cards into Knowledge Demon Status cards.",
-    "KNOWLEDGE_DEMON_POWER_ENVIRONMENTAL_TOLERANCE_POWER.smartDescription": "All Status cards gain [gold]Unique[/gold], and you can [gold]Transform[/gold] generated Status cards into Knowledge Demon Status cards.",
     "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.title": "Aberrant",
     "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.description": "The next [blue]1[/blue] Status card you generate each turn gains [gold]Sly[/gold].",
     "KNOWLEDGE_DEMON_POWER_ABERRANT_POWER.smartDescription": "The next [blue]{Amount}[/blue] Status cards you generate each turn gain [gold]Sly[/gold].",
@@ -117,7 +114,7 @@
     "KNOWLEDGE_DEMON_POWER_INFINITE_POWER.smartDescription": "Cards currently granted [gold]Infinite[/gold]: [gold]{InfiniteCards}[/gold].",
     "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.title": "Mechanical Ascension",
     "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.description": "This turn, you can play Status cards that cannot normally be played. Whenever you play a Status card, draw [blue]1[/blue] card.",
-    "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.smartDescription": "For the next [blue]{Amount}[/blue] turns, you can play Status cards that cannot normally be played. Whenever you play a Status card, draw [blue]1[/blue] card.",
+    "KNOWLEDGE_DEMON_POWER_MECHANICAL_ASCENSION_POWER.smartDescription": "This turn, you can play Status cards that cannot normally be played. Whenever you play a Status card, draw [blue]1[/blue] card.",
     "KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.title": "Telepathy",
     "KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.description": "All allies gain the effect of your starting relic this combat.",
     "KNOWLEDGE_DEMON_POWER_TELEPATHY_POWER.smartDescription": "All allies gain the effect of your starting relic this combat."
