@@ -145,7 +145,7 @@
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.title": "Character",
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.description": "At the end of combat, add 1 [gold]{ChosenCharacter}[/gold] card{IfUpgraded:show: that is upgraded|} to the card reward.",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.title": "Hat Trick",
-    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "The next {Power} times you [gold]Record[/gold] a card, [gold]Materialize[/gold] 1.",
+    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "The next {Power:diff()} times you [gold]Record[/gold] a card, [gold]Materialize[/gold] 1.",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.selectionScreenPrompt": "Choose [blue]{Amount}[/blue] cards to [gold]Materialize[/gold].",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.title": "Continuation Flame",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.description": "Gain {Block:diff()} [gold]Block[/gold]. Gain {Energy:energyIcons()}.",

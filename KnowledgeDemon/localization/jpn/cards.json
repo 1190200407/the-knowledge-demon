@@ -145,7 +145,7 @@
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.title": "キャラクター",
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.description": "戦闘終了時、[gold]{ChosenCharacter}[/gold]のカード1枚{IfUpgraded:show:（アップグレード済み）|}をカード報酬に追加する。",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.title": "ハットトリック",
-    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "次の{Power}回、カードを[gold]記録[/gold]するたびに[gold]実体化[/gold]1を行う。",
+    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "次の{Power:diff()}回、カードを[gold]記録[/gold]するたびに[gold]実体化[/gold]1を行う。",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.selectionScreenPrompt": "[gold]実体化[/gold]するカードを[blue]{Amount}[/blue]枚選ぶ。",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.title": "継火の呪符",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.description": "{Block:diff()}[gold]ブロック[/gold]を得る。{Energy:energyIcons()}を得る。",

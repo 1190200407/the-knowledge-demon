@@ -145,7 +145,7 @@
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.title": "角色",
     "KNOWLEDGE_DEMON_CARD_MIMICRY_CHARACTER_OPTION.description": "战斗结束时，卡牌奖励添加1张[gold]{ChosenCharacter}[/gold]的{IfUpgraded:show:升级过的|}卡牌。",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.title": "帽子戏法",
-    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "你接下来{Power}次[gold]记录[/gold]的时候，[gold]具象[/gold]{Materialize}。",
+    "KNOWLEDGE_DEMON_CARD_HAT_TRICK.description": "你接下来{Power:diff()}次[gold]记录[/gold]的时候，[gold]具象[/gold]{Materialize}。",
     "KNOWLEDGE_DEMON_CARD_HAT_TRICK.selectionScreenPrompt": "选择[blue]{Amount}[/blue]张牌[gold]具象[/gold]。",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.title": "续灯咒文",
     "KNOWLEDGE_DEMON_CARD_CONTINUATION_FLAME_CHARM.description": "获得{Block:diff()}点[gold]格挡[/gold]。获得{Energy:energyIcons()}。",
